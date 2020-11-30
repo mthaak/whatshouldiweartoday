@@ -3,14 +3,14 @@ import EventEmitter from 'events'
 import { isToday, isInHour } from '../common/timeutils'
 
 const weatherFromFile = require('../data/weather_18102020.json');
-import { REACT_NATIVE_OPENWEATHERMAP_APPID } from '@env'
+import { OPENWEATHERMAP_APPID } from '@env'
 
-// 'https://api.openweathermap.org/data/2.5/onecall?lat=51.539720&lon=-0.097388&exclude=minutely&appid=8b56a6f37418c8fec5111148b6f815df&units=metric'
 let OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
 let LAT = 51.539720;
 let LON = -0.097388;
-let APPID = REACT_NATIVE_OPENWEATHERMAP_APPID;
+let APPID = OPENWEATHERMAP_APPID;
 let UNITS = 'metric';
+// 'https://api.openweathermap.org/data/2.5/onecall?lat=51.539720&lon=-0.097388&exclude=minutely&appid=APPID&units=metric'
 
 class WeatherService {
 

@@ -1,7 +1,7 @@
 import { Loader, LoaderOptions } from 'google-maps';
 
-const API_KEY =
 
+const API_KEY = 
 
 const options: LoaderOptions = {/* todo */ };
 const loader = new Loader('my-api-key', options);

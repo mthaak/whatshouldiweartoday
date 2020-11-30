@@ -4,7 +4,9 @@ import { store } from './store';
 
 import Location from './Location'
 
-const GEOCODING_API_KEY = 'AIzaSyCNvBOIe9kVFwueb6RaOfQlfnQO9bUtNVw';
+import { GOOGLE_GEOCODING_API_KEY } from '@env'
+
+const GEOCODING_API_KEY = GOOGLE_GEOCODING_API_KEY;
 ExpoLocation.setApiKey(GEOCODING_API_KEY); // renamed to setGoogleApiKey later
 
 let permission = null;
