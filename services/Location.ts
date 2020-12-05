@@ -2,11 +2,13 @@ export default class Location {
   lat: int;
   lon: int;
   city: str;
+  countr: str;
 
-  constructor(lat: int, lon: int, city: str) {
+  constructor(lat: int, lon: int, city: str, country: str) {
     this.lat = lat;
     this.lon = lon;
     this.city = city;
+    this.country = country;
   }
 
   toString() {

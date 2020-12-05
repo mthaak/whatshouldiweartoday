@@ -9,7 +9,7 @@ import Navigation from './navigation';
 import { useFonts, Lato_400Regular } from '@expo-google-fonts/lato';
 import { initializeStorage } from './services/store'
 
-import { requestPermission, updateLocation } from './services/LocationService'
+import locationService from './services/LocationService'
 
 require('dotenv').config();
 
@@ -22,9 +22,10 @@ export default function App() {
 
   initializeStorage();
 
-  // requestPermission().then(() =>
-  //   updateLocation()
-  // );
+  locationService.requestPermission().then(permission => {
+    if (permission === "granted")
+      locationService.updateLocationEmit();
+  });
 
   if (!isLoadingComplete || !areFontsLoaded) {
     return null;

@@ -1,4 +1,3 @@
-// var EventEmitter = require('events').EventEmitter;
 import EventEmitter from 'events'
 import { isToday, isInHour } from '../common/timeutils'
 
@@ -10,7 +9,6 @@ let LAT = 51.539720;
 let LON = -0.097388;
 let APPID = OPENWEATHERMAP_APPID;
 let UNITS = 'metric';
-// 'https://api.openweathermap.org/data/2.5/onecall?lat=51.539720&lon=-0.097388&exclude=minutely&appid=APPID&units=metric'
 
 class WeatherService {
 
@@ -22,18 +20,17 @@ class WeatherService {
     if (isToday(weatherFromFile['current'].dt)) {
       console.log('Using weather forecast from file')
       this.weatherPromise = Promise.resolve(this.weatherFromFile);
-      // this.emitter.emit('update');
     } else {
       console.log('Retrieving weather forecast from openweathermap.org...');
       this.weatherPromise = this.retrieveWeather();
     }
   }
 
-  getWeather() {
+  getWeatherAsync() {
     return this.weatherPromise;
   }
 
-  getCurrentWeather() {
+  getCurrentWeatherAsync() {
     return this.getWeather()
       .then(weather => weather['current']);
   }
