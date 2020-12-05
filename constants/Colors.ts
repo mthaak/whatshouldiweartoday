@@ -3,6 +3,7 @@ const tintColorDark = '#fff';
 
 // https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557
 export const background = '#457b9d';
+export const darkBackground = '#0d4f6f';
 export const foreground = '#f1faee';
 export const darkAccent = '#1d3557';
 export const lightAccent = '#f1faee';
