@@ -37,8 +37,8 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       msg: "Don't go out, but if you must, take all precautions: Wear [short/airy] clothes and open shoes, and bring plenty of water.",
       clothes: ["sunglasses", "man_cap"].concat(
         profile.gender == Gender.MAN
-          ? ["man_striped_tshirt", "man_long_pants", "man_long_sleeve_buttoned"]
-          : []),
+          ? ["man_long_sleeve_buttoned", "man_long_pants"]
+          : ["woman_long_sleeve_lined", "woman_long_pants_gray"]),
     }
   else if (feelsLike >= 40) // very hot
     return {
@@ -46,7 +46,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: ["sunglasses", "man_cap"].concat(
         profile.gender == Gender.MAN
           ? ["man_striped_tshirt", "man_shorts_yellow", "man_light_shoe"]
-          : []),
+          : ["woman_dress", "woman_open_shoe"]),
     }
   else if (feelsLike >= 30) // hot
     return {
@@ -54,7 +54,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: ["sunglasses", "man_cap"].concat(
         profile.gender == Gender.MAN
           ? ["man_striped_tshirt", "man_shorts_yellow", "man_light_shoe"]
-          : []),
+          : ["woman_dress", "woman_open_shoe"]),
     }
   else if (feelsLike >= 20) // warm
     return {
@@ -62,7 +62,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: ["sunglasses", "man_cap"].concat(
         profile.gender == Gender.MAN
           ? ["man_striped_tshirt", "man_shorts", "main_long_sleeve_buttoned"]
-          : []),
+          : ["woman_long_sleeve", "woman_tshirt_yellow", "woman_skirt_with_belt"]),
     }
   else if (feelsLike >= 15) // moderate
     return {
@@ -70,7 +70,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ["man_sports_jacket", "man_long_sleeve_buttoned", "man_long_pants"]
-          : []),
+          : ["woman_long_sleeve", "woman_tshirt_yellow", "woman_long_pants_gray"]),
     }
   else if (feelsLike >= 10) // chilly
     return {
@@ -78,7 +78,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ["man_sports_jacket", "man_long_sleeve_buttoned", "man_long_pants"]
-          : []),
+          : ["woman_long_sleeve_lined", "woman_tshirt", "woman_long_pants_gray"]),
     }
   else if (feelsLike >= -5) // cold
     return {
@@ -86,7 +86,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ["man_beanie_hat", "man_winter_jacket", "man_winter_jumper", "man_long_pants"]
-          : []),
+          : ["man_beanie_hat", "woman_long_coat_gray", "woman_long_sleeve_buttoned", "woman_tights_blue"]),
     }
   else if (feelsLike >= -25) // very cold
     return {
@@ -94,7 +94,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ["man_beanie_hat", "man_winter_jacket", "man_winter_jumper", "man_long_pants", "man_boot"]
-          : []),
+          : ["man_beanie_hat", "woman_long_coat_gray", "woman_long_sleeve_buttoned", "woman_tights_blue", "man_boot"]),
     }
   else if (feelsLike < -25) // extremely cold
     return {
@@ -102,7 +102,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ["man_beanie_hat", "man_winter_jacket", "man_winter_jumper", "man_long_pants", "man_boot"]
-          : []),
+          : ["man_beanie_hat", "woman_long_coat_gray", "woman_long_sleeve_buttoned", "woman_tights_blue", "man_boot"]),
     }
 }
 
@@ -115,6 +115,12 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
   if (weathers == [])
     weathers = getTodayWeather(weatherForecast)['weather'];
   let rainWeathers = weathers.filter(w => ["Thunderstorm", "Rain", "Drizzle"].includes(w['main']))
+  if (rainWeathers.length === 0)
+    return {
+      msg: null,
+      clothes: [],
+    };
+  console.log(rainWeathers)
   let worstWeather = minByFn(rainWeathers, w => rainOrder.indexOf(w['description'])); // weather with worst rain according to rain order
 
   if (worstWeather == null)

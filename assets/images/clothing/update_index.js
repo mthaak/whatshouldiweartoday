@@ -5,6 +5,7 @@ var fs = require('fs');
 var index_content = ''
 fs.readdirSync(__dirname).forEach(file => {
   if (file.endsWith('.png')) {
+    console.log(file);
     let name = file.substring(0, file.lastIndexOf('.'));
     index_content += `export const ${name} = require('./${file}');\n`;
   }
