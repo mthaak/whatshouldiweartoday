@@ -1,16 +1,22 @@
-import { Gender } from '../common/enums';
+import { Gender, TemperatureUnit } from '../common/enums';
 import UserProfile from '../common/UserProfile';
 import Time from '../common/Time';
 import { AsyncStorage } from 'react-native';
 
 const INITIAL_PROFILE = new UserProfile(
+  null,
   Gender.MAN,
   null,
-  [0, 1, 2, 3, 4, 5, 6],
-  new Time(8, 30),
-  new Time(17, 30),
-  'C',
-  null
+  new UserProfile.Commute(
+    [0, 1, 2, 3, 4, 5, 6],
+    new Time(8, 30),
+    new Time(17, 30),
+  ),
+  new UserProfile.Alert(
+    true,
+    null,
+  ),
+  TemperatureUnit.CELSIUS,
 );
 
 export async function initializeStorage() {

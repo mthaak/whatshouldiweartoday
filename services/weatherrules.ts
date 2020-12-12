@@ -108,10 +108,10 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
 
 function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
   let weathers = [];
-  if (profile.timeLeave)
-    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.timeLeave.hour)['weather']);
-  if (profile.timeReturn)
-    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.timeReturn.hour)['weather']);
+  if (profile.commute.leaveTime)
+    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.leaveTime.hour)['weather']);
+  if (profile.commute.returnTime)
+    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.returnTime.hour)['weather']);
   if (weathers == [])
     weathers = getTodayWeather(weatherForecast)['weather'];
   let rainWeathers = weathers.filter(w => ["Thunderstorm", "Rain", "Drizzle"].includes(w['main']))
