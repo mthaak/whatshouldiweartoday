@@ -25,12 +25,14 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 import WeatherScreen from '../screens/WeatherScreen'
 import SettingsScreen from '../screens/SettingsScreen'
+import SettingsScreen2 from '../screens/SettingsScreen2'
 
 function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Weather" component={WeatherScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="Settings2" component={SettingsScreen2} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

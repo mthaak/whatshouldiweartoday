@@ -4,7 +4,6 @@ import Time from '../common/Time';
 import { AsyncStorage } from 'react-native';
 
 const INITIAL_PROFILE = new UserProfile(
-  null,
   Gender.MAN,
   null,
   [0, 1, 2, 3, 4, 5, 6],
@@ -16,7 +15,6 @@ const INITIAL_PROFILE = new UserProfile(
 
 export async function initializeStorage() {
   let existingProfile = await retrieveProfile();
-  existingProfile = null;
   if (existingProfile == null) {
     saveProfile(INITIAL_PROFILE)
   }
@@ -33,7 +31,10 @@ export async function saveProfile(profile: UserProfile) {
 
 export async function retrieveProfile(): Promise<UserProfile> {
   try {
-    let object = JSON.parse(await AsyncStorage.getItem('@store:profile'));
+    let profile = await AsyncStorage.getItem('@store:profile');
+    if (profile === null)
+      return null;
+    let object = JSON.parse(profile);
     return UserProfile.fromObject(object);
   } catch (e) {
     console.error('Failed to retrieve profile from storage');

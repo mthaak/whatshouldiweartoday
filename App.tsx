@@ -8,10 +8,9 @@ import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import { useFonts, Lato_400Regular } from '@expo-google-fonts/lato';
 import { initializeStorage } from './services/store'
+import { View, Text } from 'react-native';
 
 import locationService from './services/LocationService'
-
-require('dotenv').config();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();

@@ -3,7 +3,7 @@ import 'moment'
 import { isInHour, isToday } from '../common/timeutils'
 import { UserProfile } from '../common/UserProfile';
 import { Gender } from '../common/enums';
-import { rainOrder } from './rainOrder'
+import { rainOrder } from './rainorder';
 import { minByFn } from '../common/utils'
 
 export function getTodayWeather(weatherForecast: Object) {

@@ -1,8 +1,8 @@
-import EventEmitter from 'events'
+import { EventEmitter } from 'eventemitter3'
 import { isToday, isInHour } from '../common/timeutils'
 
 const weatherFromFile = require('../data/weather_18102020.json');
-import { OPENWEATHERMAP_APPID } from '@env'
+import { OPENWEATHERMAP_APPID } from '../env'
 
 let OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
 let LAT = 51.539720;

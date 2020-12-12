@@ -1,10 +1,10 @@
 import * as ExpoLocation from 'expo-location';
-import EventEmitter from 'events'
+import { EventEmitter } from 'eventemitter3'
 
 import * as Store from './store';
 import Location from './Location'
 
-import { GOOGLE_GEOCODING_API_KEY } from '@env'
+import { GOOGLE_GEOCODING_API_KEY } from '../env'
 
 const GEOCODING_API_KEY = GOOGLE_GEOCODING_API_KEY;
 ExpoLocation.setApiKey(GEOCODING_API_KEY); // renamed to setGoogleApiKey later

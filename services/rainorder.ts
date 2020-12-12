@@ -34,4 +34,4 @@ export const rainOrder = [
   "light thunderstorm",
   "thunderstorm",
   "ragged thunderstorm",
-]
+];
