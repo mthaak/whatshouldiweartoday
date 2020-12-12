@@ -4,7 +4,6 @@ import Location from './Location';
 
 export default class UserProfile {
 
-  username: string;
   gender: Gender;
   home: Location;
   commuteDays: Array<number>;
@@ -14,7 +13,6 @@ export default class UserProfile {
   timeAlert: Time;
 
   constructor(
-    username: string,
     gender: Gender,
     home: Location,
     commuteDays: Array<number>,
@@ -23,7 +21,6 @@ export default class UserProfile {
     tempUnit: string,
     timeAlert: Time
   ) {
-    this.username = name;
     this.gender = gender;
     this.home = home;
     this.commuteDays = commuteDays;

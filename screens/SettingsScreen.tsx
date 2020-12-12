@@ -99,15 +99,6 @@ export default class SettingsScreen extends React.Component {
           <Block style={styles.inputs}>
             <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
               <Block>
-                <Text style={{ marginBottom: 10 }}>Your name</Text>
-                {this.renderTextEdit('username')}
-              </Block>
-              <Text onPress={() => this.toggleEdit('username')}>
-                {editing === 'username' ? 'Save' : 'Edit'}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
                 <Text style={{ marginBottom: 10 }}>Home</Text>
                 <Text>Current location: </Text>
                 {this.renderLocationEdit('home')}

@@ -16,6 +16,7 @@ import weatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 
 export default class WeatherScreen extends React.Component {
+
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
@@ -57,7 +58,6 @@ export default class WeatherScreen extends React.Component {
 
     if (profile && profile.tempUnit) {
       let todayWeather = getTodayWeather(weatherForecast);
-      console.log(location)
       return <TodayWeather
         dayTemp={todayWeather.temp.day}
         feelsLikeTemp={todayWeather.feels_like.day}
@@ -95,7 +95,6 @@ export default class WeatherScreen extends React.Component {
       let weatherAtReturn = null;
       if (profile.timeReturn)
         weatherAtReturn = getWeatherAtTime(weatherForecast, profile.timeReturn);
-
       let commuteElem;
       if (weatherAtReturn || weatherAtLeave) {
         return <Commute
@@ -134,6 +133,15 @@ export default class WeatherScreen extends React.Component {
           <Ionicons size={35} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground} />
         </TouchableOpacity>
 
+        <TouchableOpacity
+          style={styles.topRightCorner2}
+          onPress={() => {
+            this.navigation.navigate('Settings2');
+          }}
+        >
+          <Ionicons size={35} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground} />
+        </TouchableOpacity>
+
         <View style={{ justifyContent: 'center', height: '25%', width: '100%' }}>
           {this.renderTodayWeather()}
         </View>
@@ -160,21 +168,23 @@ class TodayWeather extends React.Component {
     return (
       <>
         <Text style={styles.title}>Today</Text>
-        <View style={{ width: '80%', marginLeft: 'auto', marginRight: 'auto', marginTop: -20 }}>
+        <View style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: -20 }}>
           <View style={{ flexDirection: 'row' }}>
-            <View style={{ width: '40%' }}>
+            <View style={{ width: 120 }}>
               <WeatherIcon weather={this.props.weatherDescr} size={120} />
             </View>
-            <View style={{ width: '60%', justifyContent: 'center' }}>
-              <Text style={[styles.text, styles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text><br />
+            <View style={{ width: '60%', justifyContent: 'center', top: -10 }}>
+              <Text style={[styles.text, styles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text>
               <Text style={[styles.text, styles.small]}>feels like {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}</Text>
             </View>
           </View >
-          <View>
-            <Text style={[{ position: 'absolute', top: -25, left: 20 }, styles.text, styles.small]}>
-              <Ionicons name="md-pin" size={20} color={Colors.foreground} style={{ textAlignVertical: 'sub', marginRight: 10 }} />
-              {location}
-            </Text>
+          <View style={{ position: 'relative', top: -25, left: 20, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ marginRight: 7 }}>
+              <Ionicons name="md-pin" size={20} color={Colors.foreground} style={{ textAlignVertical: 'top' }} />
+            </View>
+            <View>
+              <Text style={[styles.text, styles.small]}>{location}</Text>
+            </View>
           </View>
         </View>
       </>
@@ -192,35 +202,35 @@ class WearRecommendation extends React.Component {
       <ClothingImage
         key={name}
         name={name}
-        style={{ display: 'inline-block', width: 50, height: 80, margin: 8 }}
+        style={{ width: 50, height: 80, margin: 8 }}
       />
     );
     let rainImages = this.props.wearRecommendation.rain.clothes.map((name) =>
       <ClothingImage
         key={name}
         name={name}
-        style={{ display: 'inline-block', width: 50, height: 80, margin: 8 }}
+        style={{ width: 50, height: 80, margin: 8 }}
       />
     );
     return (
       <View style={{
-        width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-        padding: 14, backgroundColor: Colors.darkBackground, borderRadius: 5,
+        width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+        padding: 18, backgroundColor: Colors.darkBackground, borderRadius: 5,
         borderColor: Colors.darkAccent, boxShadow: `inset 0 0 20px ${Colors.darkAccent}`
       }}>
-        <Text style={styles.large}>{this.props.wearRecommendation.temp.msg}</Text>
-        <View style={{ marginLeft: 'auto', marginRight: 'auto', display: 'block', backgroundColor: 'none' }}>
+        <View style={{ marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', backgroundColor: 'none' }}>
           {tempImages}
         </View>
-        <Text style={styles.large}>{this.props.wearRecommendation.rain.msg}</Text>
-        <View style={{ marginLeft: 'auto', marginRight: 'auto', display: 'block', backgroundColor: 'none' }}>
+        <Text style={[styles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.temp.msg}</Text>
+        <View style={{ marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', backgroundColor: 'none' }}>
           {rainImages}
         </View>
-
+        <Text style={[styles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.rain.msg}</Text>
       </View>
     )
   }
 }
+
 class Commute extends React.Component {
   render() {
     return (
@@ -230,14 +240,18 @@ class Commute extends React.Component {
           <View style={styles.commuteElem}>
             {this.props.timeLeave &&
               <>
-                <Text style={styles.text}>
-                  <Ionicons name="md-arrow-round-forward" size={20} color={Colors.foreground} style={{ textAlignVertical: 'sub', marginRight: 10 }} />
-                  <span>Leave {this.props.timeLeave.toString()}</span>
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{ marginRight: 10 }}>
+                    <Ionicons name="md-arrow-round-forward" size={20} color={Colors.foreground} style={{ textAlignVertical: 'bottom' }} />
+                  </View>
+                  <Text style={styles.text}>
+                    Leave {this.props.timeLeave.toString()}
+                  </Text>
+                </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtLeave} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text><br />
+                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text>
                     <Text style={[styles.text, styles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtLeave, this.props.tempUnit)}</Text>
                   </View>
                 </View>
@@ -247,14 +261,18 @@ class Commute extends React.Component {
           <View style={styles.commuteElem}>
             {this.props.timeReturn &&
               <>
-                <Text style={styles.text}>
-                  <Ionicons name="md-arrow-round-back" size={20} color={Colors.foreground} style={{ textAlignVertical: 'sub', marginRight: 10 }} />
-                  <span>Return {this.props.timeReturn.toString()}</span>
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{ marginRight: 10 }}>
+                    <Ionicons name="md-arrow-round-back" size={20} color={Colors.foreground} style={{ textAlignVertical: 'top' }} />
+                  </View>
+                  <Text style={styles.text}>
+                    Return {this.props.timeReturn.toString()}
+                  </Text>
+                </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtReturn} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text><br />
+                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text>
                     <Text style={[styles.text, styles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtReturn, this.props.tempUnit)}</Text>
                   </View>
                 </View>
@@ -277,18 +295,17 @@ class ClothingImage extends React.Component {
 class WeatherIcon extends React.Component {
   render() {
     if (this.props.weather) {
-      let url = `http://openweathermap.org/img/wn/${this.props.weather.icon}@2x.png`
+      let url = `http://openweathermap.org/img/wn/${this.props.weather.icon}@2x.png`;
       let placeholder = this.props.weather.description
-      return <img src={url} placeholder={placeholder} style={{
-        display: 'inline-block',
+      return <Image source={{ uri: url }} placeholder={placeholder} style={{
         width: this.props.size || "100%",
         height: this.props.size || "100%",
-        objectFit: 'contain',
       }} />
     }
     return null;
   }
 }
+// display 'inline-block'
 
 function formatTemp(temp, unit: string) {
   return (Math.round(temp * 10) / 10).toString() + '°' + unit
@@ -316,13 +333,20 @@ const styles = StyleSheet.create({
     right: 20,
     zIndex: 1,
   },
+  topRightCorner2: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 1,
+  },
   title: {
     ...shadowStyle,
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    marginTop: 30,
+    marginBottom: 7,
+    zIndex: 1,
   },
   subtitle: {
     ...shadowStyle,
@@ -330,7 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 7,
   },
   text: {
     ...shadowStyle
@@ -359,7 +383,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%', /* or any custom size */
     height: '100%',
-    objectFit: 'contain',
   },
   commuteElem: {
     width: '50%',

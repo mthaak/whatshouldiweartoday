@@ -6,6 +6,7 @@ export default {
     screens: {
       WeatherScreen: 'Weather',
       SettingsScreen: 'Settings',
+      SettingsScreen2: 'Settings2',
       NotFound: '*',
     },
   },
