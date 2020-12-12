@@ -1,4 +1,9 @@
 export enum Gender {
-  MAN = "Man",
-  WOMAN = "Woman",
+  MAN,
+  WOMAN,
+}
+
+export enum TemperatureUnit {
+  CELSIUS,
+  FAHRENHEIT,
 }

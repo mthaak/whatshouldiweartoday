@@ -2,6 +2,8 @@ import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 import { ColorSchemeName } from 'react-native';
+import { ThemeProvider } from 'react-native-elements';
+import { theme } from '../constants/RNE-Theme';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
@@ -14,7 +16,9 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <RootNavigator />
+      <ThemeProvider theme={theme} dark={colorScheme === 'dark'}>
+        <RootNavigator />
+      </ThemeProvider>
     </NavigationContainer>
   );
 }
@@ -25,14 +29,12 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 import WeatherScreen from '../screens/WeatherScreen'
 import SettingsScreen from '../screens/SettingsScreen'
-import SettingsScreen2 from '../screens/SettingsScreen2'
 
 function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Weather" component={WeatherScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="Settings2" component={SettingsScreen2} />
       <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </Stack.Navigator>
   );

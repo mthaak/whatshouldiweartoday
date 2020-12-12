@@ -1,14 +1,14 @@
-import * as React from 'react';
-import { useState, useEffect } from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import Block from '../components/Block'
-
-import EditScreenInfo from '../components/EditScreenInfo';
-import { View, Button, TextInput } from '../components/Themed';
-import { Text } from '../components/StyledText';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, FlatList, Switch } from 'react-native';
+import { Text, ListItem, Avatar, Icon, Badge, Button, Header } from 'react-native-elements';
+import TouchableScale from 'react-native-touchable-scale';
 import { Ionicons } from '@expo/vector-icons';
 
-// import DateTimePicker from '@react-native-community/datetimepicker';
+import { copyString } from '../common/utils';
+
+import { LinearGradient } from '../components/LinearGradient';
+
+import * as Colors from '../constants/Colors';
 
 import * as Store from '../services/store';
 
@@ -17,51 +17,11 @@ export default class SettingsScreen extends React.Component {
     super()
     this.navigation = navigation;
     this.state = { profile: null, editing: null };
-    Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
-  }
-
-  // componentDidMount() {
-  //   getCurrentWeather().then((value) => {
-  //     this.setState({weather: JSON.stringify(value)})
-  //   })
-  // }
-
-  toggleEdit(key) {
-    const { editing, profile } = this.state;
-
-    if (editing) {
-      Store.saveProfile(profile);
-      this.setState({ editing: null });
-    } else {
-      this.setState({ editing: key });
-    }
-  }
-
-  renderTextEdit(key) {
-    const { editing, profile } = this.state;
-
-    if (editing === key) {
-      return (
-        <TextInput bold
-          defaultValue={profile[key]}
-          onChangeText={text => this.handleEdit([key], text)}
-        />
-      )
-    }
-    return <Text bold>{profile[key]}</Text>
-  }
-
-  renderLocationEdit(key) {
-    const { editing, profile } = this.state;
-
-    let city = profile[key] ? profile[key].city : 'Unknown'
-
-    if (editing === key) {
-      return (
-        <Text>{city}</Text>
-      )
-    }
-    return <Text bold>{city}</Text>
+    Store.retrieveProfile().then(profile => {
+      // Dynamic placeholders need to be set only once during init
+      this.namePlaceholder = profile.name || 'Type your name';
+      this.setState({ profile: profile });
+    });
   }
 
   handleEdit(key, value) {
@@ -73,92 +33,163 @@ export default class SettingsScreen extends React.Component {
   }
 
   resetSettings() {
+    this.namePlaceholder = null;
     Store.resetProfile();
     Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
   }
 
   render() {
-    const { profile, editing } = this.state;
+    const { profile } = this.state;
     if (profile == null)
       return <Text>Loading...</Text>
 
     return (
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.topRightCorner}
-          onPress={() => {
-            this.navigation.navigate('Weather');
-          }}
-        >
-          <Ionicons size={30} style={{ marginBottom: -3 }} name="md-arrow-back" color="white" />
-        </TouchableOpacity>
+      <>
+        <View style={styles.container}>
+          <Header
+            leftComponent=<Ionicons name="md-arrow-round-back" size={30} color={Colors.foreground}
+          onPress={() => this.navigation.goBack()} />
+    />
+          <FlatList
+            ListHeaderComponent={
+              <>
+                <View style={styles.list}>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Name</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.Input
+                      placeholder={this.namePlaceholder}
+                      onChangeText={value => this.handleEdit("name", value)}
+                    />
+                    <ListItem.Chevron />
+                  </ListItem>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Gender</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.ButtonGroup
+                      buttons={['Man', 'Woman']}
+                      selectedIndex={profile.gender}
+                      onPress={(index) => this.handleEdit("gender", index)}
+                    />
+                  </ListItem>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Home</ListItem.Title>
+                    </ListItem.Content>
+                    <Text>{profile.home || 'Not set'}</Text>
+                    <ListItem.Chevron />
+                  </ListItem>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Commute</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.Chevron />
+                  </ListItem>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Alert</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.Chevron />
+                  </ListItem>
+                  <ListItem bottomDivider>
+                    <ListItem.Content>
+                      <ListItem.Title>Temperature unit</ListItem.Title>
+                    </ListItem.Content>
+                    <ListItem.ButtonGroup
+                      buttons={['°C', '°F']}
+                      selectedIndex={profile.tempUnit}
+                      onPress={(index) => this.handleEdit("tempUnit", index)}
+                    />
+                  </ListItem>
 
-        <Text style={styles.title}>Your profile</Text>
+                  <ListItem bottomDivider containerStyle={{ justifyContent: 'center' }}>
+                    <Button
+                      title="Reset Settings"
+                      onPress={() => this.resetSettings()}
+                    />
+                  </ListItem>
+                </View>
 
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Block style={styles.inputs}>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text style={{ marginBottom: 10 }}>Home</Text>
-                <Text>Current location: </Text>
-                {this.renderLocationEdit('home')}
-              </Block>
-              <Text onPress={() => this.toggleEdit('home')}>
-                {editing === 'home' ? 'Save' : 'Edit'}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text style={{ marginBottom: 10 }}>Commute</Text>
-                <Text bold>ToDo</Text>
-              </Block>
-              <Text>
-                Edit
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Block>
-                <Text style={{ marginBottom: 10 }}>Alert time</Text>
-                <Text bold>{JSON.stringify(profile.timeAlert)}</Text>
-              </Block>
-              <Text onPress={() => this.toggleEdit('timeAlert')}>
-                {editing === 'timeAlert' ? 'Save' : 'Edit'}
-              </Text>
-            </Block>
-            <Block row space="between" margin={[10, 0]} style={styles.inputRow}>
-              <Button onPress={() => this.resetSettings()} title="Reset profile">
-              </Button>
-            </Block>
-          </Block>
-        </ScrollView>
-        <Text>{JSON.stringify(profile)}</Text>
-      </View>
-    )
+              </>
+            }
+          />
+        </View>
+      </>
+    );
   }
 }
+
+
+
+// <ListItem bottomDivider>
+//   <ListItem.CheckBox
+//     checked={checkbox1}
+//     onPress={() => setCheckbox1(!checkbox1)}
+//   />
+//   <ListItem.Content>
+//     <ListItem.Title>Check that please 😢</ListItem.Title>
+//   </ListItem.Content>
+// </ListItem>
+// <ListItem bottomDivider>
+//   <Badge value="12" />
+//   <ListItem.Content>
+//     <ListItem.Title>With a Badge ! 😻</ListItem.Title>
+//   </ListItem.Content>
+// </ListItem>
+// <ListItem bottomDivider>
+//   <Icon name="check" size={20} />
+//   <ListItem.Content>
+//     <ListItem.Title>This thing is checked 😎</ListItem.Title>
+//   </ListItem.Content>
+// </ListItem>
+// <ListItem bottomDivider>
+//   <ListItem.Content>
+//     <ListItem.Title>Switch that please 😲</ListItem.Title>
+//   </ListItem.Content>
+//   <Switch
+//     onValueChange={() => { }}
+//   />
+// </ListItem>
+// <View style={styles.list}>
+//   <ListItem>
+//     <Avatar source={require('../assets/images/splash.png')} />
+//     <ListItem.Content>
+//       <ListItem.Title>
+//         Limited supply! Its like digital gold!
+//         </ListItem.Title>
+//       <View style={styles.subtitleView}>
+//         <Image
+//           source={require('../assets/images/splash.png')}
+//           style={styles.ratingImage}
+//         />
+//         <Text style={styles.ratingText}>5 months ago</Text>
+//       </View>
+//     </ListItem.Content>
+//   </ListItem>
+// </View>
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: Colors.background,
   },
-  topRightCorner: {
-    position: 'absolute',
-    top: '20px',
-    right: '20px',
+  list: {
+    borderTopWidth: 1,
+    borderColor: Colors.lightAccent,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  subtitleView: {
+    flexDirection: 'row',
+    paddingLeft: 10,
+    paddingTop: 5,
   },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
+  ratingImage: {
+    height: 19.21,
+    width: 100,
   },
-  inputs: {
-  },
-  inputRow: {
+  ratingText: {
+    paddingLeft: 10,
+    color: 'grey',
   },
 });

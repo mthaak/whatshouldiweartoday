@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import EditScreenInfo from '../components/EditScreenInfo';
 import { Image } from 'react-native';
 import { View, Button } from '../components/Themed';
 import { Text } from '../components/StyledText';
 import { Ionicons } from '@expo/vector-icons';
+import { Header } from 'react-native-elements';
 
 import * as ClothingImages from '../assets/images/clothing';
 import * as Colors from '../constants/Colors'
+import { TemperatureUnit } from '../common/enums'
 
 import * as Store from '../services/store';
 import locationService from '../services/LocationService'
@@ -34,6 +35,14 @@ export default class WeatherScreen extends React.Component {
   componentDidMount() {
     weatherService.getWeatherAsync()
       .then(weather => this.updateWeather(weather));
+
+    // Need to retrieve profile upon focus due to possible changes in settings
+    this.navigation.addListener(
+      'focus',
+      payload => {
+        Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
+      }
+    );
   }
 
   componentWillUnmount() {
@@ -56,13 +65,13 @@ export default class WeatherScreen extends React.Component {
   renderTodayWeather() {
     const { profile, location, weatherForecast } = this.state;
 
-    if (profile && profile.tempUnit) {
+    if (profile && profile.tempUnit !== null) {
       let todayWeather = getTodayWeather(weatherForecast);
       return <TodayWeather
         dayTemp={todayWeather.temp.day}
         feelsLikeTemp={todayWeather.feels_like.day}
         weatherDescr={todayWeather.weather[0]}
-        tempUnit={profile ? profile.tempUnit : 'C'}
+        tempUnit={profile ? profile.tempUnit : TemperatureUnit.CELSIUS}
         location={location}
       />
     } else {
@@ -74,7 +83,7 @@ export default class WeatherScreen extends React.Component {
     const { profile, weatherForecast } = this.state;
 
     let wearRecommendation;
-    if (profile && profile.commuteDays && isCommuteToday(profile.commuteDays)) {
+    if (profile && profile.commute.days && isCommuteToday(profile.commute.days)) {
       wearRecommendation = getWearRecommendation(weatherForecast, profile);
       return <WearRecommendation
         wearRecommendation={wearRecommendation}
@@ -90,16 +99,16 @@ export default class WeatherScreen extends React.Component {
 
     if (profile) {
       let weatherAtLeave = null;
-      if (profile.timeLeave)
-        weatherAtLeave = getWeatherAtTime(weatherForecast, profile.timeLeave);
+      if (profile.commute.leaveTime)
+        weatherAtLeave = getWeatherAtTime(weatherForecast, profile.commute.leaveTime);
       let weatherAtReturn = null;
-      if (profile.timeReturn)
-        weatherAtReturn = getWeatherAtTime(weatherForecast, profile.timeReturn);
+      if (profile.commute.returnTime)
+        weatherAtReturn = getWeatherAtTime(weatherForecast, profile.commute.returnTime);
       let commuteElem;
       if (weatherAtReturn || weatherAtLeave) {
         return <Commute
-          timeLeave={profile.timeLeave}
-          timeReturn={profile.timeReturn}
+          leaveTime={profile.commute.leaveTime}
+          returnTime={profile.commute.returnTime}
           tempAtLeave={weatherAtLeave.temp}
           tempAtReturn={weatherAtReturn.temp}
           feelsLikeAtLeave={weatherAtLeave.feels_like}
@@ -133,15 +142,6 @@ export default class WeatherScreen extends React.Component {
           <Ionicons size={35} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground} />
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.topRightCorner2}
-          onPress={() => {
-            this.navigation.navigate('Settings2');
-          }}
-        >
-          <Ionicons size={35} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground} />
-        </TouchableOpacity>
-
         <View style={{ justifyContent: 'center', height: '25%', width: '100%' }}>
           {this.renderTodayWeather()}
         </View>
@@ -154,10 +154,19 @@ export default class WeatherScreen extends React.Component {
           {this.renderCommuteWeather()}
         </View>
 
-      </View>
+      </View >
     )
   }
 }
+
+// <Header
+//   rightComponent= <Ionicons size={30} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground}
+// onPress={() => {
+//   this.navigation.navigate('Settings');
+// }} />
+// />
+
+
 
 class TodayWeather extends React.Component {
   render() {
@@ -238,14 +247,14 @@ class Commute extends React.Component {
         <Text style={styles.subtitle}>Your commute</Text>
         <View style={{ width: '100%', flexDirection: 'row' }}>
           <View style={styles.commuteElem}>
-            {this.props.timeLeave &&
+            {this.props.leaveTime &&
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
                     <Ionicons name="md-arrow-round-forward" size={20} color={Colors.foreground} style={{ textAlignVertical: 'bottom' }} />
                   </View>
                   <Text style={styles.text}>
-                    Leave {this.props.timeLeave.toString()}
+                    Leave {this.props.leaveTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
@@ -259,14 +268,14 @@ class Commute extends React.Component {
             }
           </View>
           <View style={styles.commuteElem}>
-            {this.props.timeReturn &&
+            {this.props.returnTime &&
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
                     <Ionicons name="md-arrow-round-back" size={20} color={Colors.foreground} style={{ textAlignVertical: 'top' }} />
                   </View>
                   <Text style={styles.text}>
-                    Return {this.props.timeReturn.toString()}
+                    Return {this.props.returnTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
@@ -305,10 +314,18 @@ class WeatherIcon extends React.Component {
     return null;
   }
 }
-// display 'inline-block'
 
-function formatTemp(temp, unit: string) {
-  return (Math.round(temp * 10) / 10).toString() + '°' + unit
+function formatTemperatureUnit(unit: TemperatureUnit): string {
+  switch (unit) {
+    case TemperatureUnit.CELSIUS:
+      return 'C';
+    case TemperatureUnit.FAHRENHEIT:
+      return 'F';
+  }
+}
+
+function formatTemp(temp, unit: TemperatureUnit) {
+  return (Math.round(temp * 10) / 10).toString() + '°' + formatTemperatureUnit(unit);
 }
 
 function isCommuteToday(commuteDays: Array<string>) {
@@ -325,18 +342,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    paddingTop: 34,
   },
   topRightCorner: {
     position: 'absolute',
-    top: 20,
+    top: 34,
     right: 20,
     zIndex: 1,
   },
   topRightCorner2: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
+    // position: 'absolute',
+    // top: 50,
+    // right: 20,
     zIndex: 1,
   },
   title: {
@@ -344,7 +362,6 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 30,
     marginBottom: 7,
     zIndex: 1,
   },
