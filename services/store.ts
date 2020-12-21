@@ -20,6 +20,7 @@ const INITIAL_PROFILE = new UserProfile(
 );
 
 export async function initializeStorage() {
+  resetProfile()
   let existingProfile = await retrieveProfile();
   if (existingProfile == null) {
     saveProfile(INITIAL_PROFILE)

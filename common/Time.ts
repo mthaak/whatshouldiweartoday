@@ -1,14 +1,16 @@
 export default class Time {
-  hour: int;
-  minute: int;
+  hours: int;
+  minutes: int;
 
-  constructor(hour: int, minute: int) {
-    this.hour = hour;
-    this.minute = minute;
+  constructor(hours: int, minutes: int) {
+    this.hours = hours;
+    this.minutes = minutes;
   }
 
   toString() {
-    return this.hour.toString().padStart(2, '0') + ':' + this.minute.toString().padStart(2, '0')
+    let hoursStr = this.hours !== undefined ? this.hours.toString().padStart(2, '0') : "  ";
+    let minutesStr = this.minutes !== undefined ? this.minutes.toString().padStart(2, '0') : "  ";
+    return hoursStr + ':' + minutesStr;
   }
 
   static fromObject(obj: Object) {

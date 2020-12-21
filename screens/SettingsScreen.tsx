@@ -16,7 +16,7 @@ export default class SettingsScreen extends React.Component {
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
-    this.state = { profile: null, editing: null };
+    this.state = { profile: null };
     Store.retrieveProfile().then(profile => {
       // Dynamic placeholders need to be set only once during init
       this.namePlaceholder = profile.name || 'Type your name';
@@ -91,7 +91,9 @@ export default class SettingsScreen extends React.Component {
                     <ListItem.Content>
                       <ListItem.Title>Alert</ListItem.Title>
                     </ListItem.Content>
-                    <ListItem.Chevron />
+                    <ListItem.Chevron
+                      onPress={(index) => this.navigation.navigate("Settings-Alert")}
+                    />
                   </ListItem>
                   <ListItem bottomDivider>
                     <ListItem.Content>
@@ -183,13 +185,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 10,
     paddingTop: 5,
-  },
-  ratingImage: {
-    height: 19.21,
-    width: 100,
-  },
-  ratingText: {
-    paddingLeft: 10,
-    color: 'grey',
-  },
+  }
 });

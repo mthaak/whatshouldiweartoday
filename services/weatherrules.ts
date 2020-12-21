@@ -13,7 +13,7 @@ export function getTodayWeather(weatherForecast: Object) {
 
 export function getWeatherAtTime(weatherForecast: Object, time: Time) {
   // Extracts the weather at a certain time from the weather forecast
-  return weatherForecast.hourly.find(forecast => isInHour(forecast.dt, time.hour));
+  return weatherForecast.hourly.find(forecast => isInHour(forecast.dt, time.hours));
 }
 
 export function getWearRecommendation(weatherForecast: Object, profile: UserProfile) {
@@ -109,9 +109,9 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
 function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
   let weathers = [];
   if (profile.commute.leaveTime)
-    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.leaveTime.hour)['weather']);
+    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.leaveTime.hours)['weather']);
   if (profile.commute.returnTime)
-    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.returnTime.hour)['weather']);
+    weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.returnTime.hours)['weather']);
   if (weathers == [])
     weathers = getTodayWeather(weatherForecast)['weather'];
   let rainWeathers = weathers.filter(w => ["Thunderstorm", "Rain", "Drizzle"].includes(w['main']))
@@ -120,7 +120,6 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
       msg: null,
       clothes: [],
     };
-  console.log(rainWeathers)
   let worstWeather = minByFn(rainWeathers, w => rainOrder.indexOf(w['description'])); // weather with worst rain according to rain order
 
   if (worstWeather == null)
