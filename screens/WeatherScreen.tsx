@@ -224,18 +224,25 @@ class WearRecommendation extends React.Component {
     return (
       <View style={{
         width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+        justifyContent: 'space-around',
         padding: 18, backgroundColor: Colors.darkBackground, borderRadius: 5,
         borderColor: Colors.darkAccent, boxShadow: `inset 0 0 20px ${Colors.darkAccent}`
       }}>
-        <View style={{ marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', backgroundColor: 'none' }}>
+        <View style={{
+          marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
+          backgroundColor: 'none'
+        }}>
           {tempImages}
         </View>
-        <Text style={[styles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.temp.msg}</Text>
-        <View style={{ marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', backgroundColor: 'none' }}>
+        <Text style={[styles.large]}>{this.props.wearRecommendation.temp.msg}</Text>
+        <View style={{
+          marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
+          backgroundColor: 'none'
+        }}>
           {rainImages}
         </View>
-        <Text style={[styles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.rain.msg}</Text>
-      </View>
+        <Text style={[styles.large]}>{this.props.wearRecommendation.rain.msg}</Text>
+      </View >
     )
   }
 }
