@@ -9,7 +9,6 @@ export const darkAccent = '#1d3557';
 export const lightAccent = '#f1faee';
 export const warningAccent = '#e63946';
 
-
 export default {
   light: {
     text: '#000',

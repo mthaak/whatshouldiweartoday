@@ -8,13 +8,13 @@ const INITIAL_PROFILE = new UserProfile(
   Gender.MAN,
   null,
   new UserProfile.Commute(
-    [0, 1, 2, 3, 4, 5, 6],
+    [true, true, true, true, true, false, false], // Monday - Sunday
     new Time(8, 30),
     new Time(17, 30),
   ),
   new UserProfile.Alert(
     true,
-    null,
+    new Time(7, 30),
   ),
   TemperatureUnit.CELSIUS,
 );

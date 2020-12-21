@@ -1,11 +1,11 @@
-import * as Colors from './Colors';
+import * as colors from './colors';
 
 const FONT_FAMILY = 'Lato_400Regular';
 
 export const theme = {
   colors: {
-    primary: Colors.background,
-    secondary: Colors.lightAccent,
+    primary: colors.background,
+    secondary: colors.lightAccent,
     // white;
     // black;
     // grey0;

@@ -5,8 +5,14 @@ export default {
   config: {
     screens: {
       WeatherScreen: 'Weather',
-      SettingsScreen: 'Settings',
-      SettingsScreen2: 'Settings2',
+      Settings: {
+        path: 'Settings',
+        screens: {
+          SettingsScreen: 'Main',
+          SettingsCommuteScreen: 'Commute',
+          SettingsAlertScreen: 'Alert',
+        }
+      },
       NotFound: '*',
     },
   },
