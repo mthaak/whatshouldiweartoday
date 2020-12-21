@@ -7,10 +7,10 @@ import { Text } from '../components/StyledText';
 import { Ionicons } from '@expo/vector-icons';
 import { Header } from 'react-native-elements';
 
+import * as colors from '../constants/colors'
+import { styles as gStyles } from '../constants/styles'
 import * as ClothingImages from '../assets/images/clothing';
-import * as Colors from '../constants/Colors'
 import { TemperatureUnit } from '../common/enums'
-
 import * as Store from '../services/store';
 import locationService from '../services/LocationService'
 import weatherService from '../services/WeatherService'
@@ -136,10 +136,10 @@ export default class WeatherScreen extends React.Component {
         <TouchableOpacity
           style={styles.topRightCorner}
           onPress={() => {
-            this.navigation.navigate('Settings');
+            this.navigation.navigate('Settings', { screen: 'Main' });
           }}
         >
-          <Ionicons size={35} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground} />
+          <Ionicons size={35} style={[{ marginBottom: -3 }, gStyles.shadow]} name="md-settings" color={colors.foreground} />
         </TouchableOpacity>
 
         <View style={{ justifyContent: 'center', height: '25%', width: '100%' }}>
@@ -159,15 +159,6 @@ export default class WeatherScreen extends React.Component {
   }
 }
 
-// <Header
-//   rightComponent= <Ionicons size={30} style={[{ marginBottom: -3 }, styles.shadow]} name="md-settings" color={Colors.foreground}
-// onPress={() => {
-//   this.navigation.navigate('Settings');
-// }} />
-// />
-
-
-
 class TodayWeather extends React.Component {
   render() {
     let location = "Unknown"
@@ -176,23 +167,23 @@ class TodayWeather extends React.Component {
         + (this.props.location.country ? this.props.location.country : '')
     return (
       <>
-        <Text style={styles.title}>Today</Text>
+        <Text style={gStyles.title}>Today</Text>
         <View style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: -20 }}>
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: 120 }}>
               <WeatherIcon weather={this.props.weatherDescr} size={120} />
             </View>
             <View style={{ width: '60%', justifyContent: 'center', top: -10 }}>
-              <Text style={[styles.text, styles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text>
-              <Text style={[styles.text, styles.small]}>feels like {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}</Text>
+              <Text style={[gStyles.text, gStyles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text>
+              <Text style={[gStyles.text, gStyles.small]}>feels like {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}</Text>
             </View>
           </View >
           <View style={{ position: 'relative', top: -25, left: 20, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ marginRight: 7 }}>
-              <Ionicons name="md-pin" size={20} color={Colors.foreground} style={{ textAlignVertical: 'top' }} />
+              <Ionicons name="md-pin" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
             </View>
             <View>
-              <Text style={[styles.text, styles.small]}>{location}</Text>
+              <Text style={[gStyles.text, gStyles.small]}>{location}</Text>
             </View>
           </View>
         </View>
@@ -225,8 +216,8 @@ class WearRecommendation extends React.Component {
       <View style={{
         width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
         justifyContent: 'space-around',
-        padding: 18, backgroundColor: Colors.darkBackground, borderRadius: 5,
-        borderColor: Colors.darkAccent, boxShadow: `inset 0 0 20px ${Colors.darkAccent}`
+        padding: 18, backgroundColor: colors.darkBackground, borderRadius: 5,
+        borderColor: colors.darkAccent, boxShadow: `inset 0 0 20px ${colors.darkAccent}`
       }}>
         <View style={{
           marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
@@ -234,14 +225,14 @@ class WearRecommendation extends React.Component {
         }}>
           {tempImages}
         </View>
-        <Text style={[styles.large]}>{this.props.wearRecommendation.temp.msg}</Text>
+        <Text style={[gStyles.large]}>{this.props.wearRecommendation.temp.msg}</Text>
         <View style={{
           marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
           backgroundColor: 'none'
         }}>
           {rainImages}
         </View>
-        <Text style={[styles.large]}>{this.props.wearRecommendation.rain.msg}</Text>
+        <Text style={[gStyles.large]}>{this.props.wearRecommendation.rain.msg}</Text>
       </View >
     )
   }
@@ -251,24 +242,24 @@ class Commute extends React.Component {
   render() {
     return (
       <>
-        <Text style={styles.subtitle}>Your commute</Text>
+        <Text style={gStyles.subtitle}>Your commute</Text>
         <View style={{ width: '100%', flexDirection: 'row' }}>
           <View style={styles.commuteElem}>
             {this.props.leaveTime &&
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Ionicons name="md-arrow-round-forward" size={20} color={Colors.foreground} style={{ textAlignVertical: 'bottom' }} />
+                    <Ionicons name="md-arrow-round-forward" size={20} color={colors.foreground} style={{ textAlignVertical: 'bottom' }} />
                   </View>
-                  <Text style={styles.text}>
+                  <Text style={gStyles.text}>
                     Leave {this.props.leaveTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtLeave} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text>
-                    <Text style={[styles.text, styles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtLeave, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.text, gStyles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.text, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtLeave, this.props.tempUnit)}</Text>
                   </View>
                 </View>
               </>
@@ -279,17 +270,17 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Ionicons name="md-arrow-round-back" size={20} color={Colors.foreground} style={{ textAlignVertical: 'top' }} />
+                    <Ionicons name="md-arrow-round-back" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
                   </View>
-                  <Text style={styles.text}>
+                  <Text style={gStyles.text}>
                     Return {this.props.returnTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtReturn} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[styles.text, styles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text>
-                    <Text style={[styles.text, styles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtReturn, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.text, gStyles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.text, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtReturn, this.props.tempUnit)}</Text>
                   </View>
                 </View>
               </>
@@ -357,47 +348,6 @@ const styles = StyleSheet.create({
     top: 34,
     right: 20,
     zIndex: 1,
-  },
-  topRightCorner2: {
-    // position: 'absolute',
-    // top: 50,
-    // right: 20,
-    zIndex: 1,
-  },
-  title: {
-    ...shadowStyle,
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 7,
-    zIndex: 1,
-  },
-  subtitle: {
-    ...shadowStyle,
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 10,
-    marginBottom: 7,
-  },
-  text: {
-    ...shadowStyle
-  },
-  shadow: shadowStyle,
-  xxlarge: {
-    fontSize: 32,
-  },
-  xlarge: {
-    fontSize: 22,
-  },
-  large: {
-    fontSize: 18,
-  },
-  small: {
-    fontSize: 12,
-  },
-  xsmall: {
-    fontSize: 10,
   },
   separator: {
     marginVertical: 30,

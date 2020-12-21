@@ -5,12 +5,9 @@ import TouchableScale from 'react-native-touchable-scale';
 import { Ionicons } from '@expo/vector-icons';
 
 import { copyString } from '../common/utils';
-
-import { LinearGradient } from '../components/LinearGradient';
-
-import * as Colors from '../constants/Colors';
-
+import * as colors from '../constants/colors';
 import * as Store from '../services/store';
+import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsScreen extends React.Component {
   constructor({ route, navigation }) {
@@ -46,10 +43,6 @@ export default class SettingsScreen extends React.Component {
     return (
       <>
         <View style={styles.container}>
-          <Header
-            leftComponent=<Ionicons name="md-arrow-round-back" size={30} color={Colors.foreground}
-          onPress={() => this.navigation.goBack()} />
-    />
           <FlatList
             ListHeaderComponent={
               <>
@@ -62,7 +55,6 @@ export default class SettingsScreen extends React.Component {
                       placeholder={this.namePlaceholder}
                       onChangeText={value => this.handleEdit("name", value)}
                     />
-                    <ListItem.Chevron />
                   </ListItem>
                   <ListItem bottomDivider>
                     <ListItem.Content>
@@ -79,20 +71,26 @@ export default class SettingsScreen extends React.Component {
                       <ListItem.Title>Home</ListItem.Title>
                     </ListItem.Content>
                     <Text>{profile.home || 'Not set'}</Text>
-                    <ListItem.Chevron />
+                    <ListItem.Chevron
+                      size={24}
+                    />
                   </ListItem>
                   <ListItem bottomDivider>
                     <ListItem.Content>
                       <ListItem.Title>Commute</ListItem.Title>
                     </ListItem.Content>
-                    <ListItem.Chevron />
+                    <ListItem.Chevron
+                      size={24}
+                      onPress={(index) => this.navigation.navigate("Commute")}
+                    />
                   </ListItem>
                   <ListItem bottomDivider>
                     <ListItem.Content>
                       <ListItem.Title>Alert</ListItem.Title>
                     </ListItem.Content>
                     <ListItem.Chevron
-                      onPress={(index) => this.navigation.navigate("Settings-Alert")}
+                      size={24}
+                      onPress={(index) => this.navigation.navigate("Alert")}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -123,63 +121,14 @@ export default class SettingsScreen extends React.Component {
   }
 }
 
-
-
-// <ListItem bottomDivider>
-//   <ListItem.CheckBox
-//     checked={checkbox1}
-//     onPress={() => setCheckbox1(!checkbox1)}
-//   />
-//   <ListItem.Content>
-//     <ListItem.Title>Check that please 😢</ListItem.Title>
-//   </ListItem.Content>
-// </ListItem>
-// <ListItem bottomDivider>
-//   <Badge value="12" />
-//   <ListItem.Content>
-//     <ListItem.Title>With a Badge ! 😻</ListItem.Title>
-//   </ListItem.Content>
-// </ListItem>
-// <ListItem bottomDivider>
-//   <Icon name="check" size={20} />
-//   <ListItem.Content>
-//     <ListItem.Title>This thing is checked 😎</ListItem.Title>
-//   </ListItem.Content>
-// </ListItem>
-// <ListItem bottomDivider>
-//   <ListItem.Content>
-//     <ListItem.Title>Switch that please 😲</ListItem.Title>
-//   </ListItem.Content>
-//   <Switch
-//     onValueChange={() => { }}
-//   />
-// </ListItem>
-// <View style={styles.list}>
-//   <ListItem>
-//     <Avatar source={require('../assets/images/splash.png')} />
-//     <ListItem.Content>
-//       <ListItem.Title>
-//         Limited supply! Its like digital gold!
-//         </ListItem.Title>
-//       <View style={styles.subtitleView}>
-//         <Image
-//           source={require('../assets/images/splash.png')}
-//           style={styles.ratingImage}
-//         />
-//         <Text style={styles.ratingText}>5 months ago</Text>
-//       </View>
-//     </ListItem.Content>
-//   </ListItem>
-// </View>
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   list: {
     borderTopWidth: 1,
-    borderColor: Colors.lightAccent,
+    borderColor: colors.lightAccent,
   },
   subtitleView: {
     flexDirection: 'row',

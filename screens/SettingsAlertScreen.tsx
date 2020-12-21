@@ -4,17 +4,21 @@ import { Text, ListItem, Avatar, Icon, Badge, Button, Header } from 'react-nativ
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import * as Colors from '../constants/Colors';
-import * as Store from '../services/store';
 import Time from '../common/Time';
+import * as colors from '../constants/colors';
+import * as Store from '../services/store';
+import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsAlertScreen extends React.Component {
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
-    this.state = { profile: null };
+    this.state = {
+      profile: null,
+      showDateTimePicker: false,
+    };
     Store.retrieveProfile().then(profile => {
-      this.setState({ profile: profile, showDateTimePicker: false });
+      this.setState({ profile: profile });
     });
   }
 
@@ -40,24 +44,22 @@ export default class SettingsAlertScreen extends React.Component {
   }
 
   render() {
-    const { profile } = this.state;
+    const { profile, showDateTimePicker } = this.state;
     if (profile == null)
       return <Text>Loading...</Text>
 
-    let alertTime = this.state.profile.alert.time;
-    var pickerValue;
-    if (alertTime && alertTime.hours && alertTime.minutes)
-      pickerValue = new Date(2000, 1, 1, alertTime.hours, alertTime.minutes);
-    else
-      pickerValue = new Date(2000, 1, 1, 8, 0); // default is 8 am
+    if (showDateTimePicker) {
+      let alertTime = this.state.profile.alert.time;
+      var pickerValue;
+      if (alertTime && alertTime.hours && alertTime.minutes)
+        pickerValue = new Date(2000, 1, 1, alertTime.hours, alertTime.minutes);
+      else
+        pickerValue = new Date(2000, 1, 1, 7, 30); // default is 7:30 am
+    }
 
     return (
       <>
         <View style={styles.container}>
-          <Header
-            leftComponent=<Ionicons name="md-arrow-round-back" size={30} color={Colors.foreground}
-          onPress={() => this.navigation.goBack()} />
-        />
           <FlatList
             ListHeaderComponent={
               <>
@@ -65,22 +67,23 @@ export default class SettingsAlertScreen extends React.Component {
                   <ListItem bottomDivider>
                     <ListItem.Content>
                       <ListItem.Title>Enable</ListItem.Title>
-                      <ListItem.Subtitle>Turn on push notification</ListItem.Subtitle>
+                      <ListItem.Subtitle>Turn on daily push notification</ListItem.Subtitle>
                     </ListItem.Content>
                     <Switch
                       value={profile.alert.enabled}
                       onValueChange={(value) => this.handleEnabledEdit(value)}
                     />
                   </ListItem>
-                  <ListItem bottomDivider disabled={!profile.alert.enabled} disabledStyle={styles.disabled}>
+                  <ListItem bottomDivider disabled={!profile.alert.enabled} disabledStyle={[styles.disabled]}>
                     <ListItem.Content>
                       <ListItem.Title style={profile.alert.enabled ? null : styles.disabled}>
                         Alert time</ListItem.Title>
                     </ListItem.Content>
                     <Badge
-                      badgeStyle={profile.alert.enabled ? null : styles.disabled}
                       value={profile.alert.time != null ? profile.alert.time.toString() : ""}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
+                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : styles.disabled]}
+                      textStyle={[gStyles.text]}
                     />
                   </ListItem>
                 </View>
@@ -106,16 +109,11 @@ export default class SettingsAlertScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: colors.background,
   },
   list: {
     borderTopWidth: 1,
-    borderColor: Colors.lightAccent,
-  },
-  subtitleView: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-    paddingTop: 5,
+    borderColor: colors.lightAccent,
   },
   disabled: {
     backgroundColor: 'gray',

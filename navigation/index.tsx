@@ -9,6 +9,8 @@ import NotFoundScreen from '../screens/NotFoundScreen';
 import { RootStackParamList } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
+import * as colors from '../constants/colors';
+
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
@@ -23,21 +25,37 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
   );
 }
 
-// A root stack navigator is often used for displaying modals on top of all other content
-// Read more here: https://reactnavigation.org/docs/modal
-const Stack = createStackNavigator<RootStackParamList>();
+// // A root stack navigator is often used for displaying modals on top of all other content
+// // Read more here: https://reactnavigation.org/docs/modal
+// const Stack = createStackNavigator<RootStackParamList>();
+
+const RootStack = createStackNavigator();
+const SettingsStack = createStackNavigator();
 
 import WeatherScreen from '../screens/WeatherScreen'
 import SettingsScreen from '../screens/SettingsScreen'
 import SettingsAlertScreen from '../screens/SettingsAlertScreen'
+import SettingsCommuteScreen from '../screens/SettingsCommuteScreen'
+
+function SettingsNavigator() {
+  return (
+    <SettingsStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.background },
+      }}>
+      <SettingsStack.Screen name="Main" component={SettingsScreen} />
+      <SettingsStack.Screen name="Alert" component={SettingsAlertScreen} />
+      <SettingsStack.Screen name="Commute" component={SettingsCommuteScreen} />
+    </SettingsStack.Navigator>
+  );
+}
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Weather" component={WeatherScreen} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="Settings-Alert" component={SettingsAlertScreen} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-    </Stack.Navigator>
+    <RootStack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }}>
+      <RootStack.Screen name="Weather" component={WeatherScreen} />
+      <RootStack.Screen name="Settings" component={SettingsNavigator} />
+      <RootStack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+    </RootStack.Navigator>
   );
 }
