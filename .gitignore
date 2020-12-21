@@ -12,6 +12,7 @@ web-build/
 *.xcf
 *.eps
 notes.txt
+env.ts
 
 # macOS
 .DS_Store

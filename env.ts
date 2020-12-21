@@ -1,1 +1,0 @@
-export const GOOGLE_GEOCODING_API_KEY = 'AIzaSyCNvBOIe9kVFwueb6RaOfQlfnQO9bUtNVw'
