@@ -109,7 +109,7 @@ export default class SettingsCommuteScreen extends React.Component {
                       value={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ""}
                       onPress={() => this.showDateTimePicker("leave")}
                       badgeStyle={[gStyles.badge]}
-                      textStyle={[gStyles.text]}
+                      textStyle={[gStyles.normal]}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -122,7 +122,7 @@ export default class SettingsCommuteScreen extends React.Component {
                       value={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ""}
                       onPress={() => this.showDateTimePicker("return")}
                       badgeStyle={[gStyles.badge]}
-                      textStyle={[gStyles.text]}
+                      textStyle={[gStyles.normal]}
                     />
                   </ListItem>
                 </View>

@@ -19,6 +19,7 @@ export default class SettingsScreen extends React.Component {
       this.namePlaceholder = profile.name || 'Type your name';
       this.setState({ profile: profile });
     });
+    console.log('here')
   }
 
   handleEdit(key, value) {
@@ -70,9 +71,10 @@ export default class SettingsScreen extends React.Component {
                     <ListItem.Content>
                       <ListItem.Title>Home</ListItem.Title>
                     </ListItem.Content>
-                    <Text>{profile.home || 'Not set'}</Text>
+                    <Text style={[styles.grayText]}>{profile.home ? profile.home.toString() : 'Not set'}</Text>
                     <ListItem.Chevron
                       size={24}
+                      onPress={(index) => this.navigation.navigate("Location")}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -103,15 +105,16 @@ export default class SettingsScreen extends React.Component {
                       onPress={(index) => this.handleEdit("tempUnit", index)}
                     />
                   </ListItem>
-
-                  <ListItem bottomDivider containerStyle={{ justifyContent: 'center' }}>
+                  <ListItem bottomDivider>
                     <Button
                       title="Reset Settings"
                       onPress={() => this.resetSettings()}
+                      containerStyle={[gStyles.center]}
+                      titleStyle={[gStyles.normal]}
+                      raised
                     />
                   </ListItem>
                 </View>
-
               </>
             }
           />
@@ -130,9 +133,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.lightAccent,
   },
-  subtitleView: {
-    flexDirection: 'row',
-    paddingLeft: 10,
-    paddingTop: 5,
+  grayText: {
+    color: colors.darkerGray,
   }
 });

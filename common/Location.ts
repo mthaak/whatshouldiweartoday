@@ -11,8 +11,16 @@ export default class Location {
     this.country = country;
   }
 
+  static fromObject(obj: Object): UserProfile {
+    var location = Object.assign(new Location(), obj);
+    return location;
+  }
+
   toString() {
-    // return this.hour.toString().padStart(2, '0') + ':'+ this.minute.toString().padStart(2, '0')
+    if (this.city)
+      return `${this.city}, ${this.country ? this.country : ''}`;
+    else
+      return 'Unknown';
   }
 
 }

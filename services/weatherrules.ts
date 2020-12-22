@@ -1,5 +1,3 @@
-import 'moment'
-
 import { isInHour, isToday } from '../common/timeutils'
 import { UserProfile } from '../common/UserProfile';
 import { Gender } from '../common/enums';

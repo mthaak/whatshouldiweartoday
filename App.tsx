@@ -21,10 +21,10 @@ export default function App() {
 
   initializeStorage();
 
-  // locationService.requestPermission().then(permission => {
-  //   if (permission === "granted")
-  //     locationService.updateLocationEmit();
-  // });
+  locationService.getPermission().then(permission => {
+    if (permission === "granted")
+      locationService.getLocationAsync();
+  });
 
   if (!isLoadingComplete || !areFontsLoaded) {
     return null;

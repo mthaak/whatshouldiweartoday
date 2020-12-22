@@ -82,8 +82,8 @@ export default class SettingsAlertScreen extends React.Component {
                     <Badge
                       value={profile.alert.time != null ? profile.alert.time.toString() : ""}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
-                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : styles.disabled]}
-                      textStyle={[gStyles.text]}
+                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : styles.disabledBox]}
+                      textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabled]}
                     />
                   </ListItem>
                 </View>
@@ -116,7 +116,11 @@ const styles = StyleSheet.create({
     borderColor: colors.lightAccent,
   },
   disabled: {
-    backgroundColor: 'gray',
-    color: 'white',
+    backgroundColor: colors.darkerGray,
+    color: colors.gray,
+  },
+  disabledBox: {
+    backgroundColor: colors.darkerGray,
+    borderColor: colors.gray,
   }
 });

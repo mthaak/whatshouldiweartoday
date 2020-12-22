@@ -2,18 +2,18 @@ import * as ExpoLocation from 'expo-location';
 import { EventEmitter } from 'eventemitter3'
 
 import * as Store from './store';
-import Location from './Location'
+import Location from '../common/Location'
 
 import { GOOGLE_GEOCODING_API_KEY } from '../env'
 
 const GEOCODING_API_KEY = GOOGLE_GEOCODING_API_KEY;
-ExpoLocation.setApiKey(GEOCODING_API_KEY); // renamed to setGoogleApiKey later
+ExpoLocation.setGoogleApiKey(GEOCODING_API_KEY);
 
 class LocationService {
 
   emitter: EventEmitter;
   permission: Promise<String>;
-  location: location;
+  location: Promise<Object>;
 
   constructor() {
     this.emitter = new EventEmitter();
@@ -26,33 +26,31 @@ class LocationService {
     return permission;
   }
 
-  async updateLocation() {
+  async retrieveLocation() {
     let location = await ExpoLocation.getCurrentPositionAsync({});
     let results = await ExpoLocation.reverseGeocodeAsync(location.coords);
     let address = results.find(result => 'city' in result); // not all results contain city
     if (address) {
-      this.location = new Location(location.coords.latitude,
+      return new Location(location.coords.latitude,
         location.coords.longitude, address.city, address.country);
     } else {
-      this.location = null;
+      return null;
       console.error('Could not extract city from reverse geocode')
     }
+    this.emitter.emit('update');
   }
 
-  async updateLocationEmit() {
-    this.updateLocation().then(() =>
-      this.emitter.emit('update')
-    )
-  }
-
-  getPermission() {
+  getPermission(): Promise<String> {
     if (this.permission)
       return this.permission;
     this.permission = this.requestPermission();
     return this.permission;
   }
 
-  getLocation() {
+  getLocationAsync(): Promise<Object> {
+    if (this.location)
+      return this.location;
+    this.location = this.retrieveLocation();
     return this.location;
   }
 

@@ -4,8 +4,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'react-native';
 import { View, Button } from '../components/Themed';
 import { Text } from '../components/StyledText';
-import { Ionicons } from '@expo/vector-icons';
-import { Header } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 
 import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
@@ -23,18 +22,23 @@ export default class WeatherScreen extends React.Component {
     this.navigation = navigation;
     this.state = { profile: null }
     Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
+
+    locationService.getLocationAsync()
+      .then(location => this.updateLocation(location));
+    weatherService.getWeatherAsync()
+      .then(weather => this.updateWeather(weather));
+  }
+
+  componentDidMount() {
     locationService.subscribe((location) =>
-      this.updateLocation(locationService.getLocation())
+      locationService.getLocationAsync().then((location) =>
+        this.updateLocation(location)
+      )
     );
     weatherService.subscribe(() =>
       weatherService.getWeatherAsync()
         .then(weather => this.updateWeather(weather))
     );
-  }
-
-  componentDidMount() {
-    weatherService.getWeatherAsync()
-      .then(weather => this.updateWeather(weather));
 
     // Need to retrieve profile upon focus due to possible changes in settings
     this.navigation.addListener(
@@ -139,7 +143,8 @@ export default class WeatherScreen extends React.Component {
             this.navigation.navigate('Settings', { screen: 'Main' });
           }}
         >
-          <Ionicons size={35} style={[{ marginBottom: -3 }, gStyles.shadow]} name="md-settings" color={colors.foreground} />
+          <Icon name="settings" size={35}
+            style={[{ marginBottom: -3 }, gStyles.shadow]} color={colors.foreground} />
         </TouchableOpacity>
 
         <View style={{ justifyContent: 'center', height: '25%', width: '100%' }}>
@@ -161,10 +166,7 @@ export default class WeatherScreen extends React.Component {
 
 class TodayWeather extends React.Component {
   render() {
-    let location = "Unknown"
-    if (this.props.location && this.props.location.city)
-      location = this.props.location.city + ', '
-        + (this.props.location.country ? this.props.location.country : '')
+    let locationStr = this.props.location ? this.props.location.toString() : "Unknown";
     return (
       <>
         <Text style={gStyles.title}>Today</Text>
@@ -174,16 +176,16 @@ class TodayWeather extends React.Component {
               <WeatherIcon weather={this.props.weatherDescr} size={120} />
             </View>
             <View style={{ width: '60%', justifyContent: 'center', top: -10 }}>
-              <Text style={[gStyles.text, gStyles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text>
-              <Text style={[gStyles.text, gStyles.small]}>feels like {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}</Text>
+              <Text style={[gStyles.shadow, gStyles.xxlarge]}>{formatTemp(this.props.dayTemp, this.props.tempUnit)}</Text>
+              <Text style={[gStyles.shadow, gStyles.small]}>feels like {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}</Text>
             </View>
           </View >
           <View style={{ position: 'relative', top: -25, left: 20, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ marginRight: 7 }}>
-              <Ionicons name="md-pin" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
+              <Icon name="place" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
             </View>
             <View>
-              <Text style={[gStyles.text, gStyles.small]}>{location}</Text>
+              <Text style={[gStyles.shadow, gStyles.small]}>{locationStr}</Text>
             </View>
           </View>
         </View>
@@ -249,17 +251,17 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Ionicons name="md-arrow-round-forward" size={20} color={colors.foreground} style={{ textAlignVertical: 'bottom' }} />
+                    <Icon name="arrow-forward" size={20} color={colors.foreground} style={{ textAlignVertical: 'bottom' }} />
                   </View>
-                  <Text style={gStyles.text}>
+                  <Text style={[gStyles.shadow, gStyles.normal]}>
                     Leave {this.props.leaveTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtLeave} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[gStyles.text, gStyles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text>
-                    <Text style={[gStyles.text, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtLeave, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.shadow, gStyles.xlarge]}>{formatTemp(this.props.tempAtLeave, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.shadow, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtLeave, this.props.tempUnit)}</Text>
                   </View>
                 </View>
               </>
@@ -270,17 +272,17 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Ionicons name="md-arrow-round-back" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
+                    <Icon name="arrow-back" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
                   </View>
-                  <Text style={gStyles.text}>
+                  <Text style={[gStyles.shadow, gStyles.normal]}>
                     Return {this.props.returnTime.toString()}
                   </Text>
                 </View>
                 <View style={{ width: '100%', flexDirection: 'row' }}>
                   <WeatherIcon weather={this.props.weatherDescrAtReturn} size={70} />
                   <View style={{ justifyContent: 'center' }}>
-                    <Text style={[gStyles.text, gStyles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text>
-                    <Text style={[gStyles.text, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtReturn, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.shadow, gStyles.xlarge]}>{formatTemp(this.props.tempAtReturn, this.props.tempUnit)}</Text>
+                    <Text style={[gStyles.shadow, gStyles.xsmall]}>feels like {formatTemp(this.props.feelsLikeAtReturn, this.props.tempUnit)}</Text>
                   </View>
                 </View>
               </>
@@ -326,15 +328,10 @@ function formatTemp(temp, unit: TemperatureUnit) {
   return (Math.round(temp * 10) / 10).toString() + '°' + formatTemperatureUnit(unit);
 }
 
-function isCommuteToday(commuteDays: Array<string>) {
+function isCommuteToday(commuteDays: Array<bool>): bool {
   let dayOfWeek = (new Date()).getDay();
-  return commuteDays.some(day => day % 7 == dayOfWeek);
+  return commuteDays[dayOfWeek];
 }
-
-const shadowStyle = {
-  textShadowColor: 'black',
-  textShadowRadius: 2
-};
 
 const styles = StyleSheet.create({
   container: {
