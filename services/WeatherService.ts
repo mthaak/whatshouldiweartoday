@@ -35,12 +35,11 @@ class WeatherService {
       .then(weather => weather['current']);
   }
 
-  retrieveWeather(): Promise<Object> {
-    return fetch(this.buildOpenWeatherMapUrl())
-      .then(response => response.json())
-      .catch(error => {
-        console.error(error);
-      });
+  async retrieveWeather(): Promise<Object> {
+    let response = await fetch(this.buildOpenWeatherMapUrl());
+    let json = response.json();
+    this.emitter.emit('update');
+    return json;
   }
 
   buildOpenWeatherMapUrl() {

@@ -34,6 +34,7 @@ const SettingsStack = createStackNavigator();
 
 import WeatherScreen from '../screens/WeatherScreen'
 import SettingsScreen from '../screens/SettingsScreen'
+import SettingsLocationScreen from '../screens/SettingsLocationScreen'
 import SettingsAlertScreen from '../screens/SettingsAlertScreen'
 import SettingsCommuteScreen from '../screens/SettingsCommuteScreen'
 
@@ -44,6 +45,7 @@ function SettingsNavigator() {
         headerStyle: { backgroundColor: colors.background },
       }}>
       <SettingsStack.Screen name="Main" component={SettingsScreen} />
+      <SettingsStack.Screen name="Location" component={SettingsLocationScreen} />
       <SettingsStack.Screen name="Alert" component={SettingsAlertScreen} />
       <SettingsStack.Screen name="Commute" component={SettingsCommuteScreen} />
     </SettingsStack.Navigator>

@@ -1,7 +1,7 @@
 import { Gender, TemperatureUnit } from '../common/enums';
 import UserProfile from '../common/UserProfile';
 import Time from '../common/Time';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const INITIAL_PROFILE = new UserProfile(
   null,

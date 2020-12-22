@@ -22,10 +22,6 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 7,
   },
-  text: {
-    ...shadowStyle,
-    fontSize: 16,
-  },
   shadow: shadowStyle,
   xxlarge: {
     fontSize: 32,
@@ -35,6 +31,9 @@ export const styles = StyleSheet.create({
   },
   large: {
     fontSize: 18,
+  },
+  normal: {
+    fontSize: 16,
   },
   small: {
     fontSize: 12,
@@ -46,4 +45,14 @@ export const styles = StyleSheet.create({
     paddingTop: 15,
     paddingBottom: 15,
   },
+  center: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+  centerContent: {
+    justifyContent: 'center',
+  },
+  centerText: {
+    textAlign: 'center',
+  }
 });

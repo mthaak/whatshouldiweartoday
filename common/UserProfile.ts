@@ -29,6 +29,7 @@ export default class UserProfile {
 
   static fromObject(obj: Object): UserProfile {
     var profile = Object.assign(new UserProfile(), obj);
+    profile.home = Location.fromObject(obj.home);
     profile.commute = this.Commute.fromObject(obj.commute);
     profile.alert = this.Alert.fromObject(obj.alert);
     return profile;
