@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Time from '../common/Time';
 import * as colors from '../constants/colors';
-import * as Store from '../services/store';
+import store from '../services/store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsAlertScreen extends React.Component {
@@ -17,30 +17,47 @@ export default class SettingsAlertScreen extends React.Component {
       profile: null,
       showDateTimePicker: false,
     };
-    Store.retrieveProfile().then(profile => {
-      this.setState({ profile: profile });
+
+    this.updateProfile();
+  }
+
+  componentDidMount() {
+    store.subscribe(this.updateProfile);
+  }
+
+  componentWillUnmount() {
+    store.unsubscribe(this.updateProfile);
+  }
+
+  updateProfile = () => {
+    store.retrieveProfile().then(this.setProfile);
+  }
+
+  setProfile = (profile: UserProfile) => {
+    this.setState({
+      profile: profile
     });
   }
 
-  handleEnabledEdit(value) {
+  handleEnabledEdit = (value) => {
     const { profile } = this.state;
     profile.alert.enabled = value;
 
     this.setState({ profile });
-    Store.saveProfile(profile);
+    store.saveProfile(profile);
   }
 
-  toggleDateTimePicker() {
+  toggleDateTimePicker = () => {
     this.setState({ showDateTimePicker: !this.state.showDateTimePicker })
   }
 
-  handleTimeEdit(selectedDate: Date) {
+  handleTimeEdit = (selectedDate: Date) => {
     if (selectedDate == undefined)
       return;
     const { profile } = this.state;
     profile.alert.time = new Time(selectedDate.getHours(), selectedDate.getMinutes());
     this.setState({ profile: profile, showDateTimePicker: false });
-    Store.saveProfile(profile);
+    store.saveProfile(profile);
   }
 
   render() {
@@ -71,19 +88,19 @@ export default class SettingsAlertScreen extends React.Component {
                     </ListItem.Content>
                     <Switch
                       value={profile.alert.enabled}
-                      onValueChange={(value) => this.handleEnabledEdit(value)}
+                      onValueChange={this.handleEnabledEdit}
                     />
                   </ListItem>
-                  <ListItem bottomDivider disabled={!profile.alert.enabled} disabledStyle={[styles.disabled]}>
+                  <ListItem bottomDivider disabled={!profile.alert.enabled} disabledStyle={[styles.disabledBackground]}>
                     <ListItem.Content>
-                      <ListItem.Title style={profile.alert.enabled ? null : styles.disabled}>
+                      <ListItem.Title style={profile.alert.enabled ? null : styles.disabledText}>
                         Alert time</ListItem.Title>
                     </ListItem.Content>
                     <Badge
                       value={profile.alert.time != null ? profile.alert.time.toString() : ""}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
-                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : styles.disabledBox]}
-                      textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabled]}
+                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : [styles.disabledBackground, styles.disabledBorder]]}
+                      textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabledText]}
                     />
                   </ListItem>
                 </View>
@@ -115,12 +132,13 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.lightAccent,
   },
-  disabled: {
-    backgroundColor: colors.darkerGray,
+  disabledText: {
     color: colors.gray,
   },
-  disabledBox: {
-    backgroundColor: colors.darkerGray,
+  disabledBackground: {
+    backgroundColor: colors.lighterGray,
+  },
+  disabledBorder: {
     borderColor: colors.gray,
   }
 });

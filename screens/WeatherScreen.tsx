@@ -30,13 +30,17 @@ export default class WeatherScreen extends React.Component {
 
   componentDidMount() {
     store.subscribe(this.updateProfile);
+    store.subscribe(this.updateWeather); // due to changes profile
     locationService.subscribe(this.updateLocation);
+    locationService.subscribe(this.updateWeather); // due to changes in location
     weatherService.subscribe(this.updateWeather);
   }
 
   componentWillUnmount() {
     store.unsubscribe(this.updateProfile);
+    store.unsubscribe(this.updateWeather);
     locationService.unsubscribe(this.updateLocation);
+    locationService.unsubscribe(this.updateWeather);
     weatherService.unsubscribe(this.updateWeather);
   }
 

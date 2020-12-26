@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Time from '../common/Time';
 
 import * as colors from '../constants/colors';
-import * as Store from '../services/store';
+import store from '../services/store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsCommuteScreen extends React.Component {
@@ -19,16 +19,33 @@ export default class SettingsCommuteScreen extends React.Component {
       dateTimePickerShown: false,
       timePropEdited: null,
     };
-    Store.retrieveProfile().then(profile => {
-      this.setState({ profile: profile });
+
+    this.updateProfile();
+  }
+
+  componentDidMount() {
+    store.subscribe(this.updateProfile);
+  }
+
+  componentWillUnmount() {
+    store.unsubscribe(this.updateProfile);
+  }
+
+  updateProfile = () => {
+    store.retrieveProfile().then(this.setProfile);
+  }
+
+  setProfile = (profile: UserProfile) => {
+    this.setState({
+      profile: profile
     });
   }
 
-  showDateTimePicker(timeProp: String) {
+  showDateTimePicker = (timeProp: String) => {
     this.setState({ dateTimePickerShown: timeProp });
   }
 
-  handleTimeEdit(selectedDate: Date) {
+  handleTimeEdit = (selectedDate: Date) => {
     if (selectedDate == undefined)
       return;
     const { profile, dateTimePickerShown } = this.state;
@@ -38,17 +55,17 @@ export default class SettingsCommuteScreen extends React.Component {
       profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
     }
     this.setState({ profile: profile, dateTimePickerShown: false });
-    Store.saveProfile(profile);
+    store.saveProfile(profile);
   }
 
-  toggleCheckbox(dayIdx: int) {
+  toggleCheckbox = (dayIdx: int) => {
     const { profile } = this.state;
     profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
     this.setState({ profile: profile });
-    Store.saveProfile(profile);
+    store.saveProfile(profile);
   }
 
-  renderCheckboxes() {
+  renderCheckboxes = () => {
     const { profile } = this.state;
     return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name, i) =>
       <CheckBox
