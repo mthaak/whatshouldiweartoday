@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { copyString } from '../common/utils';
 import * as colors from '../constants/colors';
-import * as Store from '../services/store';
+import store from '../services/store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsScreen extends React.Component {
@@ -14,10 +14,27 @@ export default class SettingsScreen extends React.Component {
     super()
     this.navigation = navigation;
     this.state = { profile: null };
-    Store.retrieveProfile().then(profile => {
-      // Dynamic placeholders need to be set only once during init
-      this.namePlaceholder = profile.name || 'Type your name';
-      this.setState({ profile: profile });
+
+    this.updateProfile();
+  }
+
+  componentDidMount() {
+    store.subscribe(this.updateProfile);
+  }
+
+  componentWillUnmount() {
+    store.unsubscribe(this.updateProfile);
+  }
+
+  updateProfile = () => {
+    store.retrieveProfile().then(this.setProfile);
+  }
+
+  setProfile = (profile: UserProfile) => {
+    // Dynamic placeholders need to be set only once at profile update
+    this.namePlaceholder = profile.name || 'Type your name';
+    this.setState({
+      profile: profile
     });
   }
 
@@ -26,13 +43,13 @@ export default class SettingsScreen extends React.Component {
     profile[key] = value;
 
     this.setState({ profile });
-    Store.saveProfile(profile);
+    store.saveProfile(profile);
   }
 
   resetSettings() {
     this.namePlaceholder = null;
-    Store.resetProfile();
-    Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
+    store.resetProfile();
+    store.retrieveProfile().then(profile => this.setState({ profile: profile }));
   }
 
   render() {
