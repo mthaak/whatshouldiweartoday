@@ -11,3 +11,7 @@ export function copyString(oldString) {
     return null;
   return oldString.slice();
 }
+
+export function fahrenheitToCelsius(fahrenheit) {
+  return (fahrenheit - 32) / 1.8;
+}

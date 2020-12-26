@@ -27,7 +27,7 @@ export default class SettingsScreen extends React.Component {
   }
 
   updateProfile = () => {
-    store.retrieveProfile().then(this.setProfile);
+    return store.retrieveProfile().then(this.setProfile);
   }
 
   setProfile = (profile: UserProfile) => {

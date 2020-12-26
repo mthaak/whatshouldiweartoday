@@ -25,35 +25,51 @@ export default class WeatherScreen extends React.Component {
 
     this.updateProfile();
     this.updateLocation();
-    this.updateWeather();
+    // weather gets updated after profile or location are updated
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfile);
-    store.subscribe(this.updateWeather); // due to changes profile
-    locationService.subscribe(this.updateLocation);
-    locationService.subscribe(this.updateWeather); // due to changes in location
+    store.subscribe(this.updateProfileAndThenRefreshWeather);
+    locationService.subscribe(this.updateLocationAndThenRefreshWeather);
     weatherService.subscribe(this.updateWeather);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfile);
-    store.unsubscribe(this.updateWeather);
-    locationService.unsubscribe(this.updateLocation);
-    locationService.unsubscribe(this.updateWeather);
+    store.unsubscribe(this.updateProfileAndThenRefreshWeather);
+    locationService.unsubscribe(this.updateLocationAndThenRefreshWeather);
     weatherService.unsubscribe(this.updateWeather);
   }
 
   updateProfile = () => {
-    store.retrieveProfile().then(this.setProfile);
+    return store.retrieveProfile().then(this.setProfile);
   }
 
   updateLocation = () => {
-    locationService.getLocationAsync().then(this.setLocation);
+    return locationService.getLocationAsync().then(this.setLocation);
   }
 
   updateWeather = () => {
-    weatherService.getWeatherAsync().then(this.setWeather);
+    return weatherService.getWeatherAsync().then(this.setWeather);
+  }
+
+  refreshWeather = () => {
+    const { profile, location } = this.state;
+    if (profile) {
+      if (location) {
+        return weatherService.getWeatherAsync(location, profile.tempUnit, true).then(this.setWeather)
+      } else {
+        console.warn('Current location not available, using home location for weather forecast')
+        return weatherService.getWeatherAsync(profile.home, profile.tempUnit, true).then(this.setWeather)
+      }
+    }
+  }
+
+  updateProfileAndThenRefreshWeather = () => {
+    return this.updateProfile().then(this.refreshWeather);
+  }
+
+  updateLocationAndThenRefreshWeather = () => {
+    return this.updateLocation().then(this.refreshWeather);
   }
 
   setProfile = (profile: UserProfile) => {
@@ -92,39 +108,48 @@ export default class WeatherScreen extends React.Component {
   renderTodayWeather() {
     const { profile, location, weatherForecast } = this.state;
 
-    if (profile && profile.tempUnit !== null) {
-      let todayWeather = getTodayWeather(weatherForecast);
-      return <TodayWeather
-        dayTemp={todayWeather.temp.day}
-        feelsLikeTemp={todayWeather.feels_like.day}
-        weatherDescr={todayWeather.weather[0]}
-        tempUnit={profile ? profile.tempUnit : TemperatureUnit.CELSIUS}
-        location={location}
-      />
-    } else {
+    if (!profile || profile.tempUnit === null)
       return <Text>Profile is incomplete</Text>
-    }
+
+    if (!weatherForecast)
+      return <Text>Weather is loading...</Text>
+
+    let todayWeather = getTodayWeather(weatherForecast);
+    return <TodayWeather
+      dayTemp={todayWeather.temp.day}
+      feelsLikeTemp={todayWeather.feels_like.day}
+      weatherDescr={todayWeather.weather[0]}
+      tempUnit={profile ? profile.tempUnit : TemperatureUnit.CELSIUS}
+      location={location}
+    />
   }
 
   renderWearRecommendation() {
     const { profile, weatherForecast } = this.state;
 
-    let wearRecommendation;
-    if (profile && profile.commute.days) {
-      wearRecommendation = getWearRecommendation(weatherForecast, profile);
-      return <WearRecommendation
-        wearRecommendation={wearRecommendation}
-        profile={profile}
-      />
-    } else {
+    if (!profile || !profile.commute.days)
       return <Text>Profile is incomplete</Text>
-    }
+
+    if (!weatherForecast)
+      return <Text>Weather is loading...</Text>
+
+    let wearRecommendation = getWearRecommendation(weatherForecast, profile);
+    return <WearRecommendation
+      wearRecommendation={wearRecommendation}
+      profile={profile}
+    />
   }
 
   renderCommuteWeather() {
     const { profile, weatherForecast } = this.state;
 
-    if (profile && profile.commute.days && isCommuteToday(profile.commute.days)) {
+    if (!profile || !profile.commute.days)
+      return <Text>Profile is incomplete</Text>
+
+    if (!weatherForecast)
+      return <Text>Weather is loading...</Text>
+
+    if (isCommuteToday(profile.commute.days)) {
       let weatherAtLeave = null;
       if (profile.commute.leaveTime)
         weatherAtLeave = getWeatherAtTime(weatherForecast, profile.commute.leaveTime);
@@ -153,11 +178,6 @@ export default class WeatherScreen extends React.Component {
   }
 
   render() {
-    const { weatherForecast } = this.state;
-
-    if (weatherForecast == null)
-      return <Text>Loading...</Text>
-
     return (
       <View style={[styles.container]}>
         {this.renderTopBar()}

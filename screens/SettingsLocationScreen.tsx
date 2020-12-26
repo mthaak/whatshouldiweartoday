@@ -36,11 +36,11 @@ export default class SettingsLocationScreen extends React.Component {
   }
 
   updateProfile = () => {
-    store.retrieveProfile().then(this.setProfile);
+    return store.retrieveProfile().then(this.setProfile);
   }
 
   updateLocation = () => {
-    locationService.getLocationAsync().then(this.setLocation);
+    return locationService.getLocationAsync().then(this.setLocation);
   }
 
   setProfile = (profile: UserProfile) => {

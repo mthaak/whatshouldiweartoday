@@ -23,11 +23,6 @@ export default function App() {
 
   locationService.setEnabled(false);
 
-  locationService.getPermission().then(permission => {
-    if (permission === "granted")
-      locationService.getLocationAsync();
-  });
-
   if (!isLoadingComplete || !areFontsLoaded) {
     return null;
   } else {

@@ -53,10 +53,13 @@ class LocationService {
     return this.permission;
   }
 
-  getLocationAsync(): Promise<Object> {
-    if (this.location)
-      return this.location;
-    this.location = this.retrieveLocation();
+  getLocationAsync(forceFresh: bool = false): Promise<Object> {
+    if (!this.location || forceFresh) {
+      this.location = this.retrieveLocation().then(location => {
+        this.emitter.emit('update');
+        return location;
+      });
+    }
     return this.location;
   }
 
