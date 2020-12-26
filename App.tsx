@@ -21,6 +21,8 @@ export default function App() {
 
   initializeStorage();
 
+  locationService.setEnabled(false);
+
   locationService.getPermission().then(permission => {
     if (permission === "granted")
       locationService.getLocationAsync();

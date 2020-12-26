@@ -54,7 +54,7 @@ function SettingsNavigator() {
 
 function RootNavigator() {
   return (
-    <RootStack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }}>
+    <RootStack.Navigator initialRouteName="Weather" screenOptions={{ headerShown: false }} >
       <RootStack.Screen name="Weather" component={WeatherScreen} />
       <RootStack.Screen name="Settings" component={SettingsNavigator} />
       <RootStack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />

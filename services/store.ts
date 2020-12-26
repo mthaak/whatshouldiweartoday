@@ -8,7 +8,7 @@ const INITIAL_PROFILE = new UserProfile(
   Gender.MAN,
   null,
   new UserProfile.Commute(
-    [true, true, true, true, true, false, false], // Monday - Sunday
+    [true, true, true, true, true, true, true], // Monday - Sunday
     new Time(8, 30),
     new Time(17, 30),
   ),
