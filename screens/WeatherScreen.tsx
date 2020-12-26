@@ -10,7 +10,7 @@ import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
 import * as ClothingImages from '../assets/images/clothing';
 import { TemperatureUnit } from '../common/enums'
-import * as Store from '../services/store';
+import store from '../services/store';
 import locationService from '../services/LocationService'
 import { isCommuteToday } from '../common/timeutils'
 import weatherService from '../services/WeatherService'
@@ -22,45 +22,49 @@ export default class WeatherScreen extends React.Component {
     super()
     this.navigation = navigation;
     this.state = { profile: null }
-    Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
 
-    locationService.getLocationAsync()
-      .then(location => this.updateLocation(location));
-    weatherService.getWeatherAsync()
-      .then(weather => this.updateWeather(weather));
+    this.updateProfile();
+    this.updateLocation();
+    this.updateWeather();
   }
 
   componentDidMount() {
-    locationService.subscribe(() =>
-      locationService.getLocationAsync()
-        .then((location) => this.updateLocation(location))
-    );
-    weatherService.subscribe(() =>
-      weatherService.getWeatherAsync()
-        .then(weather => this.updateWeather(weather))
-    );
-
-    // Need to retrieve profile upon focus due to possible changes in settings
-    this.navigation.addListener(
-      'focus',
-      payload => {
-        Store.retrieveProfile().then(profile => this.setState({ profile: profile }));
-      }
-    );
+    store.subscribe(this.updateProfile);
+    locationService.subscribe(this.updateLocation);
+    weatherService.subscribe(this.updateWeather);
   }
 
   componentWillUnmount() {
-    locationService.unsubscribe(() => { });
-    weatherService.unsubscribe(() => { });
+    store.unsubscribe(this.updateProfile);
+    locationService.unsubscribe(this.updateLocation);
+    weatherService.unsubscribe(this.updateWeather);
   }
 
-  updateLocation(location: String) {
+  updateProfile = () => {
+    store.retrieveProfile().then(this.setProfile);
+  }
+
+  updateLocation = () => {
+    locationService.getLocationAsync().then(this.setLocation);
+  }
+
+  updateWeather = () => {
+    weatherService.getWeatherAsync().then(this.setWeather);
+  }
+
+  setProfile = (profile: UserProfile) => {
+    this.setState({
+      profile: profile
+    });
+  }
+
+  setLocation = (location: String) => {
     this.setState({
       location: location,
     });
   }
 
-  updateWeather(weatherForecast: Object) {
+  setWeather = (weatherForecast: Object) => {
     this.setState({
       weatherForecast: weatherForecast,
     });
