@@ -19,7 +19,6 @@ export default class SettingsScreen extends React.Component {
       this.namePlaceholder = profile.name || 'Type your name';
       this.setState({ profile: profile });
     });
-    console.log('here')
   }
 
   handleEdit(key, value) {

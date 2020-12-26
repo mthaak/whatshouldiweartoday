@@ -8,19 +8,15 @@ const shadowStyle = {
 export const styles = StyleSheet.create({
   title: {
     ...shadowStyle,
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 7,
-    zIndex: 1,
-  },
-  subtitle: {
-    ...shadowStyle,
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginTop: 10,
-    marginBottom: 7,
+  },
+  subtitle: {
+    ...shadowStyle,
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   shadow: shadowStyle,
   xxlarge: {

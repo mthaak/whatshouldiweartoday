@@ -4,7 +4,7 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'react-native';
 import { View, Button } from '../components/Themed';
 import { Text } from '../components/StyledText';
-import { Icon } from 'react-native-elements';
+import { Header, Icon } from 'react-native-elements';
 
 import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
@@ -12,6 +12,7 @@ import * as ClothingImages from '../assets/images/clothing';
 import { TemperatureUnit } from '../common/enums'
 import * as Store from '../services/store';
 import locationService from '../services/LocationService'
+import { isCommuteToday } from '../common/timeutils'
 import weatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 
@@ -30,10 +31,9 @@ export default class WeatherScreen extends React.Component {
   }
 
   componentDidMount() {
-    locationService.subscribe((location) =>
-      locationService.getLocationAsync().then((location) =>
-        this.updateLocation(location)
-      )
+    locationService.subscribe(() =>
+      locationService.getLocationAsync()
+        .then((location) => this.updateLocation(location))
     );
     weatherService.subscribe(() =>
       weatherService.getWeatherAsync()
@@ -66,6 +66,21 @@ export default class WeatherScreen extends React.Component {
     });
   }
 
+  renderTopBar() {
+    return <Header
+      centerComponent={<Text style={[gStyles.title, { alignItems: 'center' }]}>{formatDateToday()}</Text>}
+      rightComponent={{
+        icon: 'settings',
+        size: 30,
+        color: colors.foreground,
+        style: gStyles.shadow,
+        onPress: () => this.navigation.navigate('Settings', { screen: 'Main' })
+      }}
+      centerContainerStyle={{ justifyContent: 'center' }}
+      containerStyle={{ minHeight: 64, zIndex: 1 }}
+    />
+  }
+
   renderTodayWeather() {
     const { profile, location, weatherForecast } = this.state;
 
@@ -87,7 +102,7 @@ export default class WeatherScreen extends React.Component {
     const { profile, weatherForecast } = this.state;
 
     let wearRecommendation;
-    if (profile && profile.commute.days && isCommuteToday(profile.commute.days)) {
+    if (profile && profile.commute.days) {
       wearRecommendation = getWearRecommendation(weatherForecast, profile);
       return <WearRecommendation
         wearRecommendation={wearRecommendation}
@@ -101,7 +116,7 @@ export default class WeatherScreen extends React.Component {
   renderCommuteWeather() {
     const { profile, weatherForecast } = this.state;
 
-    if (profile) {
+    if (profile && profile.commute.days && isCommuteToday(profile.commute.days)) {
       let weatherAtLeave = null;
       if (profile.commute.leaveTime)
         weatherAtLeave = getWeatherAtTime(weatherForecast, profile.commute.leaveTime);
@@ -125,7 +140,7 @@ export default class WeatherScreen extends React.Component {
         return null;
       }
     } else {
-      return <Text>Profile is incomplete</Text>
+      return null;
     }
   }
 
@@ -136,27 +151,23 @@ export default class WeatherScreen extends React.Component {
       return <Text>Loading...</Text>
 
     return (
-      <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.topRightCorner}
-          onPress={() => {
-            this.navigation.navigate('Settings', { screen: 'Main' });
-          }}
-        >
-          <Icon name="settings" size={35}
-            style={[{ marginBottom: -3 }, gStyles.shadow]} color={colors.foreground} />
-        </TouchableOpacity>
+      <View style={[styles.container]}>
+        {this.renderTopBar()}
 
-        <View style={{ justifyContent: 'center', height: '25%', width: '100%' }}>
-          {this.renderTodayWeather()}
-        </View>
+        <View style={{ flex: 1, paddingHorizontal: 15 }}>
 
-        <View style={{ justifyContent: 'center', height: '50%', width: '90%' }}>
-          {this.renderWearRecommendation()}
-        </View>
+          <View style={{ height: '20%', justifyContent: 'center' }}>
+            {this.renderTodayWeather()}
+          </View>
 
-        <View style={{ justifyContent: 'center', height: '25%', width: '90%' }}>
-          {this.renderCommuteWeather()}
+          <View style={{ height: '60%', justifyContent: 'center' }}>
+            {this.renderWearRecommendation()}
+          </View>
+
+          <View style={{ height: '20%', justifyContent: 'center' }}>
+            {this.renderCommuteWeather()}
+          </View>
+
         </View>
 
       </View >
@@ -169,8 +180,7 @@ class TodayWeather extends React.Component {
     let locationStr = this.props.location ? this.props.location.toString() : "Unknown";
     return (
       <>
-        <Text style={gStyles.title}>Today</Text>
-        <View style={{ marginLeft: 'auto', marginRight: 'auto', marginTop: -20 }}>
+        <View style={{ marginLeft: 'auto', marginRight: 'auto' }}>
           <View style={{ flexDirection: 'row' }}>
             <View style={{ width: 120 }}>
               <WeatherIcon weather={this.props.weatherDescr} size={120} />
@@ -182,7 +192,7 @@ class TodayWeather extends React.Component {
           </View >
           <View style={{ position: 'relative', top: -25, left: 20, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ marginRight: 7 }}>
-              <Icon name="place" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
+              <Icon name="place" size={20} color={colors.foreground} />
             </View>
             <View>
               <Text style={[gStyles.shadow, gStyles.small]}>{locationStr}</Text>
@@ -216,7 +226,7 @@ class WearRecommendation extends React.Component {
     );
     return (
       <View style={{
-        width: '100%', height: '100%', display: 'flex', flexDirection: 'column',
+        display: 'flex', flexDirection: 'column',
         justifyContent: 'space-around',
         padding: 18, backgroundColor: colors.darkBackground, borderRadius: 5,
         borderColor: colors.darkAccent, boxShadow: `inset 0 0 20px ${colors.darkAccent}`
@@ -244,14 +254,14 @@ class Commute extends React.Component {
   render() {
     return (
       <>
-        <Text style={gStyles.subtitle}>Your commute</Text>
+        <Text style={[gStyles.subtitle]}>Commute</Text>
         <View style={{ width: '100%', flexDirection: 'row' }}>
           <View style={styles.commuteElem}>
             {this.props.leaveTime &&
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Icon name="arrow-forward" size={20} color={colors.foreground} style={{ textAlignVertical: 'bottom' }} />
+                    <Icon name="arrow-forward" size={20} color={colors.foreground} />
                   </View>
                   <Text style={[gStyles.shadow, gStyles.normal]}>
                     Leave {this.props.leaveTime.toString()}
@@ -272,7 +282,7 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Icon name="arrow-back" size={20} color={colors.foreground} style={{ textAlignVertical: 'top' }} />
+                    <Icon name="arrow-back" size={20} color={colors.foreground} />
                   </View>
                   <Text style={[gStyles.shadow, gStyles.normal]}>
                     Return {this.props.returnTime.toString()}
@@ -328,32 +338,13 @@ function formatTemp(temp, unit: TemperatureUnit) {
   return (Math.round(temp * 10) / 10).toString() + '°' + formatTemperatureUnit(unit);
 }
 
-function isCommuteToday(commuteDays: Array<bool>): bool {
-  let dayOfWeek = (new Date()).getDay();
-  return commuteDays[dayOfWeek];
+function formatDateToday(date: Date) {
+  return new Date().toDateString();
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    paddingTop: 34,
-  },
-  topRightCorner: {
-    position: 'absolute',
-    top: 34,
-    right: 20,
-    zIndex: 1,
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  image: {
-    width: '100%', /* or any custom size */
-    height: '100%',
   },
   commuteElem: {
     width: '50%',

@@ -14,12 +14,16 @@ class LocationService {
   emitter: EventEmitter;
   permission: Promise<String>;
   location: Promise<Object>;
+  isEnabled: bool;
 
   constructor() {
     this.emitter = new EventEmitter();
+    this.isEnabled = true; // enablded by default
   }
 
   async requestPermission() {
+    if (!this.isEnabled)
+      return;
     let permission = (await ExpoLocation.requestPermissionsAsync()).status;
     if (permission !== 'granted')
       console.error('Permission to use location not given by user')
@@ -27,6 +31,8 @@ class LocationService {
   }
 
   async retrieveLocation() {
+    if (!this.isEnabled)
+      return;
     let location = await ExpoLocation.getCurrentPositionAsync({});
     let results = await ExpoLocation.reverseGeocodeAsync(location.coords);
     let address = results.find(result => 'city' in result); // not all results contain city
@@ -60,6 +66,14 @@ class LocationService {
 
   unsubscribe(callback) {
     this.emitter.removeListener('update', callback);
+  }
+
+  setEnabled(state: bool) {
+    this.isEnabled = state;
+  }
+
+  isEnabled() {
+    return this.isEnabled;
   }
 
 }
