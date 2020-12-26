@@ -32,7 +32,7 @@ export default class SettingsCommuteScreen extends React.Component {
   }
 
   updateProfile = () => {
-    store.retrieveProfile().then(this.setProfile);
+    return store.retrieveProfile().then(this.setProfile);
   }
 
   setProfile = (profile: UserProfile) => {

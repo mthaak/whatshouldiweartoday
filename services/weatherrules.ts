@@ -1,8 +1,8 @@
 import { isInHour, isToday, isCommuteToday } from '../common/timeutils'
 import { UserProfile } from '../common/UserProfile';
-import { Gender } from '../common/enums';
+import { Gender, TemperatureUnit } from '../common/enums';
 import { rainOrder } from './rainorder';
-import { minByFn } from '../common/utils'
+import { minByFn, fahrenheitToCelsius } from '../common/utils'
 
 export function getTodayWeather(weatherForecast: Object) {
   // Extracts the weather today from the weather forecast
@@ -30,6 +30,8 @@ export function getHourlyForecast(weatherForecast: Object, hour) {
 
 function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
   let feelsLike = getTodayWeather(weatherForecast).feels_like.day;
+  if (profile.tempUnit == TemperatureUnit.FAHRENHEIT)
+    feelsLike = fahrenheitToCelsius(feelsLike);
   if (feelsLike >= 50) // extremely hot
     return {
       msg: "Don't go out, but if you must, take all precautions: Wear [short/airy] clothes and open shoes, and bring plenty of water.",
