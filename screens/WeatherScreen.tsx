@@ -26,6 +26,10 @@ export default class WeatherScreen extends React.Component {
     this.updateProfile();
     this.updateLocation();
     // weather gets updated after profile or location are updated
+    // Promise.all([
+    //   this.updateProfile(),
+    //   this.updateLocation(),
+    // ]).then(this.refreshWeather)
   }
 
   componentDidMount() {
@@ -55,11 +59,13 @@ export default class WeatherScreen extends React.Component {
   refreshWeather = () => {
     const { profile, location } = this.state;
     if (profile) {
-      if (location) {
+      if (location && location.lon && location.lat) {
         return weatherService.getWeatherAsync(location, profile.tempUnit, true).then(this.setWeather)
-      } else {
-        console.warn('Current location not available, using home location for weather forecast')
+      } else if (profile.home && profile.home.lon && profile.home.lat) {
+        console.warn('Current location not available. Using home location for weather forecast')
         return weatherService.getWeatherAsync(profile.home, profile.tempUnit, true).then(this.setWeather)
+      } else {
+        console.warn('Current location and home location not available. Cannot retrieve weather forecast')
       }
     }
   }
@@ -79,6 +85,8 @@ export default class WeatherScreen extends React.Component {
   }
 
   setLocation = (location: String) => {
+    if (location == undefined)
+      alert('Could not retrieve location')
     this.setState({
       location: location,
     });
@@ -205,7 +213,7 @@ export default class WeatherScreen extends React.Component {
 
 class TodayWeather extends React.Component {
   render() {
-    let locationStr = this.props.location ? this.props.location.toString() : "Unknown";
+    let locationStr = this.props.location ? this.props.location.toString() : 'Unknown';
     return (
       <>
         <View style={{ marginLeft: 'auto', marginRight: 'auto' }}>
@@ -334,8 +342,11 @@ class Commute extends React.Component {
 
 class ClothingImage extends React.Component {
   render() {
-    return <Image source={ClothingImages[this.props.name]} resizeMode="contain"
-      style={this.props.style} />
+    return <Image
+      source={ClothingImages[this.props.name]}
+      resizeMode="contain"
+      style={this.props.style}
+    />
   }
 }
 
@@ -344,10 +355,14 @@ class WeatherIcon extends React.Component {
     if (this.props.weather) {
       let url = `http://openweathermap.org/img/wn/${this.props.weather.icon}@2x.png`;
       let placeholder = this.props.weather.description
-      return <Image source={{ uri: url }} placeholder={placeholder} style={{
-        width: this.props.size || "100%",
-        height: this.props.size || "100%",
-      }} />
+      return <Image
+        source={{ uri: url }}
+        placeholder={placeholder}
+        style={{
+          width: this.props.size || "100%",
+          height: this.props.size || "100%",
+        }}
+      />
     }
     return null;
   }

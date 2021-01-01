@@ -40,6 +40,7 @@ class WeatherService {
   async retrieveWeather(location: Location, unit: TemperatureUnit): Promise<Object> {
     console.log('Retrieving weather forecast from openweathermap.org...');
     let url = this.buildOpenWeatherMapUrl(location, unit);
+    console.log('Fetch ' + url)
     let response = await fetch(url);
     let json = response.json();
     return json;
@@ -64,6 +65,6 @@ class WeatherService {
 
 }
 
-let weatherService = new WeatherService();
+const weatherService = new WeatherService();
 
 export default weatherService;

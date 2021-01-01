@@ -59,7 +59,7 @@ class Store {
 
   async resetProfile() {
     try {
-      return this.saveProfile(INITIAL_PROFILE)
+      return this.saveProfile(INITIAL_PROFILE);
     } catch (e) {
       console.error('Failed to reset profile');
       throw e;

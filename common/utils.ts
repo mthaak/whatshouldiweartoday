@@ -15,3 +15,7 @@ export function copyString(oldString) {
 export function fahrenheitToCelsius(fahrenheit) {
   return (fahrenheit - 32) / 1.8;
 }
+
+export function capitalizeFirstLetterOnly(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}

@@ -49,9 +49,9 @@ export default class SettingsCommuteScreen extends React.Component {
     if (selectedDate == undefined)
       return;
     const { profile, dateTimePickerShown } = this.state;
-    if (dateTimePickerShown == "leave") {
+    if (dateTimePickerShown == 'leave') {
       profile.commute.leaveTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
-    } else if (dateTimePickerShown == "return") {
+    } else if (dateTimePickerShown == 'return') {
       profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
     }
     this.setState({ profile: profile, dateTimePickerShown: false });
@@ -87,9 +87,9 @@ export default class SettingsCommuteScreen extends React.Component {
 
     if (dateTimePickerShown) {
       var time;
-      if (dateTimePickerShown == "leave")
+      if (dateTimePickerShown == 'leave')
         time = this.state.profile.commute.leaveTime;
-      else if (dateTimePickerShown == "true")
+      else if (dateTimePickerShown == 'true')
         time = this.state.profile.commute.returnTime;
       var pickerValue;
       if (time && time.hours && time.minutes)
@@ -123,8 +123,8 @@ export default class SettingsCommuteScreen extends React.Component {
                         </ListItem.Title>
                     </ListItem.Content>
                     <Badge
-                      value={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ""}
-                      onPress={() => this.showDateTimePicker("leave")}
+                      value={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
+                      onPress={() => this.showDateTimePicker('leave')}
                       badgeStyle={[gStyles.badge]}
                       textStyle={[gStyles.normal]}
                     />
@@ -136,8 +136,8 @@ export default class SettingsCommuteScreen extends React.Component {
                         </ListItem.Title>
                     </ListItem.Content>
                     <Badge
-                      value={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ""}
-                      onPress={() => this.showDateTimePicker("return")}
+                      value={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
+                      onPress={() => this.showDateTimePicker('return')}
                       badgeStyle={[gStyles.badge]}
                       textStyle={[gStyles.normal]}
                     />
