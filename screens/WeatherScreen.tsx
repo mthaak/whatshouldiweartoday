@@ -12,7 +12,7 @@ import * as ClothingImages from '../assets/images/clothing';
 import { TemperatureUnit } from '../common/enums'
 import store from '../services/store';
 import locationService from '../services/LocationService'
-import { isCommuteToday } from '../common/timeutils'
+import { isTodayTrue } from '../common/timeutils'
 import weatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 
@@ -157,7 +157,7 @@ export default class WeatherScreen extends React.Component {
     if (!weatherForecast)
       return <Text>Weather is loading...</Text>
 
-    if (isCommuteToday(profile.commute.days)) {
+    if (isTodayTrue(profile.commute.days)) {
       let weatherAtLeave = null;
       if (profile.commute.leaveTime)
         weatherAtLeave = getWeatherAtTime(weatherForecast, profile.commute.leaveTime);

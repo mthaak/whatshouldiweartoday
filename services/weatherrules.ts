@@ -1,4 +1,4 @@
-import { isInHour, isToday, isCommuteToday } from '../common/timeutils'
+import { isInHour, isToday, isTodayTrue } from '../common/timeutils'
 import { UserProfile } from '../common/UserProfile';
 import { Gender, TemperatureUnit } from '../common/enums';
 import { rainOrder } from './rainorder';
@@ -176,7 +176,7 @@ function getTempRecommendation(weatherForecast: Object, profile: UserProfile) {
 
 function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
   let weathers = [];
-  if (isCommuteToday(profile.commute.days)) {
+  if (isTodayTrue(profile.commute.days)) {
     if (profile.commute.leaveTime)
       weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.leaveTime.hours)['weather']);
     if (profile.commute.returnTime)

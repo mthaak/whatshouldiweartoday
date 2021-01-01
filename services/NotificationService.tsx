@@ -22,10 +22,10 @@ class NotificationService {
     });
   }
 
-  scheduleNotification(content, time: Time) {
+  scheduleNotificationWeekly(content, weekday: number, time: Time) {
     Notifications.scheduleNotificationAsync({
       content: content,
-      trigger: createTriggerFromTime(time),
+      trigger: createWeeklyTrigger(weekday, time),
     });
   }
 
@@ -90,8 +90,10 @@ export function createContentFromWearRecommendation(wearRecommendation) {
   };
 }
 
-export function createTriggerFromTime(time: Time) {
-  return { // daily trigger
+export function createWeeklyTrigger(weekday: number, time: Time) {
+  // Note: Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday
+  return {
+    weekday: weekday,
     hour: time.hours,
     minute: time.minutes,
     repeats: true,

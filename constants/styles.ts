@@ -37,10 +37,6 @@ export const styles = StyleSheet.create({
   xsmall: {
     fontSize: 10,
   },
-  badge: {
-    paddingTop: 15,
-    paddingBottom: 15,
-  },
   center: {
     marginLeft: 'auto',
     marginRight: 'auto',

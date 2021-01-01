@@ -5,10 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Time from '../common/Time';
-
 import * as colors from '../constants/colors';
 import store from '../services/store';
 import { styles as gStyles } from '../constants/styles';
+import WeekdaySelect from '../components/WeekdaySelect';
 
 export default class SettingsCommuteScreen extends React.Component {
   constructor({ route, navigation }) {
@@ -58,26 +58,11 @@ export default class SettingsCommuteScreen extends React.Component {
     store.saveProfile(profile);
   }
 
-  toggleCheckbox = (dayIdx: int) => {
+  handleCheckboxToggle = (dayIdx: int) => {
     const { profile } = this.state;
     profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
     this.setState({ profile: profile });
     store.saveProfile(profile);
-  }
-
-  renderCheckboxes = () => {
-    const { profile } = this.state;
-    return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name, i) =>
-      <CheckBox
-        key={i}
-        title={name}
-        checked={profile.commute.days[i]}
-        onPress={() => this.toggleCheckbox(i)}
-        size={16}
-        containerStyle={[styles.checkboxContainer]}
-        textStyle={[styles.checkboxText]}
-      />
-    );
   }
 
   render() {
@@ -89,7 +74,7 @@ export default class SettingsCommuteScreen extends React.Component {
       var time;
       if (dateTimePickerShown == 'leave')
         time = this.state.profile.commute.leaveTime;
-      else if (dateTimePickerShown == 'true')
+      else if (dateTimePickerShown == 'return')
         time = this.state.profile.commute.returnTime;
       var pickerValue;
       if (time && time.hours && time.minutes)
@@ -110,11 +95,8 @@ export default class SettingsCommuteScreen extends React.Component {
                       <ListItem.Title>
                         Commute days
                       </ListItem.Title>
-                      <View style={{ marginTop: 10, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around' }}>
-                        {this.renderCheckboxes()}
-                      </View>
+                      <WeekdaySelect values={profile.commute.days} onToggle={this.handleCheckboxToggle} />
                     </ListItem.Content>
-
                   </ListItem>
                   <ListItem bottomDivider>
                     <ListItem.Content>
@@ -122,11 +104,10 @@ export default class SettingsCommuteScreen extends React.Component {
                         Leave time
                         </ListItem.Title>
                     </ListItem.Content>
-                    <Badge
-                      value={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
+                    <Button
+                      title={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
                       onPress={() => this.showDateTimePicker('leave')}
-                      badgeStyle={[gStyles.badge]}
-                      textStyle={[gStyles.normal]}
+                      titleStyle={[gStyles.normal]}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -135,11 +116,10 @@ export default class SettingsCommuteScreen extends React.Component {
                         Return time
                         </ListItem.Title>
                     </ListItem.Content>
-                    <Badge
-                      value={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
+                    <Button
+                      title={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
                       onPress={() => this.showDateTimePicker('return')}
-                      badgeStyle={[gStyles.badge]}
-                      textStyle={[gStyles.normal]}
+                      titleStyle={[gStyles.normal]}
                     />
                   </ListItem>
                 </View>
@@ -175,7 +155,5 @@ const styles = StyleSheet.create({
     marginLeft: 0,
     marginRight: 0,
     padding: 5,
-  },
-  checkboxText: {
-  },
+  }
 });

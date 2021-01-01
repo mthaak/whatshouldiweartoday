@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Image, FlatList, Switch } from 'react-native';
-import { Text, ListItem, Avatar, Icon, Badge, Button, Header } from 'react-native-elements';
+import { Text, ListItem, Avatar, Icon, Button, Header } from 'react-native-elements';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -8,8 +8,10 @@ import Time from '../common/Time';
 import * as colors from '../constants/colors';
 import store from '../services/store';
 import { styles as gStyles } from '../constants/styles';
+import WeekdaySelect from '../components/WeekdaySelect';
 
 export default class SettingsAlertScreen extends React.Component {
+
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
@@ -43,7 +45,15 @@ export default class SettingsAlertScreen extends React.Component {
     const { profile } = this.state;
     profile.alert.enabled = value;
 
-    this.setState({ profile });
+    this.setState({ profile, showDateTimePicker: false });
+    store.saveProfile(profile);
+  }
+
+  handleCheckboxToggle = (dayIdx: int) => {
+    console.log(dayIdx)
+    const { profile } = this.state;
+    profile.alert.days[dayIdx] = !profile.alert.days[dayIdx];
+    this.setState({ profile: profile });
     store.saveProfile(profile);
   }
 
@@ -91,23 +101,40 @@ export default class SettingsAlertScreen extends React.Component {
                       onValueChange={this.handleEnabledEdit}
                     />
                   </ListItem>
-                  <ListItem bottomDivider disabled={!profile.alert.enabled} disabledStyle={[styles.disabledBackground]}>
+                  <ListItem bottomDivider disabled={!profile.alert.enabled}>
                     <ListItem.Content>
                       <ListItem.Title style={profile.alert.enabled ? null : styles.disabledText}>
-                        Alert time</ListItem.Title>
+                        Alert days
+                        </ListItem.Title>
+                      <WeekdaySelect
+                        values={profile.alert.days}
+                        onToggle={this.handleCheckboxToggle}
+                        disabled={!profile.alert.enabled}
+                        containerStyleDisabled={[styles.disabledBackground, styles.disabledBorder]}
+                        textStyleDisabled={[styles.disabledText]}
+                        checkedColorDisabled={colors.gray}
+                      />
                     </ListItem.Content>
-                    <Badge
-                      value={profile.alert.time != null ? profile.alert.time.toString() : ''}
+                  </ListItem>
+                  <ListItem bottomDivider disabled={!profile.alert.enabled} >
+                    <ListItem.Content>
+                      <ListItem.Title style={profile.alert.enabled ? null : styles.disabledText}>
+                        Alert time
+                        </ListItem.Title>
+                    </ListItem.Content>
+                    <Button
+                      title={profile.alert.time != null ? profile.alert.time.toString() : ''}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
-                      badgeStyle={[gStyles.badge, profile.alert.enabled ? null : [styles.disabledBackground, styles.disabledBorder]]}
                       textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabledText]}
+                      disabledTitleStyle={styles.disabledText}
+                      disabled={!profile.alert.enabled}
                     />
                   </ListItem>
                 </View>
               </>
             }
           />
-          {this.state.showDateTimePicker && (
+          {profile.alert.enabled && this.state.showDateTimePicker && (
             <DateTimePicker
               testID="dateTimePicker"
               value={pickerValue}

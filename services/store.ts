@@ -15,6 +15,7 @@ const INITIAL_PROFILE = new UserProfile(
   ),
   new UserProfile.Alert(
     true,
+    [true, true, true, true, true, false, false], // Monday - Sunday
     new Time(7, 30),
   ),
   TemperatureUnit.CELSIUS,
@@ -28,6 +29,7 @@ class Store {
   }
 
   async initializeStorage() {
+    // await this.resetProfile();
     let existingProfile = await this.retrieveProfile();
     if (existingProfile == null) {
       this.saveProfile(INITIAL_PROFILE)
