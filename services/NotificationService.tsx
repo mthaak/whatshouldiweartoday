@@ -1,0 +1,99 @@
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+import React, { useState, useEffect, useRef } from 'react';
+import { Text, View, Button, Platform } from 'react-native';
+
+class NotificationService {
+
+  expoPushToken: string;
+
+  constructor() {
+    this._setNotificationHandler();
+  }
+
+  _setNotificationHandler() {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
+  }
+
+  scheduleNotification(content, time: Time) {
+    Notifications.scheduleNotificationAsync({
+      content: content,
+      trigger: createTriggerFromTime(time),
+    });
+  }
+
+  scheduleNotificationImmediately(content) {
+    Notifications.scheduleNotificationAsync({
+      content: content,
+      trigger: null, // means schedule immediately
+    });
+  }
+
+  cancelAllScheduledNotifications() {
+    return Notifications.cancelAllScheduledNotificationsAsync();
+  }
+
+  async requestPermission() {
+    const permission = await Notifications.requestPermissionsAsync();
+    let granted = this._isPermissionGranted(permission)
+    if (!granted)
+      console.error('Permission to send notifications not given by user')
+    return permission;
+  }
+
+  async allowsNotifications() {
+    const settings = await Notifications.getPermissionsAsync();
+    return this._isPermissionGranted(settings);
+  }
+
+  _isPermissionGranted(permission: NotificationPermissionStatus) {
+    return permission.granted || permission.ios ?.status === Notifications.IosAuthorizationStatus.PROVISIONAL;
+  }
+
+}
+
+export const notificationService = new NotificationService();
+
+export function createContentFromWearRecommendation(wearRecommendation) {
+  let title = wearRecommendation.temp.name;
+
+  if (wearRecommendation.temp.emojis)
+    title = wearRecommendation.temp.emojis + ' ' + title;
+
+  if (wearRecommendation.rain.name) {
+    title += ' and ' + wearRecommendation.rain.name.toLowerCase();
+    if (wearRecommendation.rain.emojis)
+      title += ' ' + wearRecommendation.rain.emojis;
+  }
+
+  let body = wearRecommendation.temp.msg;
+  if (wearRecommendation.temp.clothesEmojis)
+    body += '\n' + wearRecommendation.temp.clothesEmojis;
+
+  if (wearRecommendation.rain.msg) {
+    body += '\n' + wearRecommendation.rain.msg;
+    if (wearRecommendation.rain.clothesEmojis)
+      body += '\n' + wearRecommendation.rain.clothesEmojis;
+  }
+
+  return {
+    sound: 'default',
+    title: title,
+    body: body,
+  };
+}
+
+export function createTriggerFromTime(time: Time) {
+  return { // daily trigger
+    hour: time.hours,
+    minute: time.minutes,
+    repeats: true,
+  }
+}

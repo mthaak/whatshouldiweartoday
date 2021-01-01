@@ -29,9 +29,12 @@ export default class UserProfile {
 
   static fromObject(obj: Object): UserProfile {
     var profile = Object.assign(new UserProfile(), obj);
-    profile.home = Location.fromObject(obj.home);
-    profile.commute = this.Commute.fromObject(obj.commute);
-    profile.alert = this.Alert.fromObject(obj.alert);
+    if (profile.home)
+      profile.home = Location.fromObject(obj.home);
+    if (profile.commute)
+      profile.commute = this.Commute.fromObject(obj.commute);
+    if (profile.alert)
+      profile.alert = this.Alert.fromObject(obj.alert);
     return profile;
   }
 
@@ -53,8 +56,10 @@ export default class UserProfile {
 
     static fromObject(obj: Object): UserProfile {
       var commute = Object.assign(new UserProfile.Commute(), obj);
-      commute.leaveTime = Time.fromObject(obj.leaveTime);
-      commute.returnTime = Time.fromObject(obj.returnTime);
+      if (commute.leaveTime)
+        commute.leaveTime = Time.fromObject(obj.leaveTime);
+      if (commute.returnTime)
+        commute.returnTime = Time.fromObject(obj.returnTime);
       return commute;
     }
 
@@ -75,7 +80,8 @@ export default class UserProfile {
 
     static fromObject(obj: Object): Alert {
       var alert = Object.assign(new UserProfile.Alert(), obj);
-      alert.time = Time.fromObject(obj.time);
+      if (alert.time)
+        alert.time = Time.fromObject(obj.time);
       return alert;
     }
 

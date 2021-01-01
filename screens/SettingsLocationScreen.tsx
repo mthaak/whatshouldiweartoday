@@ -55,7 +55,7 @@ export default class SettingsLocationScreen extends React.Component {
     });
   }
 
-  setHomeLocationToCurrent() {
+  setHomeLocationToCurrent = () => {
     const { profile, currentLocation } = this.state;
     profile.home = currentLocation;
     this.setState({ profile: profile });

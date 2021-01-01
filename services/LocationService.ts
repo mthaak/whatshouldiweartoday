@@ -12,20 +12,20 @@ ExpoLocation.setGoogleApiKey(GEOCODING_API_KEY);
 class LocationService {
 
   emitter: EventEmitter;
-  permission: Promise<String>;
+  permission: Promise<NotificationPermissionStatus>;
   location: Promise<Object>;
   isEnabled: bool;
 
   constructor() {
     this.emitter = new EventEmitter();
-    this.isEnabled = true; // enablded by default
+    this.isEnabled = true; // enabled by default
   }
 
   async requestPermission() {
     if (!this.isEnabled)
       return;
-    let permission = (await ExpoLocation.requestPermissionsAsync()).status;
-    if (permission !== 'granted')
+    let permission = (await ExpoLocation.requestPermissionsAsync());
+    if (!permission.granted)
       console.error('Permission to use location not given by user')
     return permission;
   }
@@ -33,17 +33,22 @@ class LocationService {
   async retrieveLocation() {
     if (!this.isEnabled)
       return;
-    let location = await ExpoLocation.getCurrentPositionAsync({});
-    let results = await ExpoLocation.reverseGeocodeAsync(location.coords);
-    let address = results.find(result => 'city' in result); // not all results contain city
-    if (address) {
-      return new Location(location.coords.latitude,
-        location.coords.longitude, address.city, address.country);
-    } else {
-      return null;
-      console.error('Could not extract city from reverse geocode')
+    try {
+      let location = await ExpoLocation.getCurrentPositionAsync({});
+      let results = await ExpoLocation.reverseGeocodeAsync(location.coords);
+      let address = results.find(result => 'city' in result); // not all results contain city
+      if (address) {
+        return new Location(location.coords.latitude,
+          location.coords.longitude, address.city, address.country);
+      } else {
+        return null;
+        console.error('Could not extract city from reverse geocode')
+      }
+      this.emitter.emit('update');
+    } catch (error) {
+      console.error('Could not retrieve current location: ' + error);
+      alert('Could not retrieve current location: ' + error);
     }
-    this.emitter.emit('update');
   }
 
   getPermission(): Promise<String> {
@@ -81,6 +86,6 @@ class LocationService {
 
 }
 
-let locationService = new LocationService();
+const locationService = new LocationService();
 
 export default locationService;

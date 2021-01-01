@@ -15,7 +15,11 @@ export default class SettingsScreen extends React.Component {
     this.navigation = navigation;
     this.state = { profile: null };
 
-    this.updateProfile();
+    // Dynamic placeholders need to be set only once at init
+    store.retrieveProfile().then(profile => {
+      this.namePlaceholder = profile.name || 'Type your name';
+      this.setState({ profile: profile });
+    })
   }
 
   componentDidMount() {
@@ -31,8 +35,6 @@ export default class SettingsScreen extends React.Component {
   }
 
   setProfile = (profile: UserProfile) => {
-    // Dynamic placeholders need to be set only once at profile update
-    this.namePlaceholder = profile.name || 'Type your name';
     this.setState({
       profile: profile
     });
@@ -47,9 +49,8 @@ export default class SettingsScreen extends React.Component {
   }
 
   resetSettings() {
-    this.namePlaceholder = null;
+    this.namePlaceholder = 'Type your name';
     store.resetProfile();
-    store.retrieveProfile().then(profile => this.setState({ profile: profile }));
   }
 
   render() {
@@ -70,7 +71,7 @@ export default class SettingsScreen extends React.Component {
                     </ListItem.Content>
                     <ListItem.Input
                       placeholder={this.namePlaceholder}
-                      onChangeText={value => this.handleEdit("name", value)}
+                      onChangeText={value => this.handleEdit('name', value)}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -80,7 +81,7 @@ export default class SettingsScreen extends React.Component {
                     <ListItem.ButtonGroup
                       buttons={['Man', 'Woman']}
                       selectedIndex={profile.gender}
-                      onPress={(index) => this.handleEdit("gender", index)}
+                      onPress={(index) => this.handleEdit('gender', index)}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -90,7 +91,7 @@ export default class SettingsScreen extends React.Component {
                     <Text style={[styles.grayText]}>{profile.home ? profile.home.toString() : 'Not set'}</Text>
                     <ListItem.Chevron
                       size={24}
-                      onPress={(index) => this.navigation.navigate("Location")}
+                      onPress={(index) => this.navigation.navigate('Location')}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -99,7 +100,7 @@ export default class SettingsScreen extends React.Component {
                     </ListItem.Content>
                     <ListItem.Chevron
                       size={24}
-                      onPress={(index) => this.navigation.navigate("Commute")}
+                      onPress={(index) => this.navigation.navigate('Commute')}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -108,7 +109,7 @@ export default class SettingsScreen extends React.Component {
                     </ListItem.Content>
                     <ListItem.Chevron
                       size={24}
-                      onPress={(index) => this.navigation.navigate("Alert")}
+                      onPress={(index) => this.navigation.navigate('Alert')}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
@@ -118,12 +119,12 @@ export default class SettingsScreen extends React.Component {
                     <ListItem.ButtonGroup
                       buttons={['°C', '°F']}
                       selectedIndex={profile.tempUnit}
-                      onPress={(index) => this.handleEdit("tempUnit", index)}
+                      onPress={(index) => this.handleEdit('tempUnit', index)}
                     />
                   </ListItem>
                   <ListItem bottomDivider>
                     <Button
-                      title="Reset Settings"
+                      title="Reset to default settings"
                       onPress={() => this.resetSettings()}
                       containerStyle={[gStyles.center]}
                       titleStyle={[gStyles.normal]}

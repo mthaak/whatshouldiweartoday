@@ -97,7 +97,7 @@ export default class SettingsAlertScreen extends React.Component {
                         Alert time</ListItem.Title>
                     </ListItem.Content>
                     <Badge
-                      value={profile.alert.time != null ? profile.alert.time.toString() : ""}
+                      value={profile.alert.time != null ? profile.alert.time.toString() : ''}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
                       badgeStyle={[gStyles.badge, profile.alert.enabled ? null : [styles.disabledBackground, styles.disabledBorder]]}
                       textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabledText]}
