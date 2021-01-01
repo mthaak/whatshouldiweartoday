@@ -67,14 +67,17 @@ export default class UserProfile {
 
   static Alert = class {
 
+    days: Array<number>;
     enabled: boolean;
     time: Time;
 
     constructor(
       enabled: boolean,
+      days: Array<number>,
       time: Time,
     ) {
       this.enabled = enabled;
+      this.days = days;
       this.time = time;
     }
 

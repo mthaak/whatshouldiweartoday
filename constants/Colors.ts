@@ -9,9 +9,9 @@ export const darkAccent = '#1d3557';
 export const lightAccent = '#f1faee';
 export const warningAccent = '#e63946';
 
-export const lighterGray = 'rgb(227, 230, 232)';
-export const gray = 'rgb(153, 161, 168)';
-export const darkerGray = 'rgba(0, 0, 0, 0.54)';
+export const lighterGray = '#e3e6e8' // rgb(227, 230, 232)
+export const gray = '#99a1a8'; // rgb(153, 161, 168)
+export const darkerGray = '#757575'; // rgba(0, 0, 0, 0.54)
 
 export default {
   light: {

@@ -17,8 +17,11 @@ async function updateNotification() {
     return;
   }
 
+  // Remove all previous scheduled notifications before scheduling new
+  notificationService.cancelAllScheduledNotifications();
+
   if (!profile.alert.enabled || !profile.alert.time)
-    return; // alert is disabled
+    return;
 
   if (!profile.home) {
     console.warn('Home location not available. Cannot update push notification');
@@ -34,23 +37,33 @@ async function updateNotification() {
 
   let wearRecommendation = getWearRecommendation(weatherForecast, profile);
   let content = createContentFromWearRecommendation(wearRecommendation);
-  // Remove all previous scheduled notifications before scheduling new
-  notificationService.cancelAllScheduledNotifications();
-  notificationService.scheduleNotification(content, profile.alert.time);
+
+  profile.alert.days.map((enabled, dayIdx) => {
+    if (enabled) {
+      // Conversion needed because weekdays are counted differently in my app
+      // from the Expo API.
+      let dayIdxMod = (dayIdx + 1) % 7 + 1;
+      notificationService.scheduleNotificationWeekly(content, dayIdxMod, profile.alert.time)
+    }
+  })
+
   console.log('Alert updated');
 }
 
 function defineTask(taskName, func) {
-  TaskManager.defineTask(taskName, () => {
-    try {
-      func();
-      console.log(`Task ${taskName} defined`);
-      return BackgroundFetch.Result.NewData;
-    } catch (error) {
-      console.error(`Task ${taskName} define failed: ${error}`);
-      return BackgroundFetch.Result.Failed
-    }
-  })
+  try {
+    TaskManager.defineTask(taskName, () => {
+      try {
+        func();
+        return BackgroundFetch.Result.NewData;
+      } catch (error) {
+        return BackgroundFetch.Result.Failed
+      }
+    });
+    console.log(`Task ${taskName} defined`);
+  } catch (error) {
+    console.error(`Task ${taskName} define failed: ${error}`);
+  }
 }
 
 async function registerBackgroundTask(taskName, interval) {
@@ -64,17 +77,37 @@ async function registerBackgroundTask(taskName, interval) {
   }
 }
 
-let isSetUp = false;
-export function setUpBackgroundTasks() {
-  if (!isSetUp) { // to prevent multiple setups
-    isSetUp = true;
-    notificationService.allowsNotifications().then(granted => {
-      if (granted) {
-        defineTask(TASK_NAME, updateNotification);
-        registerBackgroundTask(TASK_NAME, INTERVAL);
-      } else {
-        alert('Notification permissions are not granted by user')
-      }
-    });
+async function checkBackgroundFetchAvailable() {
+  let status = await BackgroundFetch.getStatusAsync();
+  if (status == BackgroundFetch.Status.Available) {
+    return true;
+  } else if (status == BackgroundFetch.Status.Restricted) {
+    alert('Background fetch is restricted. This means that the notification feature will not be functional.');
+    return false;
+  } else if (status == BackgroundFetch.Status.Denied) {
+    alert('Background fetch is disabled. This means that the notification feature will not be functional.');
+    return false;
   }
+}
+
+let isSetUp = false;
+export async function setUpBackgroundTasks() {
+
+  // To prevent multiple setups
+  if (isSetUp)
+    return
+  isSetUp = true;
+
+  let backgroundFetchAvailable = await checkBackgroundFetchAvailable();
+  if (!backgroundFetchAvailable)
+    return;
+
+  let notificationsAllowed = await notificationService.allowsNotifications();
+  if (!notificationsAllowed) {
+    alert('Notification permissions are not granted by user');
+    return;
+  }
+
+  defineTask(TASK_NAME, updateNotification);
+  registerBackgroundTask(TASK_NAME, INTERVAL);
 }

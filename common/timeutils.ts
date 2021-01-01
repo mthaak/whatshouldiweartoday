@@ -16,7 +16,7 @@ export function isInHour(dt, hour): bool {
   return hour == date.getHours();
 }
 
-export function isCommuteToday(commuteDays: Array<bool>): bool {
+export function isTodayTrue(days: Array<bool>): bool {
   let dayOfWeek = (new Date()).getDay();
-  return commuteDays[dayOfWeek];
+  return days[dayOfWeek];
 }
