@@ -3,8 +3,8 @@ import * as TaskManager from 'expo-task-manager'
 
 import store from './store';
 import weatherService from './WeatherService'
-import { notificationService, createContentFromWearRecommendation } from './NotificationService';
-import { getWearRecommendation } from './weatherrules'
+import { notificationService, createContentForWearRecommendation } from './NotificationService';
+import { getWearRecommendation, getTodayWeather } from './weatherrules'
 
 const INTERVAL = 3600; // update interval in seconds
 const TASK_NAME = 'UPDATE_NOTIFICATION'
@@ -36,14 +36,17 @@ async function updateNotification() {
   }
 
   let wearRecommendation = getWearRecommendation(weatherForecast, profile);
-  let content = createContentFromWearRecommendation(wearRecommendation);
+  let todayWeather = getTodayWeather(weatherForecast);
+  let content = createContentForWearRecommendation(wearRecommendation, todayWeather, profile.tempUnit);
+
+  notificationService.scheduleNotificationImmediately(content);
 
   profile.alert.days.map((enabled, dayIdx) => {
     if (enabled) {
       // Conversion needed because weekdays are counted differently in my app
       // from the Expo API.
       let dayIdxMod = (dayIdx + 1) % 7 + 1;
-      notificationService.scheduleNotificationWeekly(content, dayIdxMod, profile.alert.time)
+      notificationService.scheduleNotificationWeekly(content, dayIdxMod, profile.alert.time);
     }
   })
 
@@ -57,7 +60,7 @@ function defineTask(taskName, func) {
         func();
         return BackgroundFetch.Result.NewData;
       } catch (error) {
-        return BackgroundFetch.Result.Failed
+        return BackgroundFetch.Result.Failed;
       }
     });
     console.log(`Task ${taskName} defined`);
@@ -71,9 +74,9 @@ async function registerBackgroundTask(taskName, interval) {
     await BackgroundFetch.registerTaskAsync(taskName, {
       minimumInterval: interval, // seconds,
     })
-    console.log(`Task ${taskName} registered`)
+    console.log(`Task ${taskName} registered`);
   } catch (error) {
-    console.log(`Task ${taskName} register failed: ${error}`)
+    console.log(`Task ${taskName} register failed: ${error}`);
   }
 }
 

@@ -4,10 +4,6 @@ import { Gender, TemperatureUnit } from '../common/enums';
 import { rainOrder } from './rainorder';
 import { minByFn, fahrenheitToCelsius, capitalizeFirstLetterOnly } from '../common/utils'
 
-const UMBRELLA_WITH_RAIN_DROPS = '\u2614'
-
-
-
 export function getTodayWeather(weatherForecast: Object) {
   // Extracts the weather today from the weather forecast
   return weatherForecast.daily.find(dailyForecast => isToday(dailyForecast.dt));
@@ -182,9 +178,10 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
     if (profile.commute.returnTime)
       weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.returnTime.hours)['weather']);
   }
-  if (weathers == [])
+  if (weathers.length === 0)
     weathers = getTodayWeather(weatherForecast)['weather'];
-  let rainWeathers = weathers.filter(w => ['Thunderstorm', 'Rain', 'Drizzle'].includes(w['main']))
+
+  let rainWeathers = weathers.filter(w => ['Snow', 'Thunderstorm', 'Rain', 'Drizzle'].includes(w['main']))
   if (rainWeathers.length === 0)
     return {
       name: null,
@@ -193,6 +190,7 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
       emojis: null,
       clothesEmojis: null,
     };
+
   let worstWeather = minByFn(rainWeathers, w => rainOrder.indexOf(w['description'])); // weather with worst rain according to rain order
 
   if (worstWeather == null)
@@ -203,33 +201,43 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
       emojis: null,
       clothesEmojis: null,
     };
-  if (worstWeather['main'] == 'Thunderstorm')
+
+  let name = worstWeather['description'] ? capitalizeFirstLetterOnly(worstWeather['description']) : null;
+  if (worstWeather['main'] == 'Snow')
     return {
-      name: capitalizeFirstLetterOnly(worstWeather['description']),
-      msg: `Also, there will a ${worstWeather['description']}. Don't go out but if you have to, prepare well.`,
+      name: name,
+      msg: `Also, there will be ${worstWeather['description']}. Be careful when you go out. The roads may be slippy.`,
+      clothes: [],
+      emojis: `🌨️`,
+      clothesEmojis: ``,
+    }
+  else if (worstWeather['main'] == 'Thunderstorm')
+    return {
+      name: name,
+      msg: `Also, there will be a ${worstWeather['description']}. Don't go out but if you have to, prepare well.`,
       clothes: ['umbrella_short', 'rain_boot'],
       emojis: `⛈️`,
       clothesEmojis: `🌂`,
     }
   else if (worstWeather['main'] == 'Rain')
     return {
-      name: capitalizeFirstLetterOnly(worstWeather['description']),
-      msg: `Also, there will a ${worstWeather['description']}, so wear water-resistant clothing and bring an umbrella.`,
+      name: name,
+      msg: `Also, there will be ${worstWeather['description']}, so wear water-resistant clothing and bring an umbrella.`,
       clothes: ['umbrella_short', 'rain_boot'],
       emojis: `🌧️`,
       clothesEmojis: `🌂`,
     }
   else if (worstWeather['main'] == 'Drizzle')
     return {
-      name: capitalizeFirstLetterOnly(worstWeather['description']),
-      msg: `Also, there will a ${worstWeather['description']}, so wear water resistant clothes.`,
+      name: name,
+      msg: `Also, there will be ${worstWeather['description']}, so wear water resistant clothes.`,
       clothes: ['umbrella_short'],
       emojis: `🌧️`,
       clothesEmojis: `🌂`,
     }
 }
 
-// todo use linear interpolation
-// todo storm, snow, emergency
+// todo use linear interpolation for weather during  period (e.g. commute)
+// todo atmosphere: dust, fog, tornado, etc.
 // todo sun protection
 // todo compare with yesterday?

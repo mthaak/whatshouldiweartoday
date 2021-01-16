@@ -5,11 +5,7 @@ import { TemperatureUnit } from '../common/enums'
 const weatherFromFile = require('../data/weather_18102020.json');
 import { OPENWEATHERMAP_APPID } from '../env'
 
-let OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
-let LAT = 51.539720;
-let LON = -0.097388;
-let APPID = OPENWEATHERMAP_APPID;
-let UNITS = 'metric';
+let OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
 
 class WeatherService {
 
@@ -52,7 +48,7 @@ class WeatherService {
     var units = 'metric';
     if (unit == TemperatureUnit.FAHRENHEIT)
       units = 'imperial';
-    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${APPID}&units=${units}&exclude=minutely`
+    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_APPID}&units=${units}&exclude=minutely`
   }
 
   subscribe(callback) {

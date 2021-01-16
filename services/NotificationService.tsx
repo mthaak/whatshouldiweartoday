@@ -4,6 +4,8 @@ import * as Permissions from 'expo-permissions';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 
+import { formatTemp } from '../common/weatherutils'
+
 class NotificationService {
 
   expoPushToken: string;
@@ -61,14 +63,16 @@ class NotificationService {
 
 export const notificationService = new NotificationService();
 
-export function createContentFromWearRecommendation(wearRecommendation) {
-  let title = wearRecommendation.temp.name;
+export function createContentForWearRecommendation(wearRecommendation, todayWeather, tempUnit) {
+  let temp = todayWeather.temp.day;
+
+  let title = wearRecommendation.temp.name + ` (${formatTemp(temp, tempUnit)})`;
 
   if (wearRecommendation.temp.emojis)
     title = wearRecommendation.temp.emojis + ' ' + title;
 
   if (wearRecommendation.rain.name) {
-    title += ' and ' + wearRecommendation.rain.name.toLowerCase();
+    title += ' with ' + wearRecommendation.rain.name.toLowerCase();
     if (wearRecommendation.rain.emojis)
       title += ' ' + wearRecommendation.rain.emojis;
   }
