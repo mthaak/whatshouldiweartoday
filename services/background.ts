@@ -39,7 +39,7 @@ async function updateNotification() {
   let todayWeather = getTodayWeather(weatherForecast);
   let content = createContentForWearRecommendation(wearRecommendation, todayWeather, profile.tempUnit);
 
-  notificationService.scheduleNotificationImmediately(content);
+  // notificationService.scheduleNotificationImmediately(content);
 
   profile.alert.days.map((enabled, dayIdx) => {
     if (enabled) {
