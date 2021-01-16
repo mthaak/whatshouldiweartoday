@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, Text } from 'react-native';
 import { useFonts, Lato_400Regular } from '@expo-google-fonts/lato';
+import Constants from 'expo-constants';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 import store from './services/store';
 import locationService from './services/LocationService';
+import weatherService from './services/WeatherService';
 import { notificationService } from './services/NotificationService';
 import { setUpBackgroundTasks } from './services/background';
 
@@ -23,10 +25,15 @@ export default function App() {
   store.initializeStorage();
 
   // locationService.setEnabled(false);
-  Promise.all([
-    locationService.requestPermission(),
-    notificationService.requestPermission()
-  ]).then(() => setUpBackgroundTasks());
+  if (Constants.platform.web) {
+    locationService.requestPermission();
+    // Notifications and background tasks not supported in web
+  } else if (Constants.platform.android || Constants.platform.ios) {
+    Promise.all([
+      locationService.requestPermission(),
+      notificationService.requestPermission()
+    ]).then(() => setUpBackgroundTasks());
+  }
 
   if (!isLoadingComplete || !areFontsLoaded) {
     return null;

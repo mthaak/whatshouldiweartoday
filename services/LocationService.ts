@@ -46,8 +46,8 @@ class LocationService {
       }
       this.emitter.emit('update');
     } catch (error) {
-      console.error('Could not retrieve current location: ' + error);
-      alert('Could not retrieve current location: ' + error);
+      console.error('Could not retrieve current location: ' + error.message);
+      alert('Could not retrieve current location: ' + error.message);
     }
   }
 

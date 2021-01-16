@@ -15,6 +15,7 @@ import locationService from '../services/LocationService'
 import { isTodayTrue } from '../common/timeutils'
 import weatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
+import { formatTemp } from '../common/weatherutils'
 
 export default class WeatherScreen extends React.Component {
 
@@ -26,10 +27,10 @@ export default class WeatherScreen extends React.Component {
     this.updateProfile();
     this.updateLocation();
     // weather gets updated after profile or location are updated
-    // Promise.all([
-    //   this.updateProfile(),
-    //   this.updateLocation(),
-    // ]).then(this.refreshWeather)
+    Promise.all([
+      this.updateProfile(),
+      this.updateLocation(),
+    ]).then(this.refreshWeather)
   }
 
   componentDidMount() {
@@ -269,18 +270,18 @@ class WearRecommendation extends React.Component {
       }}>
         <View style={{
           marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
-          backgroundColor: 'none'
+          backgroundColor: 'none', minHeight: 10,
         }}>
           {tempImages}
         </View>
-        <Text style={[gStyles.large]}>{this.props.wearRecommendation.temp.msg}</Text>
+        <Text style={[gStyles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.temp.msg}</Text>
         <View style={{
           marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
-          backgroundColor: 'none'
+          backgroundColor: 'none', minHeight: 10,
         }}>
           {rainImages}
         </View>
-        <Text style={[gStyles.large]}>{this.props.wearRecommendation.rain.msg}</Text>
+        <Text style={[gStyles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.rain.msg}</Text>
       </View >
     )
   }
@@ -366,19 +367,6 @@ class WeatherIcon extends React.Component {
     }
     return null;
   }
-}
-
-function formatTemperatureUnit(unit: TemperatureUnit): string {
-  switch (unit) {
-    case TemperatureUnit.CELSIUS:
-      return 'C';
-    case TemperatureUnit.FAHRENHEIT:
-      return 'F';
-  }
-}
-
-function formatTemp(temp, unit: TemperatureUnit) {
-  return (Math.round(temp * 10) / 10).toString() + '°' + formatTemperatureUnit(unit);
 }
 
 function formatDateToday(date: Date) {
