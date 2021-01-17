@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "whatshouldiweartoday",
+    "name": "What Should I Wear Today?",
     "slug": "whatshouldiweartoday",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,7 +18,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+     "package": "com.mthaak.whatshouldiweartoday",
+     "versionCode": 1
+   },
     "ios": {
+      "bundleIdentifier": "com.mthaak.whatshouldiweartoday",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
     "web": {
