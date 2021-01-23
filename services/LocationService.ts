@@ -1,7 +1,6 @@
 import * as ExpoLocation from 'expo-location';
 import { EventEmitter } from 'eventemitter3'
 
-import * as Store from './store';
 import Location from '../common/Location'
 
 import { GOOGLE_GEOCODING_API_KEY } from '../env'

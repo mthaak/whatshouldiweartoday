@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Time from '../common/Time';
 import * as colors from '../constants/colors';
-import store from '../services/store';
+import store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 import WeekdaySelect from '../components/WeekdaySelect';
 
