@@ -9,7 +9,7 @@ import locationService from '../services/LocationService'
 import Time from '../common/Time';
 
 import * as colors from '../constants/colors';
-import store from '../services/store';
+import store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsLocationScreen extends React.Component {

@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { copyString } from '../common/utils';
 import * as colors from '../constants/colors';
-import store from '../services/store';
+import store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsScreen extends React.Component {

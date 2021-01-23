@@ -10,7 +10,7 @@ import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
 import * as ClothingImages from '../assets/images/clothing';
 import { TemperatureUnit } from '../common/enums'
-import store from '../services/store';
+import store from '../services/Store';
 import locationService from '../services/LocationService'
 import { isTodayTrue } from '../common/timeutils'
 import weatherService from '../services/WeatherService'
