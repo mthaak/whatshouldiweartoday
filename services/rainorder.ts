@@ -1,6 +1,18 @@
 // This file determines the severity order of the different rain types
 // It starts with the most severe and ends with the least severe
 export const rainOrder = [
+  // snow:
+  'heavy snow',
+  'heavy shower snow,'
+  'snow',
+  'shower snow',
+  'rain and snow',
+  'sleet',
+  'shower sleet',
+  'light snow',
+  'light shower snow',
+  'light rain and snow',
+  'light shower sleet',
   // thunderstorm with rain or drizzle:
   'thunderstorm with heavy rain',
   'thunderstorm with heavy drizzle',
