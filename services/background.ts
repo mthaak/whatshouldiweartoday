@@ -39,12 +39,11 @@ async function updateNotification() {
   let todayWeather = getTodayWeather(weatherForecast);
   let content = createContentForWearRecommendation(wearRecommendation, todayWeather, profile.tempUnit);
 
-  // notificationService.scheduleNotificationImmediately(content);
-
   profile.alert.days.map((enabled, dayIdx) => {
     if (enabled) {
       // Conversion needed because weekdays are counted differently in my app
-      // from the Expo API.
+      // My app: Monday - Sunday: 0 - 6
+      // Expo API object: Sunday - Saturday: 1 - 7
       let dayIdxMod = (dayIdx + 1) % 7 + 1;
       notificationService.scheduleNotificationWeekly(content, dayIdxMod, profile.alert.time);
     }

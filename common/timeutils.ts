@@ -29,5 +29,9 @@ export function isInHour(dt, hour): bool {
 */
 export function isTodayTrue(days: Array<bool>): bool {
   let dayOfWeek = (new Date()).getDay();
+  // Conversion needed because weekdays are counted differently in my app
+  // Date object: Sunday - Saturday: 0 - 6
+  // My app: Monday - Sunday: 0 - 6
+  let dayOfWeekMod = (dayOfWeek - 1) % 7;
   return days[dayOfWeek];
 }
