@@ -206,7 +206,7 @@ function getRainRecommendation(weatherForecast: Object, profile: UserProfile) {
   if (worstWeather['main'] == 'Snow')
     return {
       name: name,
-      msg: `Also, there will be ${worstWeather['description']}. Be careful when you go out. The roads may be slippy.`,
+      msg: `Also, there will be ${worstWeather['description']}. Be careful when you go out. The roads may be slippery.`,
       clothes: [],
       emojis: `🌨️`,
       clothesEmojis: ``,

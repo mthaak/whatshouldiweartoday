@@ -6,9 +6,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Time from '../common/Time';
 import * as colors from '../constants/colors';
-import store from '../services/Store';
+import Store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 import WeekdaySelect from '../components/WeekdaySelect';
+import updateNotification from '../services/background.ts';
 
 export default class SettingsAlertScreen extends React.Component {
 
@@ -24,15 +25,15 @@ export default class SettingsAlertScreen extends React.Component {
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfile);
+    Store.subscribe(this.updateProfile);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfile);
+    Store.unsubscribe(this.updateProfile);
   }
 
   updateProfile = () => {
-    return store.retrieveProfile().then(this.setProfile);
+    return Store.retrieveProfile().then(this.setProfile);
   }
 
   setProfile = (profile: UserProfile) => {
@@ -46,7 +47,10 @@ export default class SettingsAlertScreen extends React.Component {
     profile.alert.enabled = value;
 
     this.setState({ profile, showDateTimePicker: false });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
+
+    if (profile.alert.enabled)
+      updateNotification();
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
@@ -54,7 +58,7 @@ export default class SettingsAlertScreen extends React.Component {
     const { profile } = this.state;
     profile.alert.days[dayIdx] = !profile.alert.days[dayIdx];
     this.setState({ profile: profile });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
   }
 
   toggleDateTimePicker = () => {
@@ -67,7 +71,8 @@ export default class SettingsAlertScreen extends React.Component {
     const { profile } = this.state;
     profile.alert.time = new Time(selectedDate.getHours(), selectedDate.getMinutes());
     this.setState({ profile: profile, showDateTimePicker: false });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
+    updateNotification();
   }
 
   render() {

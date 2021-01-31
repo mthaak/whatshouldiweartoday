@@ -9,10 +9,9 @@ import Constants from 'expo-constants';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
-import store from './services/store';
-import locationService from './services/LocationService';
-import weatherService from './services/WeatherService';
-import { notificationService } from './services/NotificationService';
+import Store from './services/Store';
+import LocationService from './services/LocationService';
+import { NotificationService } from './services/NotificationService';
 import { setUpBackgroundTasks } from './services/background';
 
 export default function App() {
@@ -22,16 +21,16 @@ export default function App() {
     Lato_400Regular,
   });
 
-  store.initializeStorage();
+  Store.initializeStorage();
 
-  // locationService.setEnabled(false);
+  // LocationService.setEnabled(false);
   if (Constants.platform.web) {
-    locationService.requestPermission();
+    LocationService.requestPermission();
     // Notifications and background tasks not supported in web
   } else if (Constants.platform.android || Constants.platform.ios) {
     Promise.all([
-      locationService.requestPermission(),
-      notificationService.requestPermission()
+      LocationService.requestPermission(),
+      NotificationService.requestPermission()
     ]).then(() => setUpBackgroundTasks());
   }
 

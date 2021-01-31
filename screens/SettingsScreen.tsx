@@ -3,10 +3,11 @@ import { View, StyleSheet, Image, FlatList, Switch } from 'react-native';
 import { Text, ListItem, Avatar, Icon, Badge, Button, Header } from 'react-native-elements';
 import TouchableScale from 'react-native-touchable-scale';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 
 import { copyString } from '../common/utils';
 import * as colors from '../constants/colors';
-import store from '../services/Store';
+import Store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsScreen extends React.Component {
@@ -16,22 +17,22 @@ export default class SettingsScreen extends React.Component {
     this.state = { profile: null };
 
     // Dynamic placeholders need to be set only once at init
-    store.retrieveProfile().then(profile => {
+    Store.retrieveProfile().then(profile => {
       this.namePlaceholder = profile.name || 'Type your name';
       this.setState({ profile: profile });
     })
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfile);
+    Store.subscribe(this.updateProfile);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfile);
+    Store.unsubscribe(this.updateProfile);
   }
 
   updateProfile = () => {
-    return store.retrieveProfile().then(this.setProfile);
+    return Store.retrieveProfile().then(this.setProfile);
   }
 
   setProfile = (profile: UserProfile) => {
@@ -45,12 +46,12 @@ export default class SettingsScreen extends React.Component {
     profile[key] = value;
 
     this.setState({ profile });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
   }
 
   resetSettings() {
     this.namePlaceholder = 'Type your name';
-    store.resetProfile();
+    Store.resetProfile();
   }
 
   render() {
@@ -135,6 +136,7 @@ export default class SettingsScreen extends React.Component {
               </>
             }
           />
+          <Text style={[styles.footer]}>Build date: {Constants.manifest.extra.buildDate}</Text>
         </View>
       </>
     );
@@ -152,5 +154,10 @@ const styles = StyleSheet.create({
   },
   grayText: {
     color: colors.darkerGray,
+  },
+  footer: {
+    textAlign: 'center',
+    color: colors.gray,
+    marginBottom: 5,
   }
 });

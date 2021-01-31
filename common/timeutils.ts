@@ -32,6 +32,6 @@ export function isTodayTrue(days: Array<bool>): bool {
   // Conversion needed because weekdays are counted differently in my app
   // Date object: Sunday - Saturday: 0 - 6
   // My app: Monday - Sunday: 0 - 6
-  let dayOfWeekMod = (dayOfWeek - 1) % 7;
-  return days[dayOfWeek];
+  let dayOfWeekMod = (dayOfWeek + 6) % 7;
+  return days[dayOfWeekMod];
 }
