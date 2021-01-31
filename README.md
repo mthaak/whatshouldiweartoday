@@ -3,9 +3,13 @@ Do you also wonder every morning whether you can wear a skirt or shorts? Or whet
 
 Well, wonder no more! This app tells you what you can best wear with regards to today's weather. Every morning it sends you a push notification with a summary of the weather and the clothes that go with it. It also takes into account your daily commute, so you will never be surprised by a heavy rain while on the go.
 
-![Weather screenshot](screenshots/screenshot_weather.jpg)
-![Settings screenshot](screenshots/screenshot_settings.jpg)
-![Commute settings screenshot](screenshots/screenshot_commute_settings.jpg)
+<p align="center">
+  <img alt="Screenschot weather screen" src="screenshots/screenshot_weather.jpg" width="20%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="Screenshot settings screen" src="screenshots/screenshot_settings.jpg" width="20%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="Screenshot commute settings screen" src="screenshots/screenshot_commute_settings.jpg" width="20%">
+</p>
 
 This app is currently only built for Android. And not released to the Play Store (though it might at some point). Since this is just meant as a hobby project, it doesn't (yet?) have the quality that I deem sufficient to publicly release it.
 
