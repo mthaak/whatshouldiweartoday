@@ -9,7 +9,7 @@ import * as colors from '../constants/colors';
 import Store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 import WeekdaySelect from '../components/WeekdaySelect';
-import updateNotification from '../services/background.ts';
+import { updateNotification } from '../services/background.ts';
 
 export default class SettingsAlertScreen extends React.Component {
 
@@ -131,7 +131,7 @@ export default class SettingsAlertScreen extends React.Component {
                       title={profile.alert.time != null ? profile.alert.time.toString() : ''}
                       onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : null}
                       textStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabledText]}
-                      disabledTitleStyle={styles.disabledText}
+                      disabledTitleStyle={[styles.disabledText]}
                       disabled={!profile.alert.enabled}
                     />
                   </ListItem>

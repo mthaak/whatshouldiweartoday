@@ -44,7 +44,7 @@ function SettingsNavigator() {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
       }}>
-      <SettingsStack.Screen name="Main" component={SettingsScreen} />
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
       <SettingsStack.Screen name="Location" component={SettingsLocationScreen} />
       <SettingsStack.Screen name="Alert" component={SettingsAlertScreen} />
       <SettingsStack.Screen name="Commute" component={SettingsCommuteScreen} />
