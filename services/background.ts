@@ -9,10 +9,8 @@ import { getWearRecommendation, getTodayWeather } from './weatherrules'
 const INTERVAL = 3600; // update interval in seconds
 const TASK_NAME = 'UPDATE_NOTIFICATION'
 
-async function updateNotification() {
+export async function updateNotification() {
   let profile = await Store.retrieveProfile();
-
-  console.log('update')
 
   if (!profile) {
     console.error('Could not retrieve profile from store')
