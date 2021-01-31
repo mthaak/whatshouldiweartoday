@@ -4,12 +4,10 @@ import { Text, ListItem, Avatar, Icon, Badge, Button, Header, CheckBox } from 'r
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import locationService from '../services/LocationService'
-
+import LocationService from '../services/LocationService'
 import Time from '../common/Time';
-
 import * as colors from '../constants/colors';
-import store from '../services/Store';
+import Store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 
 export default class SettingsLocationScreen extends React.Component {
@@ -26,21 +24,21 @@ export default class SettingsLocationScreen extends React.Component {
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfile);
-    locationService.subscribe(this.updateLocation);
+    Store.subscribe(this.updateProfile);
+    LocationService.subscribe(this.updateLocation);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfile);
-    locationService.unsubscribe(this.updateLocation);
+    Store.unsubscribe(this.updateProfile);
+    LocationService.unsubscribe(this.updateLocation);
   }
 
   updateProfile = () => {
-    return store.retrieveProfile().then(this.setProfile);
+    return Store.retrieveProfile().then(this.setProfile);
   }
 
   updateLocation = () => {
-    return locationService.getLocationAsync().then(this.setLocation);
+    return LocationService.getLocationAsync().then(this.setLocation);
   }
 
   setProfile = (profile: UserProfile) => {
@@ -59,7 +57,7 @@ export default class SettingsLocationScreen extends React.Component {
     const { profile, currentLocation } = this.state;
     profile.home = currentLocation;
     this.setState({ profile: profile });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
   }
 
   render() {

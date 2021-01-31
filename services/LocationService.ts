@@ -3,10 +3,9 @@ import { EventEmitter } from 'eventemitter3'
 
 import Location from '../common/Location'
 
-import { GOOGLE_GEOCODING_API_KEY } from '../env'
+import { GOOGLE_GEOCODING_API_KEY } from '@env'
 
-const GEOCODING_API_KEY = GOOGLE_GEOCODING_API_KEY;
-ExpoLocation.setGoogleApiKey(GEOCODING_API_KEY);
+ExpoLocation.setGoogleApiKey(GOOGLE_GEOCODING_API_KEY);
 
 class LocationService {
 

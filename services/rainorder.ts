@@ -3,7 +3,7 @@
 export const rainOrder = [
   // snow:
   'heavy snow',
-  'heavy shower snow,'
+  'heavy shower snow',
   'snow',
   'shower snow',
   'rain and snow',

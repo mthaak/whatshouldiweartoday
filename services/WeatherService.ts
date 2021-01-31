@@ -1,11 +1,9 @@
 import { EventEmitter } from 'eventemitter3'
 import { isToday, isInHour } from '../common/timeutils'
 import { TemperatureUnit } from '../common/enums'
+import { OPENWEATHERMAP_APPID } from "@env"
 
-const weatherFromFile = require('../data/weather_18102020.json');
-import { OPENWEATHERMAP_APPID } from '../env'
-
-let OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
+const OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
 
 class WeatherService {
 
@@ -14,13 +12,6 @@ class WeatherService {
 
   constructor() {
     this.emitter = new EventEmitter();
-    // if (isToday(weatherFromFile['current'].dt)) {
-    //   console.log('Using weather forecast from file')
-    //   this.weatherPromise = Promise.resolve(this.weatherFromFile);
-    // } else {
-    //   console.log('Retrieving weather forecast from openweathermap.org...');
-    //   this.weatherPromise = this.retrieveWeather();
-    // }
   }
 
   getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh: bool = false) {

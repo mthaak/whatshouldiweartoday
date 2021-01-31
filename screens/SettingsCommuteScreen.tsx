@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Time from '../common/Time';
 import * as colors from '../constants/colors';
-import store from '../services/Store';
+import Store from '../services/Store';
 import { styles as gStyles } from '../constants/styles';
 import WeekdaySelect from '../components/WeekdaySelect';
 
@@ -24,15 +24,15 @@ export default class SettingsCommuteScreen extends React.Component {
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfile);
+    Store.subscribe(this.updateProfile);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfile);
+    Store.unsubscribe(this.updateProfile);
   }
 
   updateProfile = () => {
-    return store.retrieveProfile().then(this.setProfile);
+    return Store.retrieveProfile().then(this.setProfile);
   }
 
   setProfile = (profile: UserProfile) => {
@@ -55,14 +55,14 @@ export default class SettingsCommuteScreen extends React.Component {
       profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
     }
     this.setState({ profile: profile, dateTimePickerShown: false });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
     const { profile } = this.state;
     profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
     this.setState({ profile: profile });
-    store.saveProfile(profile);
+    Store.saveProfile(profile);
   }
 
   render() {

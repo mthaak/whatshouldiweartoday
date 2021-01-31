@@ -19,16 +19,16 @@
       "**/*"
     ],
     "android": {
-     "package": "com.mthaak.whatshouldiweartoday",
-     "versionCode": 1
-   },
+      "package": "com.mthaak.whatshouldiweartoday",
+      "versionCode": 1
+    },
     "ios": {
       "bundleIdentifier": "com.mthaak.whatshouldiweartoday",
       "buildNumber": "1.0.0",
-      "supportsTablet": true
+      "supportsTablet": false
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
   }
 }

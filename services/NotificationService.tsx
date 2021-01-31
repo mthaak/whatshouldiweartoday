@@ -61,7 +61,9 @@ class NotificationService {
 
 }
 
-export const notificationService = new NotificationService();
+const notificationService = new NotificationService();
+
+export { notificationService as NotificationService };
 
 export function createContentForWearRecommendation(wearRecommendation, todayWeather, tempUnit) {
   let temp = todayWeather.temp.day;

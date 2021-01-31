@@ -10,64 +10,70 @@ import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
 import * as ClothingImages from '../assets/images/clothing';
 import { TemperatureUnit } from '../common/enums'
-import store from '../services/Store';
-import locationService from '../services/LocationService'
+import Store from '../services/Store';
+import LocationService from '../services/LocationService'
 import { isTodayTrue } from '../common/timeutils'
-import weatherService from '../services/WeatherService'
+import WeatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 import { formatTemp } from '../common/weatherutils'
+
+const REFRESH_PERIOD = 1800; // time (s) between each data refresh when screen is active
 
 export default class WeatherScreen extends React.Component {
 
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
-    this.state = { profile: null }
-
-    this.updateProfile();
-    this.updateLocation();
-    // weather gets updated after profile or location are updated
-    Promise.all([
-      this.updateProfile(),
-      this.updateLocation(),
-    ]).then(this.refreshWeather)
+    this.state = { profile: null, location: null }
   }
 
   componentDidMount() {
-    store.subscribe(this.updateProfileAndThenRefreshWeather);
-    locationService.subscribe(this.updateLocationAndThenRefreshWeather);
-    weatherService.subscribe(this.updateWeather);
+    this.refreshData();
+
+    Store.subscribe(this.updateProfileAndThenRefreshWeather);
+    LocationService.subscribe(this.updateLocationAndThenRefreshWeather);
+    WeatherService.subscribe(this.updateWeather);
+    this.focusListener = this.navigation.addListener("focus", this.refreshData);
   }
 
   componentWillUnmount() {
-    store.unsubscribe(this.updateProfileAndThenRefreshWeather);
-    locationService.unsubscribe(this.updateLocationAndThenRefreshWeather);
-    weatherService.unsubscribe(this.updateWeather);
+    Store.unsubscribe(this.updateProfileAndThenRefreshWeather);
+    LocationService.unsubscribe(this.updateLocationAndThenRefreshWeather);
+    WeatherService.unsubscribe(this.updateWeather);
   }
 
   updateProfile = () => {
-    return store.retrieveProfile().then(this.setProfile);
+    return Store.retrieveProfile().then(this.setProfile);
   }
 
   updateLocation = () => {
-    return locationService.getLocationAsync().then(this.setLocation);
+    return LocationService.getLocationAsync().then(this.setLocation);
   }
 
   updateWeather = () => {
-    return weatherService.getWeatherAsync().then(this.setWeather);
+    return WeatherService.getWeatherAsync().then(this.setWeather);
   }
 
   refreshWeather = () => {
     const { profile, location } = this.state;
     if (profile) {
       if (location && location.lon && location.lat) {
-        return weatherService.getWeatherAsync(location, profile.tempUnit, true).then(this.setWeather)
-      } else if (profile.home && profile.home.lon && profile.home.lat) {
-        console.warn('Current location not available. Using home location for weather forecast')
-        return weatherService.getWeatherAsync(profile.home, profile.tempUnit, true).then(this.setWeather)
+        return WeatherService.getWeatherAsync(location, profile.tempUnit, true).then(this.setWeather)
       } else {
-        console.warn('Current location and home location not available. Cannot retrieve weather forecast')
+        console.warn('Current location not available. Cannot retrieve weather forecast')
       }
+    }
+  }
+
+  refreshData = () => {
+    if (!this.timeLastRefreshed
+      || (Date.now() - this.timeLastRefreshed) / 1E6 > REFRESH_PERIOD) {
+      // Weather gets updated after profile or location are updated
+      Promise.all([
+        this.updateProfile(),
+        this.updateLocation(),
+      ]).then(this.refreshWeather);
+      this.timeLastRefreshed = Date.now();
     }
   }
 
@@ -274,14 +280,14 @@ class WearRecommendation extends React.Component {
         }}>
           {tempImages}
         </View>
-        <Text style={[gStyles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.temp.msg}</Text>
+        <Text style={[gStyles.large, { marginTop: 0 }]}>{this.props.wearRecommendation.temp.msg}</Text>
         <View style={{
           marginLeft: 'auto', marginRight: 'auto', flexDirection: 'row', flexWrap: 'wrap',
           backgroundColor: 'none', minHeight: 10,
         }}>
           {rainImages}
         </View>
-        <Text style={[gStyles.large, { marginTop: 10 }]}>{this.props.wearRecommendation.rain.msg}</Text>
+        <Text style={[gStyles.large, { marginTop: 0 }]}>{this.props.wearRecommendation.rain.msg}</Text>
       </View >
     )
   }
