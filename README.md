@@ -5,6 +5,8 @@ Well, wonder no more! This app tells you what you can best wear with regards to 
 
 This app is currently only built for Android. And not released to the Play Store (though it might at some point). Since this is just meant as a hobby project, it doesn't (yet?) have the quality that I deem sufficient to publicly release it.
 
+The weather forecast comes from [OpenWeather](https://openweathermap.org/api).
+
 ## Development
 This is a React Native app, developed using [Expo](https://expo.io/).
 
