@@ -22,6 +22,11 @@ Make sure that NodeJS and the Expo CLI are installed before starting.
 
 ### How to set up
 - Clone the repo
+- Create a `.env` file in the repo root with the following variables (ask me for the values):
+```
+OPENWEATHERMAP_APPID=<...>
+GOOGLE_GEOCODING_API_KEY=<...>
+```
 - Start Expo from the repo root: `expo start`
 - Open the app (follow the Expo instructions). Either:
     - On your phone with the Expo client
