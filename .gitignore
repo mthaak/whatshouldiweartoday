@@ -13,6 +13,7 @@ web-build/
 *.eps
 notes.txt
 env.ts
+data
 
 # macOS
 .DS_Store

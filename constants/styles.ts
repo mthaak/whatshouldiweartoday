@@ -41,6 +41,10 @@ export const styles = StyleSheet.create({
     marginLeft: 'auto',
     marginRight: 'auto',
   },
+  centerVertical: {
+    marginTop: 'auto',
+    marginBottom: 'auto',
+  },
   centerContent: {
     justifyContent: 'center',
   },

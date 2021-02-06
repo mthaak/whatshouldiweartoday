@@ -9,6 +9,7 @@ import { formatTemp } from '../common/weatherutils'
 class NotificationService {
 
   expoPushToken: string;
+  permission: Promise<bool>;
 
   constructor() {
     this._setNotificationHandler();
@@ -45,9 +46,18 @@ class NotificationService {
   async requestPermission() {
     const permission = await Notifications.requestPermissionsAsync();
     let granted = this._isPermissionGranted(permission)
-    if (!granted)
+    if (!granted) {
       console.error('Permission to send notifications not given by user')
-    return permission;
+      return false;
+    }
+    return true;
+  }
+
+  getPermission(): Promise<bool> {
+    if (this.permission)
+      return this.permission;
+    this.permission = this.requestPermission();
+    return this.permission;
   }
 
   async allowsNotifications() {
