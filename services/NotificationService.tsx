@@ -89,6 +89,9 @@ export function createContentForWearRecommendation(wearRecommendation, todayWeat
       body += '\n' + wearRecommendation.rain.clothesEmojis;
   }
 
+  let date = new Date();
+  body += '\n' + `Last updated at: ${date.toLocaleString('en-GB'}`;
+
   return {
     sound: 'default',
     title: title,
