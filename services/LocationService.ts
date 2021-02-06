@@ -12,7 +12,8 @@ class LocationService {
   emitter: EventEmitter;
   permission: Promise<bool>;
   hasPermissionGranted: bool = false;
-  location: Promise<Object>;
+  locationPromise: Promise<Object>;
+  hasLocation: bool = false;
   isEnabled: bool;
 
   constructor() {
@@ -20,7 +21,7 @@ class LocationService {
     this.isEnabled = true; // enabled by default
   }
 
-  async requestPermission() {
+  async requestPermission(): Promise<bool> {
     if (!this.isEnabled)
       return;
     this.hasPermissionGranted = false;
@@ -47,10 +48,10 @@ class LocationService {
         return null;
         console.error('Could not extract city from reverse geocode')
       }
-      this.emitter.emit('update');
     } catch (error) {
       console.error('Could not retrieve current location: ' + error.message);
       alert('Could not retrieve current location: ' + error.message);
+      return null;
     }
   }
 
@@ -66,13 +67,16 @@ class LocationService {
   }
 
   getLocationAsync(forceFresh: bool = false): Promise<Object> {
-    if (!this.location || forceFresh) {
-      this.location = this.retrieveLocation().then(location => {
-        this.emitter.emit('update');
+    if (!this.locationPromise || !this.hasLocation || forceFresh) {
+      this.locationPromise = this.retrieveLocation().then(location => {
+        if (location) {
+          this.emitter.emit('update');
+          this.hasLocation = true;
+        }
         return location;
       });
     }
-    return this.location;
+    return this.locationPromise;
   }
 
   subscribe(callback) {
