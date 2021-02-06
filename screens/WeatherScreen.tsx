@@ -190,11 +190,12 @@ export default class WeatherScreen extends React.Component {
       else {
         let button = <Button
           title="Give permission"
-          onPress={() => LocationService.requestPermission()}
+          onPress={() => LocationService.requestPermission()
+            .then(granted => { if (granted) LocationService.getLocationAsync() })}
           titleStyle={[gStyles.normal]}
           type="solid"
           containerStyle={[gStyles.center, { alignSelf: 'flex-start' }]}
-          buttonStyle={{ backgroundColor: "white" }}
+          buttonStyle={{ backgroundColor: colors.foreground }}
           titleStyle={{ color: colors.background }}
         />
         return (

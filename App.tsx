@@ -24,15 +24,25 @@ export default function App() {
   Store.initializeStorage();
 
   // LocationService.setEnabled(false);
+
   if (Constants.platform.web) {
-    LocationService.requestPermission();
+    LocationService.requestPermission()
+      .then(granted => {
+        if (granted) LocationService.getLocationAsync();
+      });
     // Notifications and background tasks not supported in web
+
   } else if (Constants.platform.android || Constants.platform.ios) {
+    // Wait for permissions before setting up background tasks
     Promise.all([
-      LocationService.requestPermission(),
+      LocationService.requestPermission()
+        .then(granted => {
+          if (granted) LocationService.getLocationAsync();
+          return granted;
+        }),
       NotificationService.requestPermission()
     ]).then((values) => {
-      if (values.every(Boolean))
+      if (values.every(Boolean)) // all permissions
         setUpBackgroundTasks()
     });
   }

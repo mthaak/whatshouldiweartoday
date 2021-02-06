@@ -53,7 +53,7 @@ export default class SettingsAlertScreen extends React.Component {
       if (profile.home)
         updateNotification();
       else
-        alert('You need to set your home location for the alert to work');
+        alert('You need to set your home location for the alert to work.');
     }
   }
 
