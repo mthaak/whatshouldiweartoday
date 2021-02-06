@@ -10,7 +10,8 @@ ExpoLocation.setGoogleApiKey(GOOGLE_GEOCODING_API_KEY);
 class LocationService {
 
   emitter: EventEmitter;
-  permission: Promise<NotificationPermissionStatus>;
+  permission: Promise<bool>;
+  hasPermissionGranted: bool = false;
   location: Promise<Object>;
   isEnabled: bool;
 
@@ -22,10 +23,14 @@ class LocationService {
   async requestPermission() {
     if (!this.isEnabled)
       return;
+    this.hasPermissionGranted = false;
     let permission = (await ExpoLocation.requestPermissionsAsync());
-    if (!permission.granted)
-      console.error('Permission to use location not given by user')
-    return permission;
+    if (!permission.granted) {
+      console.error('Permission to use location not given by user');
+      return false;
+    }
+    this.hasPermissionGranted = true;
+    return true;
   }
 
   async retrieveLocation() {
@@ -49,11 +54,15 @@ class LocationService {
     }
   }
 
-  getPermission(): Promise<String> {
+  getPermission(): Promise<bool> {
     if (this.permission)
       return this.permission;
     this.permission = this.requestPermission();
     return this.permission;
+  }
+
+  hasPermission(): bool {
+    return this.hasPermissionGranted;
   }
 
   getLocationAsync(forceFresh: bool = false): Promise<Object> {

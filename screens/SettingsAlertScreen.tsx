@@ -49,12 +49,15 @@ export default class SettingsAlertScreen extends React.Component {
     this.setState({ profile, showDateTimePicker: false });
     Store.saveProfile(profile);
 
-    if (profile.alert.enabled)
-      updateNotification();
+    if (profile.alert.enabled) {
+      if (profile.home)
+        updateNotification();
+      else
+        alert('You need to set your home location for the alert to work');
+    }
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
-    console.log(dayIdx)
     const { profile } = this.state;
     profile.alert.days[dayIdx] = !profile.alert.days[dayIdx];
     this.setState({ profile: profile });

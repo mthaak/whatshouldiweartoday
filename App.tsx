@@ -31,7 +31,10 @@ export default function App() {
     Promise.all([
       LocationService.requestPermission(),
       NotificationService.requestPermission()
-    ]).then(() => setUpBackgroundTasks());
+    ]).then((values) => {
+      if (values.every(Boolean))
+        setUpBackgroundTasks()
+    });
   }
 
   if (!isLoadingComplete || !areFontsLoaded) {

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import { Image } from 'react-native';
-import { View, Button } from '../components/Themed';
+import { Image, ActivityIndicator } from 'react-native';
+import { View } from '../components/Themed';
 import { Text } from '../components/StyledText';
-import { Header, Icon } from 'react-native-elements';
+import { Header, Icon, Button } from 'react-native-elements';
 
 import * as colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
@@ -24,7 +24,7 @@ export default class WeatherScreen extends React.Component {
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation;
-    this.state = { profile: null, location: null }
+    this.state = { profile: null, location: null, isRefreshing: false }
   }
 
   componentDidMount() {
@@ -68,11 +68,14 @@ export default class WeatherScreen extends React.Component {
   refreshData = () => {
     if (!this.timeLastRefreshed
       || (Date.now() - this.timeLastRefreshed) / 1E6 > REFRESH_PERIOD) {
+      this.setState({ isRefreshing: true });
       // Weather gets updated after profile or location are updated
       Promise.all([
         this.updateProfile(),
         this.updateLocation(),
-      ]).then(this.refreshWeather);
+      ])
+        .then(this.refreshWeather)
+        .finally(() => this.setState({ isRefreshing: false }));
       this.timeLastRefreshed = Date.now();
     }
   }
@@ -92,8 +95,6 @@ export default class WeatherScreen extends React.Component {
   }
 
   setLocation = (location: String) => {
-    if (location == undefined)
-      alert('Could not retrieve location')
     this.setState({
       location: location,
     });
@@ -123,12 +124,6 @@ export default class WeatherScreen extends React.Component {
   renderTodayWeather() {
     const { profile, location, weatherForecast } = this.state;
 
-    if (!profile || profile.tempUnit === null)
-      return <Text>Profile is incomplete</Text>
-
-    if (!weatherForecast)
-      return <Text>Weather is loading...</Text>
-
     let todayWeather = getTodayWeather(weatherForecast);
     return <TodayWeather
       dayTemp={todayWeather.temp.day}
@@ -142,12 +137,6 @@ export default class WeatherScreen extends React.Component {
   renderWearRecommendation() {
     const { profile, weatherForecast } = this.state;
 
-    if (!profile || !profile.commute.days)
-      return <Text>Profile is incomplete</Text>
-
-    if (!weatherForecast)
-      return <Text>Weather is loading...</Text>
-
     let wearRecommendation = getWearRecommendation(weatherForecast, profile);
     return <WearRecommendation
       wearRecommendation={wearRecommendation}
@@ -157,12 +146,6 @@ export default class WeatherScreen extends React.Component {
 
   renderCommuteWeather() {
     const { profile, weatherForecast } = this.state;
-
-    if (!profile || !profile.commute.days)
-      return <Text>Profile is incomplete</Text>
-
-    if (!weatherForecast)
-      return <Text>Weather is loading...</Text>
 
     if (isTodayTrue(profile.commute.days)) {
       let weatherAtLeave = null;
@@ -192,27 +175,65 @@ export default class WeatherScreen extends React.Component {
     }
   }
 
+  renderContent() {
+    const { profile, location, weatherForecast, isRefreshing } = this.state;
+
+    if (isRefreshing)
+      return <CenterMessage message="Weather forecast is being retrieved" active />;
+
+    if (!profile)
+      return <CenterMessage message="Profile is incomplete" />;
+
+    if (!location) {
+      if (LocationService.hasPermission())
+        return <CenterMessage message="Could not retrieve current location" />
+      else {
+        let button = <Button
+          title="Give permission"
+          onPress={() => LocationService.requestPermission()}
+          titleStyle={[gStyles.normal]}
+          type="solid"
+          containerStyle={[gStyles.center, { alignSelf: 'flex-start' }]}
+          buttonStyle={{ backgroundColor: "white" }}
+          titleStyle={{ color: colors.background }}
+        />
+        return (
+          <>
+            <CenterMessage message="Does not have permission for current location"
+              bottom={button}
+            />
+          </>
+        )
+      }
+    }
+
+    if (!weatherForecast)
+      return <CenterMessage message="Could not retrieve weather forecast" />;
+
+    return (
+      <>
+        <View style={{ height: '20%', justifyContent: 'center' }}>
+          {this.renderTodayWeather()}
+        </View>
+
+        <View style={{ height: '60%', justifyContent: 'center' }}>
+          {this.renderWearRecommendation()}
+        </View>
+
+        <View style={{ height: '20%', justifyContent: 'center' }}>
+          {this.renderCommuteWeather()}
+        </View>
+      </>
+    );
+  }
+
   render() {
     return (
       <View style={[styles.container]}>
         {this.renderTopBar()}
-
         <View style={{ flex: 1, paddingHorizontal: 15 }}>
-
-          <View style={{ height: '20%', justifyContent: 'center' }}>
-            {this.renderTodayWeather()}
-          </View>
-
-          <View style={{ height: '60%', justifyContent: 'center' }}>
-            {this.renderWearRecommendation()}
-          </View>
-
-          <View style={{ height: '20%', justifyContent: 'center' }}>
-            {this.renderCommuteWeather()}
-          </View>
-
+          {this.renderContent()}
         </View>
-
       </View >
     )
   }
@@ -372,6 +393,25 @@ class WeatherIcon extends React.Component {
       />
     }
     return null;
+  }
+}
+
+class CenterMessage extends React.Component {
+  render() {
+    var animation;
+    if (this.props.active)
+      animation = <ActivityIndicator size={50} color={colors.foreground} />;
+    else
+      animation = <Icon name="error" size={40} color={colors.foreground} />
+    return (
+      <>
+        <View style={[gStyles.center, gStyles.centerVertical, gStyles.centerText]}>
+          {animation}
+          <Text style={[gStyles.large, gStyles.shadow, { marginTop: 20, marginBottom: 20 }]}>{this.props.message}</Text>
+          {this.props.bottom}
+        </View>
+      </>
+    );
   }
 }
 
