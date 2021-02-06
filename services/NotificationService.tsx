@@ -90,7 +90,7 @@ export function createContentForWearRecommendation(wearRecommendation, todayWeat
   }
 
   let date = new Date();
-  body += '\n' + `Last updated at: ${date.toLocaleString('en-GB'}`;
+  body += '\n' + `Last updated at: ${date.toLocaleString('en-GB')}`;
 
   return {
     sound: 'default',
