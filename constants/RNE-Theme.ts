@@ -1,11 +1,11 @@
-import * as colors from './colors';
+import * as colors from './colors'
 
-const FONT_FAMILY = 'Lato_400Regular';
+const FONT_FAMILY = 'Lato_400Regular'
 
 export const theme = {
   colors: {
     primary: colors.background,
-    secondary: colors.lightAccent,
+    secondary: colors.lightAccent
     // white;
     // black;
     // grey0;
@@ -37,12 +37,12 @@ export const theme = {
   },
   Text: {
     style: {
-      fontFamily: FONT_FAMILY,
+      fontFamily: FONT_FAMILY
     }
   },
   Button: {
     titleStyle: {
-      fontFamily: FONT_FAMILY,
+      fontFamily: FONT_FAMILY
     }
   }
 }

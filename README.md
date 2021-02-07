@@ -41,3 +41,6 @@ If you want to build a new version of the Android app, run:
 
 To perform over-the-air (OTA) updates of the built app, run:
 `expo publish`
+
+### Style
+Use `npx eslint . --fix` to check and fix the style

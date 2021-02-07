@@ -1,86 +1,85 @@
-import React from 'react';
-import { View, StyleSheet, Image, FlatList, Switch } from 'react-native';
-import { Text, ListItem, Avatar, Icon, Badge, Button, Header, CheckBox } from 'react-native-elements';
-import { Ionicons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React from 'react'
+import { View, StyleSheet, FlatList } from 'react-native'
+import { Text, ListItem, Button } from 'react-native-elements'
+import DateTimePicker from '@react-native-community/datetimepicker'
 
-import Time from '../common/Time';
-import * as colors from '../constants/colors';
-import Store from '../services/Store';
-import { styles as gStyles } from '../constants/styles';
-import WeekdaySelect from '../components/WeekdaySelect';
+import Time from '../common/Time'
+import * as colors from '../constants/colors'
+import Store from '../services/Store'
+import { styles as gStyles } from '../constants/styles'
+import WeekdaySelect from '../components/WeekdaySelect'
 
 export default class SettingsCommuteScreen extends React.Component {
   constructor({ route, navigation }) {
     super()
-    this.navigation = navigation;
+    this.navigation = navigation
     this.state = {
       profile: null,
       dateTimePickerShown: false,
-      timePropEdited: null,
-    };
+      timePropEdited: null
+    }
 
-    this.updateProfile();
+    this.updateProfile()
   }
 
   componentDidMount() {
-    Store.subscribe(this.updateProfile);
+    Store.subscribe(this.updateProfile)
   }
 
   componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile);
+    Store.unsubscribe(this.updateProfile)
   }
 
-  updateProfile = () => {
-    return Store.retrieveProfile().then(this.setProfile);
+  updateProfile = async () => {
+    return await Store.retrieveProfile().then(this.setProfile)
   }
 
   setProfile = (profile: UserProfile) => {
     this.setState({
       profile: profile
-    });
+    })
   }
 
-  showDateTimePicker = (timeProp: String) => {
-    this.setState({ dateTimePickerShown: timeProp });
+  showDateTimePicker = (timeProp: string) => {
+    this.setState({ dateTimePickerShown: timeProp })
   }
 
   handleTimeEdit = (selectedDate: Date) => {
-    if (selectedDate == undefined)
-      return;
-    const { profile, dateTimePickerShown } = this.state;
+    if (selectedDate == undefined) { return }
+    const { profile, dateTimePickerShown } = this.state
     if (dateTimePickerShown == 'leave') {
-      profile.commute.leaveTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
+      profile.commute.leaveTime = new Time(selectedDate.getHours(), selectedDate.getMinutes())
     } else if (dateTimePickerShown == 'return') {
-      profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes());
+      profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes())
     }
-    this.setState({ profile: profile, dateTimePickerShown: false });
-    Store.saveProfile(profile);
+    this.setState({ profile: profile, dateTimePickerShown: false })
+    Store.saveProfile(profile)
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
-    const { profile } = this.state;
-    profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
-    this.setState({ profile: profile });
-    Store.saveProfile(profile);
+    const { profile } = this.state
+    profile.commute.days[dayIdx] = !profile.commute.days[dayIdx]
+    this.setState({ profile: profile })
+    Store.saveProfile(profile)
   }
 
   render() {
-    const { profile, dateTimePickerShown } = this.state;
-    if (profile == null)
-      return <Text>Loading...</Text>
+    const { profile, dateTimePickerShown } = this.state
+    if (profile == null) { return <Text>Loading...</Text> }
 
+    let pickerValue
     if (dateTimePickerShown) {
-      var time;
-      if (dateTimePickerShown == 'leave')
-        time = this.state.profile.commute.leaveTime;
-      else if (dateTimePickerShown == 'return')
-        time = this.state.profile.commute.returnTime;
-      var pickerValue;
-      if (time && time.hours && time.minutes)
-        pickerValue = new Date(2000, 1, 1, time.hours, time.minutes);
-      else
-        pickerValue = new Date(2000, 1, 1, 8, 0); // default is 8 am
+      let time
+      if (dateTimePickerShown == 'leave') {
+        time = this.state.profile.commute.leaveTime
+      } else if (dateTimePickerShown == 'return') {
+        time = this.state.profile.commute.returnTime
+      }
+      if (time && time.hours && time.minutes) {
+        pickerValue = new Date(2000, 1, 1, time.hours, time.minutes)
+      } else {
+        pickerValue = new Date(2000, 1, 1, 8, 0) // default is 8 am
+      }
     }
 
     return (
@@ -102,7 +101,7 @@ export default class SettingsCommuteScreen extends React.Component {
                     <ListItem.Content>
                       <ListItem.Title>
                         Leave time
-                        </ListItem.Title>
+                      </ListItem.Title>
                     </ListItem.Content>
                     <Button
                       title={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
@@ -114,7 +113,7 @@ export default class SettingsCommuteScreen extends React.Component {
                     <ListItem.Content>
                       <ListItem.Title>
                         Return time
-                        </ListItem.Title>
+                      </ListItem.Title>
                     </ListItem.Content>
                     <Button
                       title={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
@@ -128,32 +127,32 @@ export default class SettingsCommuteScreen extends React.Component {
           />
           {this.state.dateTimePickerShown && (
             <DateTimePicker
-              testID="dateTimePicker"
+              testID='dateTimePicker'
               value={pickerValue}
-              mode="time"
-              is24Hour={true}
-              display="default"
+              mode='time'
+              is24Hour
+              display='default'
               onChange={(event, selectedTime) => this.handleTimeEdit(selectedTime)}
             />
           )}
         </View>
       </>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background
   },
   list: {
     borderTopWidth: 1,
-    borderColor: colors.lightAccent,
+    borderColor: colors.lightAccent
   },
   checkboxContainer: {
     marginLeft: 0,
     marginRight: 0,
-    padding: 5,
+    padding: 5
   }
-});
+})

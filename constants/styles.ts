@@ -1,54 +1,54 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'
 
 const shadowStyle = {
   textShadowColor: 'black',
   textShadowRadius: 2
-};
+}
 
 export const styles = StyleSheet.create({
   title: {
     ...shadowStyle,
     fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   subtitle: {
     ...shadowStyle,
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   shadow: shadowStyle,
   xxlarge: {
-    fontSize: 32,
+    fontSize: 32
   },
   xlarge: {
-    fontSize: 22,
+    fontSize: 22
   },
   large: {
-    fontSize: 18,
+    fontSize: 18
   },
   normal: {
-    fontSize: 16,
+    fontSize: 16
   },
   small: {
-    fontSize: 12,
+    fontSize: 12
   },
   xsmall: {
-    fontSize: 10,
+    fontSize: 10
   },
   center: {
     marginLeft: 'auto',
-    marginRight: 'auto',
+    marginRight: 'auto'
   },
   centerVertical: {
     marginTop: 'auto',
-    marginBottom: 'auto',
+    marginBottom: 'auto'
   },
   centerContent: {
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   centerText: {
-    textAlign: 'center',
+    textAlign: 'center'
   }
-});
+})

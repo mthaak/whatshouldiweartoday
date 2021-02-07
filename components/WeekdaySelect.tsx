@@ -1,33 +1,34 @@
-import * as React from 'react';
-import { View } from 'react-native';
-import { CheckBox } from 'react-native-elements';
+import * as React from 'react'
+import { View } from 'react-native'
+import { CheckBox } from 'react-native-elements'
 
-export default function WeekdaySelect(props) {
-  // Props:
-  // - values
-  // - onToggle
-  // - disabled
-  // - containerStyleDisabled
-  // - textStyleDisabled
-  // - checkedColorDisabled
+interface WeekdaySelectProps {
+  values: Array[number];
+  onToggle: () => void;
+  disabled: bool;
+  containerStyleDisabled: ViewStyle;
+  textStyleDisabled: TextStyle;
+  checkedColorDisabled: string;
+}
 
-  let defaultContainerStyle = {
+export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
+
+  const defaultContainerStyle = {
     marginLeft: 0,
     marginRight: 0,
-    padding: 5,
+    padding: 5
   }
 
-  let defaultContainerStyleDisabled = {
-    borderColor: 'rgba(0,0,0,0)',
+  const defaultContainerStyleDisabled = {
+    borderColor: 'rgba(0,0,0,0)'
   }
 
-  let containerStyleDisabled = {
+  const containerStyleDisabled = {
     ...defaultContainerStyleDisabled,
     ...props.containerStyleDisabled
   }
 
-
-  let checkboxes = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name, i) =>
+  const checkboxes = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((name, i) =>
     <CheckBox
       key={i}
       title={name}
@@ -39,12 +40,11 @@ export default function WeekdaySelect(props) {
       checkedColor={props.disabled ? props.checkedColorDisabled : undefined}
       disabled={props.disabled}
     />
-  );
+  )
 
   return (
     <View style={{ marginTop: 10, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around' }}>
       {checkboxes}
     </View>
   )
-
 }

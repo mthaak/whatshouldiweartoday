@@ -1,20 +1,18 @@
-import { StackScreenProps } from '@react-navigation/stack';
-import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import { RootStackParamList } from '../types';
+import { StackScreenProps } from '@react-navigation/stack'
+import * as React from 'react'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export default function NotFoundScreen({
-  navigation,
-}: StackScreenProps<RootStackParamList, 'NotFound'>) {
+  navigation
+}: StackScreenProps<RootStackParamList, 'NotFound'>): JSX.Element {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>This screen doesn't exist.</Text>
+      <Text style={styles.title}>This screen doesn&apos;t exist.</Text>
       <TouchableOpacity onPress={() => navigation.replace('Weather')} style={styles.link}>
         <Text style={styles.linkText}>Go to home screen!</Text>
       </TouchableOpacity>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -23,18 +21,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: 20
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   link: {
     marginTop: 15,
-    paddingVertical: 15,
+    paddingVertical: 15
   },
   linkText: {
     fontSize: 14,
-    color: '#2e78b7',
-  },
-});
+    color: '#2e78b7'
+  }
+})
