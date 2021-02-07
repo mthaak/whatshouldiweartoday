@@ -31,6 +31,7 @@ export default class WeatherScreen extends React.Component {
     Store.subscribe(this.updateProfileAndThenRefreshWeather)
     LocationService.subscribe(this.updateLocationAndThenRefreshWeather)
     WeatherService.subscribe(this.updateWeather)
+
     this.focusListener = this.navigation.addListener('focus', this.refreshData)
   }
 
@@ -53,10 +54,17 @@ export default class WeatherScreen extends React.Component {
   }
 
   refreshWeather = () => {
+    const { isRefreshing } = this.state
+    if (isRefreshing)
+      return // don't refresh simultaneously
+
     const { profile, location } = this.state
     if (profile) {
       if (location && location.lon && location.lat) {
-        return WeatherService.getWeatherAsync(location, profile.tempUnit, true).then(this.setWeather)
+        this.setState({ isRefreshing: true })
+        return WeatherService.getWeatherAsync(location, profile.tempUnit, true)
+          .then(this.setWeather)
+          .finally(() => this.setState({ isRefreshing: false }))
       } else {
         console.warn('Current location not available. Cannot retrieve weather forecast')
       }
@@ -64,20 +72,14 @@ export default class WeatherScreen extends React.Component {
   }
 
   refreshData = () => {
-    const { isRefreshing } = this.state
-    if (isRefreshing)
-      return // don't refresh simultaneously
-
     if (!this.timeLastRefreshed ||
       (Date.now() - this.timeLastRefreshed) / 1E6 > REFRESH_PERIOD) {
-      this.setState({ isRefreshing: true })
       // Weather gets updated after profile or location are updated
       Promise.all([
         this.updateProfile(),
         this.updateLocation()
       ])
         .then(this.refreshWeather)
-        .finally(() => this.setState({ isRefreshing: false }))
       this.timeLastRefreshed = Date.now()
     }
   }
