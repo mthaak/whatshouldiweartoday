@@ -1,7 +1,7 @@
-import { Gender, TemperatureUnit } from '../common/enums';
-import UserProfile from '../common/UserProfile';
-import Time from '../common/Time';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Gender, TemperatureUnit } from '../common/enums'
+import UserProfile from '../common/UserProfile'
+import Time from '../common/Time'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { EventEmitter } from 'eventemitter3'
 
 const INITIAL_PROFILE = new UserProfile(
@@ -11,26 +11,26 @@ const INITIAL_PROFILE = new UserProfile(
   new UserProfile.Commute(
     [true, true, true, true, true, false, false], // Monday - Sunday
     new Time(8, 30),
-    new Time(17, 30),
+    new Time(17, 30)
   ),
   new UserProfile.Alert(
     true,
     [true, true, true, true, true, false, false], // Monday - Sunday
-    new Time(7, 30),
+    new Time(7, 30)
   ),
-  TemperatureUnit.CELSIUS,
-);
+  TemperatureUnit.CELSIUS
+)
 
 class Store {
-  emitter: EventEmitter;
+  emitter: EventEmitter
 
   constructor() {
-    this.emitter = new EventEmitter();
+    this.emitter = new EventEmitter()
   }
 
   async initializeStorage() {
     // await this.resetProfile();
-    let existingProfile = await this.retrieveProfile();
+    const existingProfile = await this.retrieveProfile()
     if (existingProfile == null) {
       this.saveProfile(INITIAL_PROFILE)
     }
@@ -38,46 +38,44 @@ class Store {
 
   async saveProfile(profile: UserProfile) {
     try {
-      await AsyncStorage.setItem('@store:profile', JSON.stringify(profile));
-      this.emitter.emit('update');
+      await AsyncStorage.setItem('@store:profile', JSON.stringify(profile))
+      this.emitter.emit('update')
     } catch (e) {
-      console.error('Failed to save the profile to storage');
-      throw e;
+      console.error('Failed to save the profile to storage')
+      throw e
     }
   }
 
   async retrieveProfile(): Promise<UserProfile> {
     try {
-      let profile = await AsyncStorage.getItem('@store:profile');
-      if (profile === null)
-        return null;
-      let object = JSON.parse(profile);
-      return UserProfile.fromObject(object);
+      const profile = await AsyncStorage.getItem('@store:profile')
+      if (profile === null) { return null }
+      const object = JSON.parse(profile)
+      return UserProfile.fromObject(object)
     } catch (e) {
-      console.error('Failed to retrieve profile from storage');
-      throw e;
+      console.error('Failed to retrieve profile from storage')
+      throw e
     }
   }
 
   async resetProfile() {
     try {
-      return this.saveProfile(INITIAL_PROFILE);
+      return await this.saveProfile(INITIAL_PROFILE)
     } catch (e) {
-      console.error('Failed to reset profile');
-      throw e;
+      console.error('Failed to reset profile')
+      throw e
     }
   }
 
   subscribe(callback) {
-    this.emitter.addListener('update', callback);
+    this.emitter.addListener('update', callback)
   }
 
   unsubscribe(callback) {
-    this.emitter.removeListener('update', callback);
+    this.emitter.removeListener('update', callback)
   }
-
 }
 
-let store = new Store();
+const store = new Store()
 
-export default store;
+export default store

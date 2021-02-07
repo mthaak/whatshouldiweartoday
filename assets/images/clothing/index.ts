@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const man_beanie_hat = require('./man_beanie_hat.png');
 export const man_boot = require('./man_boot.png');
 export const man_cap = require('./man_cap.png');
@@ -38,3 +39,4 @@ export const woman_tight_pants_blue = require('./woman_tight_pants_blue.png');
 export const woman_tight_pants_brown = require('./woman_tight_pants_brown.png');
 export const woman_tshirt = require('./woman_tshirt.png');
 export const woman_tshirt_yellow = require('./woman_tshirt_yellow.png');
+/* eslint-enable */

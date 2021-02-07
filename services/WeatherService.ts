@@ -1,57 +1,53 @@
 import { EventEmitter } from 'eventemitter3'
-import { isToday, isInHour } from '../common/timeutils'
+import { OPENWEATHERMAP_APPID } from '@env'
 import { TemperatureUnit } from '../common/enums'
-import { OPENWEATHERMAP_APPID } from "@env"
 
-const OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
+const OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
 
 class WeatherService {
-
-  emitter: EventEmitter;
-  weatherPromise: Promise<Object>;
+  emitter: EventEmitter
+  weatherPromise: Promise<WeatherForecast>
 
   constructor() {
-    this.emitter = new EventEmitter();
+    this.emitter = new EventEmitter()
   }
 
-  getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh: bool = false) {
+  async getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh: bool = false) {
     if (!this.weatherPromise || forceFresh) {
       this.weatherPromise = this.retrieveWeather(location, unit).then(weather => {
-        this.emitter.emit('update');
-        return weather;
-      });
+        this.emitter.emit('update')
+        return weather
+      })
     }
-    return this.weatherPromise;
+    return this.weatherPromise
   }
 
-  async retrieveWeather(location: Location, unit: TemperatureUnit): Promise<Object> {
-    console.log('Retrieving weather forecast from openweathermap.org...');
-    let url = this.buildOpenWeatherMapUrl(location, unit);
+  async retrieveWeather(location: Location, unit: TemperatureUnit): Promise<WeatherForecast> {
+    console.log('Retrieving weather forecast from openweathermap.org...')
+    const url = this.buildOpenWeatherMapUrl(location, unit)
     console.log('Fetch ' + url)
-    let response = await fetch(url);
-    let json = response.json();
-    return json;
+    const response = await fetch(url)
+    const json = response.json()
+    return await json
   }
 
   buildOpenWeatherMapUrl(location: Location, unit: TemperatureUnit) {
-    let lat = location.lat;
-    let lon = location.lon;
-    var units = 'metric';
-    if (unit == TemperatureUnit.FAHRENHEIT)
-      units = 'imperial';
+    const lat = location.lat
+    const lon = location.lon
+    let units = 'metric'
+    if (unit == TemperatureUnit.FAHRENHEIT) { units = 'imperial' }
     return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_APPID}&units=${units}&exclude=minutely`
   }
 
   subscribe(callback) {
-    this.emitter.addListener('update', callback);
+    this.emitter.addListener('update', callback)
   }
 
   unsubscribe(callback) {
-    this.emitter.removeListener('update', callback);
+    this.emitter.removeListener('update', callback)
   }
-
 }
 
-const weatherService = new WeatherService();
+const weatherService = new WeatherService()
 
-export default weatherService;
+export default weatherService

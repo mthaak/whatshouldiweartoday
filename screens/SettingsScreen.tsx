@@ -1,63 +1,59 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Image, FlatList, Switch } from 'react-native';
-import { Text, ListItem, Avatar, Icon, Badge, Button, Header } from 'react-native-elements';
-import TouchableScale from 'react-native-touchable-scale';
-import { Ionicons } from '@expo/vector-icons';
-import Constants from 'expo-constants';
+import React from 'react'
+import { View, StyleSheet, FlatList } from 'react-native'
+import { Text, ListItem, Button } from 'react-native-elements'
+import Constants from 'expo-constants'
 
-import { copyString } from '../common/utils';
-import * as colors from '../constants/colors';
-import Store from '../services/Store';
-import { styles as gStyles } from '../constants/styles';
+import * as colors from '../constants/colors'
+import Store from '../services/Store'
+import { styles as gStyles } from '../constants/styles'
 
 export default class SettingsScreen extends React.Component {
   constructor({ route, navigation }) {
     super()
-    this.navigation = navigation;
-    this.state = { profile: null };
+    this.navigation = navigation
+    this.state = { profile: null }
 
     // Dynamic placeholders need to be set only once at init
     Store.retrieveProfile().then(profile => {
-      this.namePlaceholder = profile.name || 'Type your name';
-      this.setState({ profile: profile });
+      this.namePlaceholder = profile.name || 'Type your name'
+      this.setState({ profile: profile })
     })
   }
 
   componentDidMount() {
-    Store.subscribe(this.updateProfile);
+    Store.subscribe(this.updateProfile)
   }
 
   componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile);
+    Store.unsubscribe(this.updateProfile)
   }
 
-  updateProfile = () => {
-    return Store.retrieveProfile().then(this.setProfile);
+  updateProfile = async () => {
+    return await Store.retrieveProfile().then(this.setProfile)
   }
 
   setProfile = (profile: UserProfile) => {
     this.setState({
       profile: profile
-    });
+    })
   }
 
   handleEdit(key, value) {
-    const { profile } = this.state;
-    profile[key] = value;
+    const { profile } = this.state
+    profile[key] = value
 
-    this.setState({ profile });
-    Store.saveProfile(profile);
+    this.setState({ profile })
+    Store.saveProfile(profile)
   }
 
   resetSettings() {
-    this.namePlaceholder = 'Type your name';
-    Store.resetProfile();
+    this.namePlaceholder = 'Type your name'
+    Store.resetProfile()
   }
 
   render() {
-    const { profile } = this.state;
-    if (profile == null)
-      return <Text>Loading...</Text>
+    const { profile } = this.state
+    if (profile == null) { return <Text>Loading...</Text> }
 
     return (
       <>
@@ -125,7 +121,7 @@ export default class SettingsScreen extends React.Component {
                   </ListItem>
                   <ListItem bottomDivider>
                     <Button
-                      title="Reset to default settings"
+                      title='Reset to default settings'
                       onPress={() => this.resetSettings()}
                       containerStyle={[gStyles.center]}
                       titleStyle={[gStyles.normal]}
@@ -139,25 +135,25 @@ export default class SettingsScreen extends React.Component {
           <Text style={[styles.footer]}>Build date: {Constants.manifest.extra.buildDate}</Text>
         </View>
       </>
-    );
+    )
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.background
   },
   list: {
     borderTopWidth: 1,
-    borderColor: colors.lightAccent,
+    borderColor: colors.lightAccent
   },
   grayText: {
-    color: colors.darkerGray,
+    color: colors.darkerGray
   },
   footer: {
     textAlign: 'center',
     color: colors.gray,
-    marginBottom: 5,
+    marginBottom: 5
   }
-});
+})

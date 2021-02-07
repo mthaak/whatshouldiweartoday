@@ -1,77 +1,60 @@
-import * as React from 'react';
+import * as React from 'react'
 import {
   Text as DefaultText,
   View as DefaultView,
   Button as DefaultButton,
-  TextInput as DefaultTextInput,
-} from 'react-native';
+  TextInput as DefaultTextInput
+} from 'react-native'
 
-import colors from '../constants/colors';
-import useColorScheme from '../hooks/useColorScheme';
-
-const DEFAULT_FONT = 'Lato_400Regular';
+import colors from '../constants/colors'
+import useColorScheme from '../hooks/useColorScheme'
 
 export function useThemeColor(
-  props: { light?: string; dark?: string },
+  props: { light?: string, dark?: string },
   colorName: keyof typeof colors.light & keyof typeof colors.dark
-) {
-  const theme = useColorScheme();
-  const colorFromProps = props[theme];
+): string {
+  const theme = useColorScheme()
+  const colorFromProps = props[theme]
 
   if (colorFromProps) {
-    return colorFromProps;
+    return colorFromProps
   } else {
-    return colors[theme][colorName];
+    return colors[theme][colorName]
   }
 }
 
-type ThemeProps = {
-  lightColor?: string;
-  darkColor?: string;
-};
-
-export type TextProps = ThemeProps & DefaultText['props'];
-export type ViewProps = ThemeProps & DefaultView['props'];
-
-export function Text(props: TextProps) {
-  const { style, lightColor, darkColor, bold, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-
-  return <DefaultText style={[{ color }, bold && { fontWeight: "bold" }, style]} {...otherProps} />;
+interface ThemeProps {
+  lightColor?: string
+  darkColor?: string
 }
 
-export function TextInput(props: TextInputProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+export type TextProps = ThemeProps & DefaultText['props']
+export type ViewProps = ThemeProps & DefaultView['props']
 
-  return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
+export function Text(props: TextProps): JSX.Element {
+  const { style, lightColor, darkColor, bold, ...otherProps } = props
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text')
+
+  return <DefaultText style={[{ color }, bold && { fontWeight: 'bold' }, style]} {...otherProps} />
 }
 
-export function View(props: ViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+export function TextInput(props: TextInputProps): JSX.Element {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text')
 
-  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <DefaultTextInput style={[{ color }, style]} {...otherProps} />
 }
 
-export function Button(props: ViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+export function View(props: ViewProps): JSX.Element {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background')
 
-  return <DefaultButton style={[{ backgroundColor }, style]} {...otherProps} >hai</DefaultButton>;
+  return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />
 }
 
-export function SettingsButton(props: ViewProps) {
-  const { style, lightColor, darkColor, ...otherProps } = props;
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+export function Button(props: ViewProps): JSX.Element {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background')
 
-  return (
-    <DefaultButton style={[{ backgroundColor }, style]} {...otherProps}>
-      <Ionicons size={30} style={{ marginBottom: -3 }} name="md-settings" />
-    </DefaultButton>
-  );
-}
-
-function Icon(props: { name: string; color: string }) {
-  return <Ionicons size={30} style={{ marginBottom: -3 }} {...props} />;
+  return <DefaultButton style={[{ backgroundColor }, style]} {...otherProps}>hai</DefaultButton>
 }
