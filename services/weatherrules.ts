@@ -143,7 +143,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tights_blue']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue']),
       emojis: '❄️',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
@@ -159,7 +159,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants', 'man_boot']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tights_blue', 'man_boot']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot']),
       emojis: '❄️🥶',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
@@ -175,7 +175,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
       clothes: [].concat(
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants', 'man_boot']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tights_blue', 'man_boot']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot']),
       emojis: '❄️🥶',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
