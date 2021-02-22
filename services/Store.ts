@@ -14,7 +14,7 @@ const INITIAL_PROFILE = new UserProfile(
     new Time(17, 30)
   ),
   new UserProfile.Alert(
-    true,
+    false,
     [true, true, true, true, true, false, false], // Monday - Sunday
     new Time(7, 30)
   ),
