@@ -4,7 +4,7 @@ import { Text, ListItem, Button } from 'react-native-elements'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
 import Time from '../common/Time'
-import * as colors from '../constants/colors'
+import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
 import WeekdaySelect from '../components/WeekdaySelect'
@@ -118,7 +118,7 @@ export default class SettingsAlertScreen extends React.Component {
                         disabled={!profile.alert.enabled}
                         containerStyleDisabled={[styles.disabledBackground, styles.disabledBorder]}
                         textStyleDisabled={[styles.disabledText]}
-                        checkedColorDisabled={colors.gray}
+                        checkedColorDisabled={Colors.gray}
                       />
                     </ListItem.Content>
                   </ListItem>
@@ -159,19 +159,19 @@ export default class SettingsAlertScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: Colors.background
   },
   list: {
     borderTopWidth: 1,
-    borderColor: colors.lightAccent
+    borderColor: Colors.lightAccent
   },
   disabledText: {
-    color: colors.gray
+    color: Colors.gray
   },
   disabledBackground: {
-    backgroundColor: colors.lighterGray
+    backgroundColor: Colors.lighterGray
   },
   disabledBorder: {
-    borderColor: colors.gray
+    borderColor: Colors.gray
   }
 })

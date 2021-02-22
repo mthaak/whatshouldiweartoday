@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList } from 'react-native'
 import { Text, ListItem, Button } from 'react-native-elements'
 
 import LocationService from '../services/LocationService'
-import * as colors from '../constants/colors'
+import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
 
@@ -106,10 +106,10 @@ export default class SettingsLocationScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: Colors.background
   },
   list: {
     borderTopWidth: 1,
-    borderColor: colors.lightAccent
+    borderColor: Colors.lightAccent
   }
 })

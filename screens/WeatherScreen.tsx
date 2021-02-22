@@ -4,7 +4,7 @@ import { Header, Icon, Button } from 'react-native-elements'
 
 import { View } from '../components/Themed'
 import { Text } from '../components/StyledText'
-import * as colors from '../constants/colors'
+import * as Colors from '../constants/colors'
 import { styles as gStyles } from '../constants/styles'
 import * as ClothingImages from '../assets/images/clothing'
 import { TemperatureUnit } from '../common/enums'
@@ -117,7 +117,7 @@ export default class WeatherScreen extends React.Component {
         rightComponent={{
           icon: 'settings',
           size: 30,
-          color: colors.foreground,
+          color: Colors.foreground,
           style: gStyles.shadow,
           onPress: () => this.navigation.navigate('Settings', { screen: 'Main' })
         }}
@@ -200,8 +200,8 @@ export default class WeatherScreen extends React.Component {
               .then(granted => { if (granted) LocationService.getLocationAsync() })}
             type='solid'
             containerStyle={[gStyles.center, { alignSelf: 'flex-start' }]}
-            buttonStyle={{ backgroundColor: colors.foreground }}
-            titleStyle={[gStyles.normal, { color: colors.background }]}
+            buttonStyle={{ backgroundColor: Colors.foreground }}
+            titleStyle={[gStyles.normal, { color: Colors.background }]}
           />
         )
         return (
@@ -263,7 +263,7 @@ class TodayWeather extends React.Component {
           </View>
           <View style={{ position: 'relative', top: -25, left: 20, flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ marginRight: 7 }}>
-              <Icon name='place' size={20} color={colors.foreground} />
+              <Icon name='place' size={20} color={Colors.foreground} />
             </View>
             <View>
               <Text style={[gStyles.shadow, gStyles.small]}>{locationStr}</Text>
@@ -297,10 +297,10 @@ class WearRecommendation extends React.Component {
         flexDirection: 'column',
         justifyContent: 'space-around',
         padding: 18,
-        backgroundColor: colors.darkBackground,
+        backgroundColor: Colors.darkBackground,
         borderRadius: 5,
-        borderColor: colors.darkAccent,
-        boxShadow: `inset 0 0 20px ${colors.darkAccent}`
+        borderColor: Colors.darkAccent,
+        boxShadow: `inset 0 0 20px ${Colors.darkAccent}`
       }}
       >
         <View style={{
@@ -343,7 +343,7 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Icon name='arrow-forward' size={20} color={colors.foreground} />
+                    <Icon name='arrow-forward' size={20} color={Colors.foreground} />
                   </View>
                   <Text style={[gStyles.shadow, gStyles.normal]}>
                     Leave {this.props.leaveTime.toString()}
@@ -363,7 +363,7 @@ class Commute extends React.Component {
               <>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={{ marginRight: 10 }}>
-                    <Icon name='arrow-back' size={20} color={colors.foreground} />
+                    <Icon name='arrow-back' size={20} color={Colors.foreground} />
                   </View>
                   <Text style={[gStyles.shadow, gStyles.normal]}>
                     Return {this.props.returnTime.toString()}
@@ -419,7 +419,7 @@ class WeatherIcon extends React.Component {
 class CenterMessage extends React.Component {
   render() {
     let animation
-    if (this.props.active) { animation = <ActivityIndicator size={50} color={colors.foreground} /> } else { animation = <Icon name='error' size={40} color={colors.foreground} /> }
+    if (this.props.active) { animation = <ActivityIndicator size={50} color={Colors.foreground} /> } else { animation = <Icon name='error' size={40} color={Colors.foreground} /> }
     return (
       <>
         <View style={[gStyles.center, gStyles.centerVertical, gStyles.centerText]}>
