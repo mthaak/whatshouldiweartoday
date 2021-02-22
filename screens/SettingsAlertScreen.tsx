@@ -73,7 +73,11 @@ export default class SettingsAlertScreen extends React.Component {
     profile.alert.time = new Time(selectedDate.getHours(), selectedDate.getMinutes())
     this.setState({ profile: profile, showDateTimePicker: false })
     Store.saveProfile(profile)
-    updateNotification()
+    if (profile.home) {
+      updateNotification()
+    } else {
+      alert('You need to set your home location for the alert to work.')
+    }
   }
 
   render() {
