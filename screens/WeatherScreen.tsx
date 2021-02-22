@@ -15,14 +15,14 @@ import WeatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 import { formatTemp } from '../common/weatherutils'
 
-const REFRESH_PERIOD = 1800 // time (s) between each data refresh when screen is active
+const REFRESH_PERIOD = 300 // time (s) between each data refresh when screen is active
 
 export default class WeatherScreen extends React.Component {
 
   constructor({ route, navigation }) {
     super()
     this.navigation = navigation
-    this.state = { profile: null, location: null, isRefreshing: false }
+    this.state = { profile: null, location: null, isRefreshing: false, weatherForecastFailed: false }
   }
 
   componentDidMount() {
@@ -42,18 +42,21 @@ export default class WeatherScreen extends React.Component {
   }
 
   updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile)
+    return await Store.retrieveProfile()
+      .then(this.setProfile)
   }
 
   updateLocation = async () => {
-    return await LocationService.getLocationAsync().then(this.setLocation)
+    return await LocationService.getLocationAsync()
+      .then(this.setLocation)
   }
 
   updateWeather = async () => {
-    return await WeatherService.getWeatherAsync().then(this.setWeather)
+    return await WeatherService.getWeatherAsync()
+      .then(this.setWeather)
   }
 
-  refreshWeather = () => {
+  refreshWeather = (force: bool = false) => {
     const { isRefreshing } = this.state
     if (isRefreshing)
       return // don't refresh simultaneously
@@ -62,8 +65,10 @@ export default class WeatherScreen extends React.Component {
     if (profile) {
       if (location && location.lon && location.lat) {
         this.setState({ isRefreshing: true })
-        return WeatherService.getWeatherAsync(location, profile.tempUnit, true)
+        return WeatherService.getWeatherAsync(location, profile.tempUnit, force)
           .then(this.setWeather)
+          .then(() => this.setState({ weatherForecastFailed: false }))
+          .catch(err => this.setState({ weatherForecastFailed: false }))
           .finally(() => this.setState({ isRefreshing: false }))
       } else {
         console.warn('Current location not available. Cannot retrieve weather forecast')
@@ -73,7 +78,7 @@ export default class WeatherScreen extends React.Component {
 
   refreshData = () => {
     if (!this.timeLastRefreshed ||
-      (Date.now() - this.timeLastRefreshed) / 1E6 > REFRESH_PERIOD) {
+      (Date.now() - this.timeLastRefreshed) / 1E3 > REFRESH_PERIOD) {
       // Weather gets updated after profile or location are updated
       Promise.all([
         this.updateProfile(),
@@ -85,7 +90,7 @@ export default class WeatherScreen extends React.Component {
   }
 
   updateProfileAndThenRefreshWeather = async () => {
-    return await this.updateProfile().then(this.refreshWeather)
+    return await this.updateProfile().then(() => this.refreshWeather(true))
   }
 
   updateLocationAndThenRefreshWeather = async () => {
@@ -185,14 +190,18 @@ export default class WeatherScreen extends React.Component {
   }
 
   renderContent() {
-    const { profile, location, weatherForecast, isRefreshing } = this.state
+    const { profile, location, weatherForecast, isRefreshing, weatherForecastFailed } = this.state
 
     if (isRefreshing) { return <CenterMessage message='Weather forecast is being retrieved' active /> }
+
+    if (weatherForecastFailed) { return <CenterMessage message='Could not retrieve weather forecast' active /> }
 
     if (!profile) { return <CenterMessage message='Profile is incomplete' /> }
 
     if (!location) {
-      if (LocationService.hasPermission()) { return <CenterMessage message='Could not retrieve current location' /> } else {
+      if (LocationService.hasPermission()) {
+        return <CenterMessage message='Weather forecast is being retrieved' active />
+      } else {
         const button = (
           <Button
             title='Give permission'
@@ -215,7 +224,7 @@ export default class WeatherScreen extends React.Component {
       }
     }
 
-    if (!weatherForecast) { return <CenterMessage message='Could not retrieve weather forecast' /> }
+    if (!weatherForecast) { return <CenterMessage message='Weather forecast is being retrieved' active /> }
 
     return (
       <>

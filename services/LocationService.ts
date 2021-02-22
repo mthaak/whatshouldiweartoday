@@ -7,29 +7,39 @@ import { GOOGLE_GEOCODING_API_KEY } from '@env'
 
 ExpoLocation.setGoogleApiKey(GOOGLE_GEOCODING_API_KEY)
 
+const REFRESH_PERIOD = 900 // minimal time (s) between each location refresh
+
 class LocationService {
+
   emitter: EventEmitter
   permission: Promise<bool>
   hasPermissionGranted: bool = false
   locationPromise: Promise<Record>
-  hasLocation: bool = false
-  isEnabled: bool
+  isEnabled: bool = true  // enabled by default
+  isRefreshing: bool = false
+  timeLastRefreshed: Date
 
   constructor() {
     this.emitter = new EventEmitter()
-    this.isEnabled = true // enabled by default
+    this.isEnabled = true
   }
 
-  async requestPermission(): Promise<bool> {
-    if (!this.isEnabled) { return }
-    this.hasPermissionGranted = false
-    const permission = (await ExpoLocation.requestPermissionsAsync())
-    if (!permission.granted) {
-      console.error('Permission to use location not given by user')
-      return false
+  async getLocationAsync(forceFresh: bool = false): Promise<Record> {
+    if (!this.isRefreshing &&
+      (!this.locationPromise
+        || !this.timeLastRefreshed
+        || (Date.now() - this.timeLastRefreshed) / 1E3 > REFRESH_PERIOD
+        || forceFresh)) {
+      this.isRefreshing = true
+      this.locationPromise = this.retrieveLocation().then(location => {
+        if (location) {
+          this.timeLastRefreshed = Date.now()
+          this.emitter.emit('update')
+        }
+        return location
+      }).finally(() => this.isRefreshing = false)
     }
-    this.hasPermissionGranted = true
-    return true
+    return this.locationPromise
   }
 
   async retrieveLocation() {
@@ -42,8 +52,8 @@ class LocationService {
         return new Location(location.coords.latitude,
           location.coords.longitude, address.city, address.country)
       } else {
-        return null
         console.error('Could not extract city from reverse geocode')
+        return null
       }
     } catch (error) {
       console.error('Could not retrieve current location: ' + error.message)
@@ -58,21 +68,20 @@ class LocationService {
     return await this.permission
   }
 
-  hasPermission(): bool {
-    return this.hasPermissionGranted
+  async requestPermission(): Promise<bool> {
+    if (!this.isEnabled) { return }
+    this.hasPermissionGranted = false
+    const permission = (await ExpoLocation.requestPermissionsAsync())
+    if (!permission.granted) {
+      console.error('Permission to use location not given by user')
+      return false
+    }
+    this.hasPermissionGranted = true
+    return true
   }
 
-  async getLocationAsync(forceFresh: bool = false): Promise<Record> {
-    if (!this.locationPromise || !this.hasLocation || forceFresh) {
-      this.locationPromise = this.retrieveLocation().then(location => {
-        if (location) {
-          this.emitter.emit('update')
-          this.hasLocation = true
-        }
-        return location
-      })
-    }
-    return this.locationPromise
+  hasPermission(): bool {
+    return this.hasPermissionGranted
   }
 
   subscribe(callback) {

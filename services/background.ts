@@ -27,7 +27,7 @@ export async function updateNotification(): void {
     return
   }
 
-  const weatherForecast = await WeatherService.getWeatherAsync(profile.home, profile.tempUnit, true)
+  const weatherForecast = await WeatherService.getWeatherAsync(profile.home, profile.tempUnit)
 
   if (!weatherForecast) {
     console.error('Could not retrieve weather forecast')

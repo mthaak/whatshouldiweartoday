@@ -3,21 +3,31 @@ import { OPENWEATHERMAP_APPID } from '@env'
 import { TemperatureUnit } from '../common/enums'
 
 const OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
+const REFRESH_PERIOD = 900 // minimal time (s) between each forecast refresh
 
 class WeatherService {
+
   emitter: EventEmitter
   weatherPromise: Promise<WeatherForecast>
+  isRefreshing: bool = false
+  timeLastRefreshed: Date
 
   constructor() {
     this.emitter = new EventEmitter()
   }
 
   async getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh: bool = false) {
-    if (!this.weatherPromise || forceFresh) {
+    if (!this.isRefreshing &&
+      (!this.weatherPromise
+        || !this.timeLastRefreshed
+        || (Date.now() - this.timeLastRefreshed) / 1E3 > REFRESH_PERIOD
+        || forceFresh)) {
+      this.isRefreshing = true
       this.weatherPromise = this.retrieveWeather(location, unit).then(weather => {
+        this.timeLastRefreshed = Date.now()
         this.emitter.emit('update')
         return weather
-      })
+      }).finally(() => this.isRefreshing = false)
     }
     return this.weatherPromise
   }
