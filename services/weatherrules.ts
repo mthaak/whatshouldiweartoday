@@ -42,8 +42,8 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
   {
     return {
       name: 'Extremely hot',
-      msg: 'Don\'t go out, but if you must, take all precautions: Wear[short / airy] clothes and open shoes, and bring plenty of water.',
-      clothesEmojis: ['sunglasses', 'man_cap'].concat(
+      msg: 'Don\'t go out, but if you must, take all precautions: Wear airy clothes and open shoes, and bring plenty of water.',
+      clothes: ['sunglasses', 'man_cap'].concat(
         profile.gender == Gender.MAN
           ? ['man_long_sleeve_buttoned', 'man_long_pants']
           : ['woman_long_sleeve_lined', 'woman_long_pants_gray']),
@@ -58,7 +58,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
   {
     return {
       name: 'Very hot',
-      msg: 'It will be very hot. Wear something [short/airy] and open shoes to be more comfortable. Also bring plenty of water.',
+      msg: 'It will be very hot. Wear something airy and open shoes to be more comfortable. Also bring plenty of water.',
       clothes: ['sunglasses', 'man_cap'].concat(
         profile.gender == Gender.MAN
           ? ['man_striped_tshirt', 'man_shorts_yellow', 'man_light_shoe']
@@ -74,7 +74,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
   {
     return {
       name: 'Hot',
-      msg: 'It will be hot. Wear something [short/airy] and open shoes to be more comfortable. Also bring plenty of water.',
+      msg: 'It will be hot. Wear something short and open shoes to be more comfortable. Also bring plenty of water.',
       clothes: ['sunglasses', 'man_cap'].concat(
         profile.gender == Gender.MAN
           ? ['man_striped_tshirt', 'man_shorts_yellow', 'man_light_shoe']
@@ -90,7 +90,7 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
   {
     return {
       name: 'Warm',
-      msg: 'It will be warm. Wear something [short/airy] but also bring extra layers for the colder parts of the day. Also bring extra water.',
+      msg: 'It will be warm. Wear something short but also bring extra layers for the colder parts of the day. Also bring extra water.',
       clothes: ['sunglasses', 'man_cap'].concat(
         profile.gender == Gender.MAN
           ? ['man_striped_tshirt', 'man_shorts', 'main_long_sleeve_buttoned']
