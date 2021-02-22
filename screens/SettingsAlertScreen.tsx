@@ -19,7 +19,11 @@ export default class SettingsAlertScreen extends React.Component {
       showDateTimePicker: false
     }
 
-    this.updateProfile()
+    this.updateProfile().then(() => {
+      const { profile } = this.state
+      if (!profile.home)
+        alert('You need to set your home location for the alert to work.')
+    })
   }
 
   componentDidMount() {
@@ -47,18 +51,14 @@ export default class SettingsAlertScreen extends React.Component {
     this.setState({ profile, showDateTimePicker: false })
     Store.saveProfile(profile)
 
-    if (profile.alert.enabled) {
-      if (profile.home) {
-        updateNotification()
-      } else {
-        alert('You need to set your home location for the alert to work.')
-      }
-    }
+    if (profile.alert.enabled)
+      updateNotification()
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
     const { profile } = this.state
     profile.alert.days[dayIdx] = !profile.alert.days[dayIdx]
+
     this.setState({ profile: profile })
     Store.saveProfile(profile)
   }
@@ -69,15 +69,14 @@ export default class SettingsAlertScreen extends React.Component {
 
   handleTimeEdit = (selectedDate: Date) => {
     if (selectedDate == undefined) { return }
+
     const { profile } = this.state
     profile.alert.time = new Time(selectedDate.getHours(), selectedDate.getMinutes())
+
     this.setState({ profile: profile, showDateTimePicker: false })
     Store.saveProfile(profile)
-    if (profile.home) {
-      updateNotification()
-    } else {
-      alert('You need to set your home location for the alert to work.')
-    }
+
+    updateNotification()
   }
 
   render() {
@@ -90,9 +89,11 @@ export default class SettingsAlertScreen extends React.Component {
       if (alertTime && alertTime.hours && alertTime.minutes) {
         pickerValue = new Date(2000, 1, 1, alertTime.hours, alertTime.minutes)
       } else {
-        pickerValue = new Date(2000, 1, 1, 7, 30)// default is 7:30 am
+        pickerValue = new Date(2000, 1, 1, 7, 30) // default is 7:30 am
       }
     }
+
+    let switchEnabled = !!(profile.home)
 
     return (
       <>
@@ -103,12 +104,17 @@ export default class SettingsAlertScreen extends React.Component {
                 <View style={styles.list}>
                   <ListItem bottomDivider>
                     <ListItem.Content>
-                      <ListItem.Title>Enable</ListItem.Title>
-                      <ListItem.Subtitle>Turn on daily push notification</ListItem.Subtitle>
+                      <ListItem.Title style={switchEnabled ? null : styles.disabledText}>
+                        Enable
+                      </ListItem.Title>
+                      <ListItem.Subtitle style={switchEnabled ? null : styles.disabledText}>
+                        Turn on daily push notification
+                      </ListItem.Subtitle>
                     </ListItem.Content>
                     <Switch
                       value={profile.alert.enabled}
                       onValueChange={this.handleEnabledEdit}
+                      disabled={!switchEnabled}
                     />
                   </ListItem>
                   <ListItem bottomDivider disabled={!profile.alert.enabled}>
