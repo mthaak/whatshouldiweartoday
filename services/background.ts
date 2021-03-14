@@ -6,7 +6,7 @@ import WeatherService from './WeatherService'
 import { NotificationService, createContentForWearRecommendation } from './NotificationService'
 import { getWearRecommendation, getTodayWeather } from './weatherrules'
 
-const INTERVAL = 30 // update interval in seconds
+const INTERVAL = 3600 // update interval in seconds
 const TASK_NAME = 'UPDATE_NOTIFICATION'
 
 export async function updateNotification(): void {
