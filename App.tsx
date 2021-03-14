@@ -10,7 +10,7 @@ import Navigation from './navigation'
 import Store from './services/Store'
 import LocationService from './services/LocationService'
 import { NotificationService } from './services/NotificationService'
-import { setUpBackgroundTasks } from './services/background'
+import { setUpBackgroundTasks, startBackgroundTasks, stopBackgroundTasks } from './services/background'
 
 export default function App(): JSX.Element {
   const isLoadingComplete = useCachedResources()
@@ -39,8 +39,16 @@ export default function App(): JSX.Element {
         }),
       NotificationService.requestPermission()
     ]).then((values) => {
-      if (values.every(Boolean)) // all permissions
-      { setUpBackgroundTasks() }
+      if (values.every(Boolean)) { // if has all permissions
+        setUpBackgroundTasks().then(() => {
+          Store.retrieveProfile().then(profile => {
+            if (profile.alert.enabled)
+              startBackgroundTasks()
+            else
+              stopBackgroundTasks()
+          })
+        })
+      }
     })
   }
 

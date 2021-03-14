@@ -6,10 +6,11 @@ import WeatherService from './WeatherService'
 import { NotificationService, createContentForWearRecommendation } from './NotificationService'
 import { getWearRecommendation, getTodayWeather } from './weatherrules'
 
-const INTERVAL = 3600 // update interval in seconds
+const INTERVAL = 30 // update interval in seconds
 const TASK_NAME = 'UPDATE_NOTIFICATION'
 
 export async function updateNotification(): void {
+
   const profile = await Store.retrieveProfile()
 
   if (!profile) {
@@ -72,12 +73,19 @@ function defineTask(taskName: string, func) {
 async function registerBackgroundTask(taskName: string, interval: int) {
   try {
     await BackgroundFetch.registerTaskAsync(taskName, {
-      minimumInterval: interval // in seconds
+      minimumInterval: interval, // in seconds
+      stopOnTerminate: false,
+      startOnBoot: true,
     })
     console.log(`Task ${taskName} registered`)
   } catch (error) {
     console.log(`Task ${taskName} register failed: ${error}`)
   }
+}
+
+async function unregisterBackgroundTask(taskName: string) {
+  await BackgroundFetch.unregisterTaskAsync(taskName)
+  return
 }
 
 async function checkBackgroundFetchAvailable(): void {
@@ -109,5 +117,12 @@ export async function setUpBackgroundTasks(): void {
   }
 
   defineTask(TASK_NAME, updateNotification)
-  registerBackgroundTask(TASK_NAME, INTERVAL)
+}
+
+export async function startBackgroundTasks(): void {
+  await registerBackgroundTask(TASK_NAME, INTERVAL)
+}
+
+export async function stopBackgroundTasks(): void {
+  await unregisterBackgroundTask(TASK_NAME)
 }
