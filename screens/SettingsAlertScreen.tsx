@@ -8,7 +8,7 @@ import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
 import WeekdaySelect from '../components/WeekdaySelect'
-import { updateNotification } from '../services/background.ts'
+import { updateNotification, startBackgroundTasks, stopBackgroundTasks } from '../services/background.ts'
 
 export default class SettingsAlertScreen extends React.Component {
   constructor({ route, navigation }) {
@@ -51,8 +51,13 @@ export default class SettingsAlertScreen extends React.Component {
     this.setState({ profile, showDateTimePicker: false })
     Store.saveProfile(profile)
 
-    if (profile.alert.enabled)
-      updateNotification()
+    if (profile.alert.enabled) {
+      startBackgroundTasks().then(() => {
+        updateNotification()
+      })
+    } else {
+      stopBackgroundTasks()
+    }
   }
 
   handleCheckboxToggle = (dayIdx: int) => {
