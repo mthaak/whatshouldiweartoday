@@ -124,5 +124,6 @@ export async function startBackgroundTasks(): void {
 }
 
 export async function stopBackgroundTasks(): void {
-  await unregisterBackgroundTask(TASK_NAME)
+  await unregisterBackgroundTask(TASK_NAME).catch(() => { }) // ignore errors
+  await NotificationService.cancelAllScheduledNotifications()
 }
