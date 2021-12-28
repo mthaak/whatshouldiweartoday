@@ -45,7 +45,8 @@
     "react-native-windows": "^0.62.19",
     "react-promise": "^3.0.2",
     "expo-background-fetch": "~10.1.0",
-    "expo-task-manager": "~10.1.0"
+    "expo-task-manager": "~10.1.0",
+    "expo-location": "~14.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
