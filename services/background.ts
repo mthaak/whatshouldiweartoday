@@ -90,12 +90,12 @@ async function unregisterBackgroundTask(taskName: string) {
 
 async function checkBackgroundFetchAvailable(): void {
   const status = await BackgroundFetch.getStatusAsync()
-  if (status == BackgroundFetch.Status.Available) {
+  if (status == BackgroundFetch.BackgroundFetchStatus.Available) {
     return true
-  } else if (status == BackgroundFetch.Status.Restricted) {
+  } else if (status == BackgroundFetch.BackgroundFetchStatus.Restricted) {
     alert('Background fetch is restricted. This means that the notification feature will not be functional.')
     return false
-  } else if (status == BackgroundFetch.Status.Denied) {
+  } else if (status == BackgroundFetch.BackgroundFetchStatus.Denied) {
     alert('Background fetch is disabled. This means that the notification feature will not be functional.')
     return false
   }
