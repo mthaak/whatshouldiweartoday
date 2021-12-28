@@ -47,10 +47,12 @@ class LocationService {
     try {
       const location = await ExpoLocation.getCurrentPositionAsync({})
       const results = await ExpoLocation.reverseGeocodeAsync(location.coords)
-      const address = results.find(result => 'city' in result) // not all results contain city
+      const address = results.find(result => 'city') // not all results contain city
+        || results.find(result => 'subregion' in result) // fall back to subregion
+        || results.find(result => 'country' in result) // finally fall back to country
       if (address) {
         return new Location(location.coords.latitude,
-          location.coords.longitude, address.city, address.country)
+          location.coords.longitude, address.city || address.subregion, address.country)
       } else {
         console.error('Could not extract city from reverse geocode')
         return null
@@ -71,9 +73,14 @@ class LocationService {
   async requestPermission(): Promise<bool> {
     if (!this.isEnabled) { return }
     this.hasPermissionGranted = false
-    const permission = (await ExpoLocation.requestPermissionsAsync())
-    if (!permission.granted) {
-      console.error('Permission to use location not given by user')
+    const permissionFg = (await ExpoLocation.requestForegroundPermissionsAsync())
+    if (!permissionFg.granted) {
+      console.error('Permission to use location in foreground not given by user')
+      return false
+    }
+    const permissionBg = (await ExpoLocation.requestBackgroundPermissionsAsync())
+    if (!permissionBg.granted) {
+      console.error('Permission to use location in background not given by user')
       return false
     }
     this.hasPermissionGranted = true
