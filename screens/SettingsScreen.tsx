@@ -6,6 +6,7 @@ import Constants from 'expo-constants'
 import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
+import stopBackgroundTasks from '../services/background'
 
 export default class SettingsScreen extends React.Component {
   constructor({ route, navigation }) {
@@ -49,6 +50,7 @@ export default class SettingsScreen extends React.Component {
   resetSettings() {
     this.namePlaceholder = 'Type your name'
     Store.resetProfile()
+    stopBackgroundTasks()
   }
 
   render() {
