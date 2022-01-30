@@ -1,9 +1,9 @@
 import * as ExpoLocation from 'expo-location'
 import { EventEmitter } from 'eventemitter3'
 
+import { GOOGLE_GEOCODING_API_KEY } from '@env'
 import Location from '../common/Location'
 
-import { GOOGLE_GEOCODING_API_KEY } from '@env'
 
 ExpoLocation.setGoogleApiKey(GOOGLE_GEOCODING_API_KEY)
 
@@ -11,20 +11,20 @@ const REFRESH_PERIOD = 900 // minimal time (s) between each location refresh
 
 class LocationService {
 
-  emitter: EventEmitter
-  permission: Promise<bool>
-  hasPermissionGranted: bool = false
-  locationPromise: Promise<Record>
-  isEnabled: bool = true  // enabled by default
-  isRefreshing: bool = false
-  timeLastRefreshed: Date
+  emitter
+  permission: Promise<boolean> | null = null
+  hasPermissionGranted = false
+  locationPromise: Promise<Location | null> | null = null
+  isEnabled = true  // enabled by default
+  isRefreshing = false
+  timeLastRefreshed: number | null = null
 
   constructor() {
     this.emitter = new EventEmitter()
     this.isEnabled = true
   }
 
-  async getLocationAsync(forceFresh: bool = false): Promise<Record> {
+  async getLocationAsync(forceFresh = false): Promise<Location | null> {
     if (!this.isRefreshing &&
       (!this.locationPromise
         || !this.timeLastRefreshed
@@ -42,12 +42,12 @@ class LocationService {
     return this.locationPromise
   }
 
-  async retrieveLocation() {
-    if (!this.isEnabled) { return }
+  async retrieveLocation(): Promise<Location | null> {
+    if (!this.isEnabled) { return null }
     try {
       const location = await ExpoLocation.getCurrentPositionAsync({})
       const results = await ExpoLocation.reverseGeocodeAsync(location.coords)
-      const address = results.find(result => 'city') // not all results contain city
+      const address = results.find(_ => 'city') // not all results contain city
         || results.find(result => 'subregion' in result) // fall back to subregion
         || results.find(result => 'country' in result) // finally fall back to country
       if (address) {
@@ -57,21 +57,21 @@ class LocationService {
         console.error('Could not extract city from reverse geocode')
         return null
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Could not retrieve current location: ' + error.message)
       alert('Could not retrieve current location: ' + error.message)
       return null
     }
   }
 
-  async getPermission(): Promise<bool> {
+  async getPermission(): Promise<boolean> {
     if (this.permission) { return await this.permission }
     this.permission = this.requestPermission()
     return await this.permission
   }
 
-  async requestPermission(): Promise<bool> {
-    if (!this.isEnabled) { return }
+  async requestPermission(): Promise<boolean> {
+    if (!this.isEnabled) { return false }
     this.hasPermissionGranted = false
     const permissionFg = (await ExpoLocation.requestForegroundPermissionsAsync())
     if (!permissionFg.granted) {
@@ -87,24 +87,20 @@ class LocationService {
     return true
   }
 
-  hasPermission(): bool {
+  hasPermission(): boolean {
     return this.hasPermissionGranted
   }
 
-  subscribe(callback) {
+  subscribe(callback: any) {
     this.emitter.addListener('update', callback)
   }
 
-  unsubscribe(callback) {
+  unsubscribe(callback: any) {
     this.emitter.removeListener('update', callback)
   }
 
-  setEnabled(state: bool) {
+  setEnabled(state: boolean) {
     this.isEnabled = state
-  }
-
-  isEnabled() {
-    return this.isEnabled
   }
 }
 

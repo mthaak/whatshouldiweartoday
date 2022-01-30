@@ -9,7 +9,7 @@ import { getWearRecommendation, getTodayWeather } from './weatherrules'
 const INTERVAL = 3600 // update interval in seconds
 const TASK_NAME = 'UPDATE_NOTIFICATION'
 
-export async function updateNotification(): void {
+export async function updateNotification(): Promise<void> {
 
   const profile = await Store.retrieveProfile()
 
@@ -54,14 +54,14 @@ export async function updateNotification(): void {
   console.log('Alert updated')
 }
 
-function defineTask(taskName: string, func) {
+function defineTask(taskName: string, func: CallableFunction) {
   try {
     TaskManager.defineTask(taskName, () => {
       try {
         func()
-        return BackgroundFetch.Result.NewData
+        return BackgroundFetch.BackgroundFetchResult.NewData
       } catch (error) {
-        return BackgroundFetch.Result.Failed
+        return BackgroundFetch.BackgroundFetchResult.Failed
       }
     })
     console.log(`Task ${taskName} defined`)
@@ -70,7 +70,7 @@ function defineTask(taskName: string, func) {
   }
 }
 
-async function registerBackgroundTask(taskName: string, interval: int) {
+async function registerBackgroundTask(taskName: string, interval: number) {
   try {
     await BackgroundFetch.registerTaskAsync(taskName, {
       minimumInterval: interval, // in seconds
@@ -88,7 +88,7 @@ async function unregisterBackgroundTask(taskName: string) {
   return
 }
 
-async function checkBackgroundFetchAvailable(): void {
+async function checkBackgroundFetchAvailable(): Promise<boolean> {
   const status = await BackgroundFetch.getStatusAsync()
   if (status == BackgroundFetch.BackgroundFetchStatus.Available) {
     return true
@@ -98,11 +98,13 @@ async function checkBackgroundFetchAvailable(): void {
   } else if (status == BackgroundFetch.BackgroundFetchStatus.Denied) {
     alert('Background fetch is disabled. This means that the notification feature will not be functional.')
     return false
+  } else {
+    return false
   }
 }
 
 let isSetUp = false
-export async function setUpBackgroundTasks(): void {
+export async function setUpBackgroundTasks(): Promise<void> {
   // To prevent multiple setups
   if (isSetUp) { return }
   isSetUp = true
@@ -119,11 +121,13 @@ export async function setUpBackgroundTasks(): void {
   defineTask(TASK_NAME, updateNotification)
 }
 
-export async function startBackgroundTasks(): void {
+export async function startBackgroundTasks(): Promise<void> {
   await registerBackgroundTask(TASK_NAME, INTERVAL)
 }
 
-export async function stopBackgroundTasks(): void {
-  await unregisterBackgroundTask(TASK_NAME).catch(() => { }) // ignore errors
+export async function stopBackgroundTasks(): Promise<void> {
+  await unregisterBackgroundTask(TASK_NAME).catch(() => {
+    // ignore errors
+  })
   await NotificationService.cancelAllScheduledNotifications()
 }

@@ -12,7 +12,7 @@ import LocationService from './services/LocationService'
 import { NotificationService } from './services/NotificationService'
 import { setUpBackgroundTasks, startBackgroundTasks, stopBackgroundTasks } from './services/background'
 
-export default function App(): JSX.Element {
+export default function App(): JSX.Element | null {
   const isLoadingComplete = useCachedResources()
   const colorScheme = useColorScheme()
   const [areFontsLoaded] = useFonts({
@@ -22,6 +22,8 @@ export default function App(): JSX.Element {
   Store.initializeStorage()
 
   // LocationService.setEnabled(false);
+
+  if (!Constants.platform) return null
 
   if (Constants.platform.web) {
     LocationService.requestPermission()
@@ -42,7 +44,7 @@ export default function App(): JSX.Element {
       if (values.every(Boolean)) { // if has all permissions
         setUpBackgroundTasks().then(() => {
           Store.retrieveProfile().then(profile => {
-            if (profile.alert.enabled)
+            if (profile && profile.alert.enabled)
               startBackgroundTasks()
             else
               stopBackgroundTasks()

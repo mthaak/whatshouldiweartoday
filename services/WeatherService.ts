@@ -1,22 +1,24 @@
 import { EventEmitter } from 'eventemitter3'
 import { OPENWEATHERMAP_APPID } from '@env'
 import { TemperatureUnit } from '../common/enums'
+import WeatherForecast from '../common/WeatherForecast'
+import Location from '../common/Location'
 
 const OPENWEATHERMAP_BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall'
 const REFRESH_PERIOD = 900 // minimal time (s) between each forecast refresh
 
 class WeatherService {
 
-  emitter: EventEmitter
-  weatherPromise: Promise<WeatherForecast>
-  isRefreshing: bool = false
-  timeLastRefreshed: Date
+  emitter
+  weatherPromise: Promise<WeatherForecast> | null = null
+  isRefreshing = false
+  timeLastRefreshed: number | null = null
 
   constructor() {
     this.emitter = new EventEmitter()
   }
 
-  async getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh: bool = false) {
+  async getWeatherAsync(location: Location, unit: TemperatureUnit, forceFresh = false) {
     if (!this.isRefreshing &&
       (!this.weatherPromise
         || !this.timeLastRefreshed
@@ -49,11 +51,11 @@ class WeatherService {
     return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_APPID}&units=${units}&exclude=minutely`
   }
 
-  subscribe(callback) {
+  subscribe(callback: any) {
     this.emitter.addListener('update', callback)
   }
 
-  unsubscribe(callback) {
+  unsubscribe(callback: any) {
     this.emitter.removeListener('update', callback)
   }
 }

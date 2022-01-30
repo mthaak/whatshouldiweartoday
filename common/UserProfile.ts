@@ -3,19 +3,19 @@ import Time from './Time'
 import Location from './Location'
 
 export default class UserProfile {
-  name: string
+  name: string | null
   gender: Gender
-  home: Location
-  commute: Commute
-  alert: Alert
+  home: Location | null
+  commute: UserProfile.Commute
+  alert: UserProfile.Alert
   tempUnit: TemperatureUnit
 
   constructor(
-    name: string,
+    name: string | null,
     gender: Gender,
-    home: Location,
-    commute: Commute,
-    alert: Alert,
+    home: Location | null,
+    commute: UserProfile.Commute,
+    alert: UserProfile.Alert,
     tempUnit: TemperatureUnit
   ) {
     this.name = name
@@ -26,8 +26,8 @@ export default class UserProfile {
     this.tempUnit = tempUnit
   }
 
-  static fromObject(obj: Record<string, unknown>): UserProfile {
-    const profile = Object.assign(new UserProfile(), obj)
+  static fromObject(obj: Record<string, any>): UserProfile {
+    const profile = Object.setPrototypeOf(obj, UserProfile)
     if (profile.home) { profile.home = Location.fromObject(obj.home) }
     if (profile.commute) { profile.commute = this.Commute.fromObject(obj.commute) }
     if (profile.alert) { profile.alert = this.Alert.fromObject(obj.alert) }
@@ -35,12 +35,12 @@ export default class UserProfile {
   }
 
   static Commute = class {
-    days: number[]
+    days: Array<boolean>
     leaveTime: Time
     returnTime: Time
 
     constructor(
-      days: number[],
+      days: Array<boolean>,
       leaveTime: Time,
       returnTime: Time
     ) {
@@ -49,8 +49,8 @@ export default class UserProfile {
       this.returnTime = returnTime
     }
 
-    static fromObject(obj: Record<string, unknown>): UserProfile {
-      const commute = Object.assign(new UserProfile.Commute(), obj)
+    static fromObject(obj: Record<string, any>): UserProfile.Commute {
+      const commute = Object.setPrototypeOf(obj, UserProfile.Commute.prototype)
       if (commute.leaveTime) { commute.leaveTime = Time.fromObject(obj.leaveTime) }
       if (commute.returnTime) { commute.returnTime = Time.fromObject(obj.returnTime) }
       return commute
@@ -58,13 +58,13 @@ export default class UserProfile {
   }
 
   static Alert = class {
-    days: number[]
+    days: Array<boolean>
     enabled: boolean
     time: Time
 
     constructor(
       enabled: boolean,
-      days: number[],
+      days: Array<boolean>,
       time: Time
     ) {
       this.enabled = enabled
@@ -72,10 +72,15 @@ export default class UserProfile {
       this.time = time
     }
 
-    static fromObject(obj: Record<string, unknown>): Alert {
-      const alert = Object.assign(new UserProfile.Alert(), obj)
+    static fromObject(obj: Record<string, any>): UserProfile.Alert {
+      const alert = Object.setPrototypeOf(obj, UserProfile.Alert.prototype)
       if (alert.time) { alert.time = Time.fromObject(obj.time) }
       return alert
     }
   }
+}
+
+declare namespace UserProfile {
+  type Commute = typeof UserProfile.Commute.prototype
+  type Alert = typeof UserProfile.Alert.prototype
 }

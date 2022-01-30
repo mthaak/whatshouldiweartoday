@@ -50,5 +50,11 @@ export const styles = StyleSheet.create({
   },
   centerText: {
     textAlign: 'center'
+  },
+  lightText: {
+    color: 'white'
+  },
+  darkText: {
+    color: 'black'
   }
 })

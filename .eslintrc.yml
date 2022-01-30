@@ -44,11 +44,15 @@ rules:
   import/namespace: off # ignore errors in imported modules
   "@typescript-eslint/no-unused-vars":
     - warn
-    - argsIgnorePattern: route|index
+    - argsIgnorePattern: route|index|_
   import/no-unresolved:
     - 2
     - ignore:
       - "@env" # this is used by react-native-dotenv
+  "@typescript-eslint/no-namespace": "off"
+  import/order:
+    - 1
+    - groups: [external, builtin, internal, sibling, parent, index]
 
 overrides:
   - files: ["*.ts"] # don't check *.tsx files

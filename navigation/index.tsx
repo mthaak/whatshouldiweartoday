@@ -3,10 +3,10 @@ import { createStackNavigator } from '@react-navigation/stack'
 import * as React from 'react'
 import { ColorSchemeName } from 'react-native'
 import { ThemeProvider } from 'react-native-elements'
+import LinkingConfiguration from './LinkingConfiguration'
 import { theme } from '../constants/RNE-Theme'
 
 import NotFoundScreen from '../screens/NotFoundScreen'
-import LinkingConfiguration from './LinkingConfiguration'
 
 import * as colors from '../constants/colors'
 
@@ -18,18 +18,21 @@ import SettingsCommuteScreen from '../screens/SettingsCommuteScreen'
 
 // If you are not familiar with React Navigation, we recommend going through the
 // "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
-export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }): React.Compoent {
+export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
-      <ThemeProvider theme={theme} dark={colorScheme === 'dark'}>
+      <ThemeProvider theme={theme} useDark={colorScheme === 'dark'}>
         <RootNavigator />
       </ThemeProvider>
     </NavigationContainer>
   )
 }
+
+type RootStackParamList = any;
+type SettingsStackParamList = any;
 
 // // A root stack navigator is often used for displaying modals on top of all other content
 // // Read more here: https://reactnavigation.org/docs/modal
@@ -45,7 +48,7 @@ function SettingsNavigator() {
         headerStyle: { backgroundColor: colors.background }
       }}
     >
-      <SettingsStack.Screen name='Settings' component={SettingsScreen} />
+      <SettingsStack.Screen name='Main' component={SettingsScreen} />
       <SettingsStack.Screen name='Location' component={SettingsLocationScreen} />
       <SettingsStack.Screen name='Alert' component={SettingsAlertScreen} />
       <SettingsStack.Screen name='Commute' component={SettingsCommuteScreen} />
@@ -61,4 +64,9 @@ function RootNavigator() {
       <RootStack.Screen name='NotFound' component={NotFoundScreen} options={{ title: 'Oops!' }} />
     </RootStack.Navigator>
   )
+}
+
+export {
+  RootStackParamList,
+  SettingsStackParamList,
 }

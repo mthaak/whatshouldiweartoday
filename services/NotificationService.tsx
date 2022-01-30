@@ -1,10 +1,11 @@
 import * as Notifications from 'expo-notifications'
-
+import { WearRecommendation, WeatherForecastAtTime } from './weatherrules'
+import Time from '../common/Time'
+import UserProfile from '../common/UserProfile'
 import { formatTemp } from '../common/weatherutils'
 
 class NotificationService {
-  expoPushToken: string
-  permission: Promise<bool>
+  permission: Promise<boolean> | null = null
 
   constructor() {
     this._setNotificationHandler()
@@ -20,14 +21,14 @@ class NotificationService {
     })
   }
 
-  scheduleNotificationWeekly(content, weekday: number, time: Time) {
+  scheduleNotificationWeekly(content: Notifications.NotificationContentInput, weekday: number, time: Time) {
     Notifications.scheduleNotificationAsync({
       content: content,
       trigger: createWeeklyTrigger(weekday, time)
     })
   }
 
-  scheduleNotificationImmediately(content) {
+  scheduleNotificationImmediately(content: Notifications.NotificationContentInput) {
     Notifications.scheduleNotificationAsync({
       content: content,
       trigger: null // means schedule immediately
@@ -48,7 +49,7 @@ class NotificationService {
     return true
   }
 
-  async getPermission(): Promise<bool> {
+  async getPermission(): Promise<boolean> {
     if (this.permission) { return await this.permission }
     this.permission = this.requestPermission()
     return await this.permission
@@ -59,7 +60,7 @@ class NotificationService {
     return this._isPermissionGranted(settings)
   }
 
-  _isPermissionGranted(permission: NotificationPermissionStatus) {
+  _isPermissionGranted(permission: Notifications.NotificationPermissionsStatus) {
     return permission.granted || permission.ios ?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
   }
 }
