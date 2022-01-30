@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, FlatList } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Text, ListItem, Button } from 'react-native-elements'
 import DateTimePicker from '@react-native-community/datetimepicker'
 
@@ -8,15 +8,23 @@ import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
 import WeekdaySelect from '../components/WeekdaySelect'
+import UserProfile from '../common/UserProfile'
 
-export default class SettingsCommuteScreen extends React.Component {
-  constructor({ route, navigation }) {
-    super()
-    this.navigation = navigation
+type SettingsCommuteScreenState = {
+  profile: UserProfile | null
+  dateTimePickerShown: string | null
+}
+
+export default class SettingsCommuteScreen extends React.Component<any, SettingsCommuteScreenState> {
+
+  navigation: any
+
+  constructor(props) {
+    super(props)
+    this.navigation = props.navigation
     this.state = {
       profile: null,
-      dateTimePickerShown: false,
-      timePropEdited: null
+      dateTimePickerShown: null
     }
 
     this.updateProfile()
@@ -52,11 +60,11 @@ export default class SettingsCommuteScreen extends React.Component {
     } else if (dateTimePickerShown == 'return') {
       profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes())
     }
-    this.setState({ profile: profile, dateTimePickerShown: false })
+    this.setState({ profile: profile, dateTimePickerShown: null })
     Store.saveProfile(profile)
   }
 
-  handleCheckboxToggle = (dayIdx: int) => {
+  handleCheckboxToggle = (dayIdx: number) => {
     const { profile } = this.state
     profile.commute.days[dayIdx] = !profile.commute.days[dayIdx]
     this.setState({ profile: profile })
@@ -85,46 +93,41 @@ export default class SettingsCommuteScreen extends React.Component {
     return (
       <>
         <View style={styles.container}>
-          <FlatList
-            ListHeaderComponent={
-              <>
-                <View style={styles.list}>
-                  <ListItem bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>
-                        Commute days
-                      </ListItem.Title>
-                      <WeekdaySelect values={profile.commute.days} onToggle={this.handleCheckboxToggle} />
-                    </ListItem.Content>
-                  </ListItem>
-                  <ListItem bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>
-                        Leave time
-                      </ListItem.Title>
-                    </ListItem.Content>
-                    <Button
-                      title={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
-                      onPress={() => this.showDateTimePicker('leave')}
-                      titleStyle={[gStyles.normal]}
-                    />
-                  </ListItem>
-                  <ListItem bottomDivider>
-                    <ListItem.Content>
-                      <ListItem.Title>
-                        Return time
-                      </ListItem.Title>
-                    </ListItem.Content>
-                    <Button
-                      title={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
-                      onPress={() => this.showDateTimePicker('return')}
-                      titleStyle={[gStyles.normal]}
-                    />
-                  </ListItem>
-                </View>
-              </>
-            }
-          />
+          <View style={styles.list}>
+            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+              <ListItem.Content>
+                <ListItem.Title style={styles.listItemTitle}>
+                  Commute days
+                </ListItem.Title>
+                <WeekdaySelect values={profile.commute.days} onToggle={this.handleCheckboxToggle} />
+              </ListItem.Content>
+            </ListItem>
+            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+              <ListItem.Content>
+                <ListItem.Title style={styles.listItemTitle}>
+                  Leave time
+                </ListItem.Title>
+              </ListItem.Content>
+              <Button
+                title={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
+                onPress={() => this.showDateTimePicker('leave')}
+                titleStyle={[gStyles.normal]}
+              />
+            </ListItem>
+            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+              <ListItem.Content>
+                <ListItem.Title style={styles.listItemTitle}>
+                  Return time
+                </ListItem.Title>
+              </ListItem.Content>
+              <Button
+                title={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
+                onPress={() => this.showDateTimePicker('return')}
+                titleStyle={[gStyles.normal]}
+              />
+            </ListItem>
+          </View>
+
           {this.state.dateTimePickerShown && (
             <DateTimePicker
               testID='dateTimePicker'
@@ -149,6 +152,12 @@ const styles = StyleSheet.create({
   list: {
     borderTopWidth: 1,
     borderColor: Colors.lightAccent
+  },
+  listItemContainer: {
+    backgroundColor: 'white'
+  },
+  listItemTitle: {
+    color: Colors.darkAccent
   },
   checkboxContainer: {
     marginLeft: 0,

@@ -2,7 +2,6 @@ import * as React from 'react'
 import {
   Text as DefaultText,
   View as DefaultView,
-  Button as DefaultButton,
   TextInput as DefaultTextInput
 } from 'react-native'
 
@@ -26,9 +25,11 @@ export function useThemeColor(
 interface ThemeProps {
   lightColor?: string
   darkColor?: string
+  bold?: boolean
 }
 
 export type TextProps = ThemeProps & DefaultText['props']
+export type TextInputProps = ThemeProps & DefaultTextInput['props']
 export type ViewProps = ThemeProps & DefaultView['props']
 
 export function Text(props: TextProps): JSX.Element {
@@ -50,11 +51,4 @@ export function View(props: ViewProps): JSX.Element {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background')
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />
-}
-
-export function Button(props: ViewProps): JSX.Element {
-  const { style, lightColor, darkColor, ...otherProps } = props
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background')
-
-  return <DefaultButton style={[{ backgroundColor }, style]} {...otherProps}>hai</DefaultButton>
 }

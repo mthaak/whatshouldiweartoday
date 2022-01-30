@@ -1,19 +1,18 @@
 export default class Location {
-  lat: int
-  lon: int
-  city: str
-  countr: str
+  lat: number
+  lon: number
+  city: string | null
+  country: string | null
 
-  constructor(lat: int, lon: int, city: str, country: str) {
+  constructor(lat: number, lon: number, city: string | null, country: string | null) {
     this.lat = lat
     this.lon = lon
     this.city = city
     this.country = country
   }
 
-  static fromObject(obj: Record<string, unknown>): UserProfile {
-    const location = Object.assign(new Location(), obj)
-    return location
+  static fromObject(obj: Record<string, unknown>): Location {
+    return Object.setPrototypeOf(obj, Location.prototype)
   }
 
   toString(): string {

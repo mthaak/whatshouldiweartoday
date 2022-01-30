@@ -9,6 +9,7 @@ export default {
         path: 'Settings',
         screens: {
           SettingsScreen: 'Main',
+          SettingsLocationScreen: 'Location',
           SettingsCommuteScreen: 'Commute',
           SettingsAlertScreen: 'Alert'
         }

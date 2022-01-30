@@ -14,15 +14,37 @@ import { isTodayTrue } from '../common/timeutils'
 import WeatherService from '../services/WeatherService'
 import { getTodayWeather, getWeatherAtTime, getWearRecommendation } from '../services/weatherrules'
 import { formatTemp } from '../common/weatherutils'
+import UserProfile from '../common/UserProfile'
+import WeatherForecast from '../common/WeatherForecast'
+import Time from '../common/Time'
+import Location from '../common/Location'
 
 const REFRESH_PERIOD = 300 // time (s) between each data refresh when screen is active
 
-export default class WeatherScreen extends React.Component {
+type WeatherScreenState = {
+  profile: UserProfile | null
+  location: Location | null
+  isRefreshing: boolean,
+  weatherForecast: WeatherForecast
+  weatherForecastFailed: boolean
+}
 
-  constructor({ route, navigation }) {
-    super()
-    this.navigation = navigation
-    this.state = { profile: null, location: null, isRefreshing: false, weatherForecastFailed: false }
+export default class WeatherScreen extends React.Component<any, WeatherScreenState> {
+
+  navigation: any
+  focusListener: any
+  timeLastRefreshed: any
+
+  constructor(props) {
+    super(props)
+    this.navigation = props.navigation
+    this.state = {
+      profile: null,
+      location: null,
+      isRefreshing: false,
+      weatherForecast: null,
+      weatherForecastFailed: false
+    }
   }
 
   componentDidMount() {
@@ -52,11 +74,12 @@ export default class WeatherScreen extends React.Component {
   }
 
   updateWeather = async () => {
-    return await WeatherService.getWeatherAsync()
+    const { profile, location } = this.state
+    return await WeatherService.getWeatherAsync(location, profile.tempUnit)
       .then(this.setWeather)
   }
 
-  refreshWeather = (force: bool = false) => {
+  refreshWeather = async (force = false) => {
     const { isRefreshing } = this.state
     if (isRefreshing)
       return // don't refresh simultaneously
@@ -65,11 +88,15 @@ export default class WeatherScreen extends React.Component {
     if (profile) {
       if (location && location.lon && location.lat) {
         this.setState({ isRefreshing: true })
-        return WeatherService.getWeatherAsync(location, profile.tempUnit, force)
-          .then(this.setWeather)
-          .then(() => this.setState({ weatherForecastFailed: false }))
-          .catch(err => this.setState({ weatherForecastFailed: false }))
-          .finally(() => this.setState({ isRefreshing: false }))
+        try {
+          const weatherForecast = await WeatherService.getWeatherAsync(location, profile.tempUnit, force)
+          this.setWeather(weatherForecast)
+          this.setState({ weatherForecastFailed: false })
+        } catch (_) {
+          this.setState({ weatherForecastFailed: true })
+        }
+        this.setState({ isRefreshing: false })
+        return
       } else {
         console.warn('Current location not available. Cannot retrieve weather forecast')
       }
@@ -84,7 +111,7 @@ export default class WeatherScreen extends React.Component {
         this.updateProfile(),
         this.updateLocation()
       ])
-        .then(this.refreshWeather)
+        .then(() => this.refreshWeather(false))
       this.timeLastRefreshed = Date.now()
     }
   }
@@ -94,7 +121,7 @@ export default class WeatherScreen extends React.Component {
   }
 
   updateLocationAndThenRefreshWeather = async () => {
-    return await this.updateLocation().then(this.refreshWeather)
+    return await this.updateLocation().then(() => this.refreshWeather())
   }
 
   setProfile = (profile: UserProfile) => {
@@ -103,7 +130,7 @@ export default class WeatherScreen extends React.Component {
     })
   }
 
-  setLocation = (location: string) => {
+  setLocation = (location: Location) => {
     this.setState({
       location: location
     })
@@ -118,14 +145,22 @@ export default class WeatherScreen extends React.Component {
   renderTopBar() {
     return (
       <Header
-        centerComponent={<Text style={[gStyles.title, { alignItems: 'center' }]}>{formatDateToday()}</Text>}
-        rightComponent={{
-          icon: 'settings',
-          size: 30,
-          color: Colors.foreground,
-          style: gStyles.shadow,
-          onPress: () => this.navigation.navigate('Settings', { screen: 'Main' })
-        }}
+        centerComponent={
+          <Text
+            style={[gStyles.title, { alignItems: 'center' }]}>
+            {formatDateToday()}
+          </Text>
+        }
+        rightComponent={
+          <Icon
+            name="settings"
+            size={30}
+            color={Colors.foreground}
+            style={gStyles.shadow}
+            onPress={() => this.navigation.navigate('Settings', { screen: 'Main' })}
+          >
+          </Icon>
+        }
         centerContainerStyle={{ justifyContent: 'center' }}
         containerStyle={{ minHeight: 64, zIndex: 1 }}
       />
@@ -148,7 +183,7 @@ export default class WeatherScreen extends React.Component {
   }
 
   renderWearRecommendation() {
-    const { profile, weatherForecast } = this.state
+    const { profile, weatherForecast } = this.state as any
 
     const wearRecommendation = getWearRecommendation(weatherForecast, profile)
     return (
@@ -160,7 +195,7 @@ export default class WeatherScreen extends React.Component {
   }
 
   renderCommuteWeather() {
-    const { profile, weatherForecast } = this.state
+    const { profile, weatherForecast } = this.state as any
 
     if (isTodayTrue(profile.commute.days)) {
       let weatherAtLeave = null
@@ -255,7 +290,16 @@ export default class WeatherScreen extends React.Component {
   }
 }
 
-class TodayWeather extends React.Component {
+type TodayWeatherProps = {
+  location: Location | null
+  weatherDescr: string
+  tempUnit: TemperatureUnit
+  dayTemp: number
+  feelsLikeTemp: number
+}
+
+class TodayWeather extends React.Component<TodayWeatherProps, null> {
+
   render() {
     const locationStr = this.props.location ? this.props.location.toString() : 'Unknown'
     return (
@@ -284,7 +328,13 @@ class TodayWeather extends React.Component {
   }
 }
 
-class WearRecommendation extends React.Component {
+type WearRecommendationProps = {
+  wearRecommendation: Record<any, any>
+  profile: UserProfile
+}
+
+class WearRecommendation extends React.Component<WearRecommendationProps, null> {
+
   render() {
     const tempImages = this.props.wearRecommendation.temp.clothes.map((name) =>
       <ClothingImage
@@ -308,8 +358,11 @@ class WearRecommendation extends React.Component {
         padding: 18,
         backgroundColor: Colors.darkBackground,
         borderRadius: 5,
-        borderColor: Colors.darkAccent,
-        boxShadow: `inset 0 0 20px ${Colors.darkAccent}`
+        borderWidth: 10,
+        borderColor: Colors.darkBackground,
+        shadowColor: 'black',
+        shadowRadius: 10,
+        shadowOpacity: 1.0,
       }}
       >
         <View style={{
@@ -341,7 +394,22 @@ class WearRecommendation extends React.Component {
   }
 }
 
-class Commute extends React.Component {
+
+type CommuteProps = {
+  leaveTime: Time
+  weatherDescrAtLeave: string
+  tempAtLeave: number
+  feelsLikeAtLeave: number
+  returnTime: Time
+  weatherDescrAtReturn: string
+  tempAtReturn: number
+  feelsLikeAtReturn: number
+  tempUnit: TemperatureUnit
+}
+
+
+class Commute extends React.Component<CommuteProps, null> {
+
   render() {
     return (
       <>
@@ -393,7 +461,14 @@ class Commute extends React.Component {
   }
 }
 
-class ClothingImage extends React.Component {
+type ClothingImageProps = {
+  name: string
+  style: any
+}
+
+class ClothingImage extends React.Component<ClothingImageProps, null> {
+
+
   render() {
     return (
       <Image
@@ -405,15 +480,21 @@ class ClothingImage extends React.Component {
   }
 }
 
-class WeatherIcon extends React.Component {
+type WeatherIconProps = {
+  weather: any
+  size: number
+}
+
+class WeatherIcon extends React.Component<WeatherIconProps, null> {
+
   render() {
     if (this.props.weather) {
       const url = `http://openweathermap.org/img/wn/${this.props.weather.icon}@2x.png`
-      const placeholder = this.props.weather.description
+      const accessibilityLabel = this.props.weather.description
       return (
         <Image
           source={{ uri: url }}
-          placeholder={placeholder}
+          accessibilityLabel={accessibilityLabel}
           style={{
             width: this.props.size || '100%',
             height: this.props.size || '100%'
@@ -425,15 +506,22 @@ class WeatherIcon extends React.Component {
   }
 }
 
-class CenterMessage extends React.Component {
+type CenterMessageProps = {
+  message: string
+  active?: boolean
+  bottom?: any
+}
+
+class CenterMessage extends React.Component<CenterMessageProps, null> {
+
   render() {
     let animation
     if (this.props.active) { animation = <ActivityIndicator size={50} color={Colors.foreground} /> } else { animation = <Icon name='error' size={40} color={Colors.foreground} /> }
     return (
       <>
-        <View style={[gStyles.center, gStyles.centerVertical, gStyles.centerText]}>
+        <View style={[gStyles.center, gStyles.centerVertical]}>
           {animation}
-          <Text style={[gStyles.large, gStyles.shadow, { marginTop: 20, marginBottom: 20 }]}>{this.props.message}</Text>
+          <Text style={[gStyles.large, gStyles.shadow, gStyles.centerText, { marginTop: 20, marginBottom: 20 }]}>{this.props.message}</Text>
           {this.props.bottom}
         </View>
       </>

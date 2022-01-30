@@ -1,21 +1,26 @@
 import * as React from 'react'
 import { View } from 'react-native'
 import { CheckBox } from 'react-native-elements'
+import * as Colors from '../constants/colors'
 
 interface WeekdaySelectProps {
-  values: Array[number];
-  onToggle: () => void;
-  disabled: bool;
-  containerStyleDisabled: ViewStyle;
-  textStyleDisabled: TextStyle;
-  checkedColorDisabled: string;
+  values: Array<boolean>;
+  onToggle: (dayIdx: number) => void;
+  disabled?: boolean;
+  containerStyleDisabled?: any;
+  textStyleDisabled?: any;
+  checkedColorDisabled?: string;
 }
 
 export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
 
+  const defaultStyle = {
+    color: Colors.darkAccent
+  }
+
   const defaultContainerStyle = {
     marginLeft: 0,
-    marginRight: 0,
+    marginRight: 15,
     padding: 5
   }
 
@@ -36,7 +41,7 @@ export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
       onPress={() => props.onToggle(i)}
       size={16}
       containerStyle={[defaultContainerStyle, props.disabled ? containerStyleDisabled : {}]}
-      textStyle={[props.disabled ? props.textStyleDisabled : {}]}
+      textStyle={[defaultStyle, props.disabled ? props.textStyleDisabled : {}]}
       checkedColor={props.disabled ? props.checkedColorDisabled : undefined}
       disabled={props.disabled}
     />

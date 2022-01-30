@@ -1,24 +1,25 @@
-import { isInHour, isTodayTrue, isToday } from '../common/timeutils'
-import { UserProfile } from '../common/UserProfile'
-import { Gender, TemperatureUnit } from '../common/enums'
 import { rainOrder } from './rainorder'
+import { isInHour, isTodayTrue, isToday } from '../common/timeutils'
+import UserProfile from '../common/UserProfile'
+import { Gender, TemperatureUnit } from '../common/enums'
+import Time from '../common/Time'
 import { minByFn, fahrenheitToCelsius, capitalizeFirstLetterOnly } from '../common/utils'
+import WeatherForecast from '../common/WeatherForecast'
 
 // TODO define more strict types
-type WeatherForecast = Record<string, unknown>
-type WeatherForecastAtTime = Record<string, unknown>
-type WearRecommendation = Record<string, unknown>
-type TempRecommendation = Record<string, unknown>
-type RainRecommendation = Record<string, unknown>
+export type WeatherForecastAtTime = Record<string, any>
+export type WearRecommendation = Record<string, any>
+export type TempRecommendation = Record<string, any>
+export type RainRecommendation = Record<string, any>
 
 export function getTodayWeather(weatherForecast: WeatherForecast): WeatherForecastAtTime {
   // Extracts the weather today from the weather forecast
-  return weatherForecast.daily.find(dailyForecast => isToday(dailyForecast.dt))
+  return weatherForecast.daily.find((dailyForecast: { dt: number }) => isToday(dailyForecast.dt))
 }
 
 export function getWeatherAtTime(weatherForecast: WeatherForecast, time: Time): WeatherForecastAtTime {
   // Extracts the weather at a certain time from the weather forecast
-  return weatherForecast.hourly.find(forecast => isInHour(forecast.dt, time.hours))
+  return weatherForecast.hourly.find((forecast: { dt: number }) => isInHour(forecast.dt, time.hours))
 }
 
 export function getWearRecommendation(weatherForecast: WeatherForecast, profile: UserProfile): WearRecommendation {
@@ -31,8 +32,8 @@ export function getWearRecommendation(weatherForecast: WeatherForecast, profile:
   }
 }
 
-export function getHourlyForecast(weatherForecast: WeatherForecast, hour: int): WeatherForecastAtTime {
-  return weatherForecast.hourly.find(forecast => isInHour(forecast.dt, hour))
+export function getHourlyForecast(weatherForecast: WeatherForecast, hour: number): WeatherForecastAtTime {
+  return weatherForecast.hourly.find((forecast: { dt: number }) => isInHour(forecast.dt, hour))
 }
 
 function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserProfile): TempRecommendation {
@@ -108,10 +109,10 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
     return {
       name: 'Moderate',
       msg: 'The temperature will be moderate. Wear a thin jacket and dress in layers to be prepared for the colder parts of the day.',
-      clothes: [].concat(
+      clothes:
         profile.gender == Gender.MAN
           ? ['man_sports_jacket', 'man_long_sleeve_buttoned', 'man_long_pants']
-          : ['woman_long_sleeve', 'woman_tshirt_yellow', 'woman_long_pants_gray']),
+          : ['woman_long_sleeve', 'woman_tshirt_yellow', 'woman_long_pants_gray'],
       emojis: '', // TODO find emojis?
       clothesEmojis: ''.concat(
         profile.gender == Gender.MAN
@@ -124,10 +125,10 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
     return {
       name: 'Chilly',
       msg: 'It will be chilly. Wear long, layered clothes and bring a thin jacket.',
-      clothes: [].concat(
+      clothes:
         profile.gender == Gender.MAN
           ? ['man_sports_jacket', 'man_long_sleeve_buttoned', 'man_long_pants']
-          : ['woman_long_sleeve_lined', 'woman_tshirt', 'woman_long_pants_gray']),
+          : ['woman_long_sleeve_lined', 'woman_tshirt', 'woman_long_pants_gray'],
       emojis: '', // TODO find emojis?
       clothesEmojis: '🧥'.concat(
         profile.gender == Gender.MAN
@@ -140,10 +141,10 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
     return {
       name: 'Cold',
       msg: 'It will be cold. Wear long, layered clothes, a thick jacket, gloves, hat and anything to keep you warm and snug.',
-      clothes: [].concat(
+      clothes:
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue'],
       emojis: '❄️',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
@@ -156,10 +157,10 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
     return {
       name: 'Very cold',
       msg: 'It will be very cold. Wear long, multiple-layered clothes, a thick jacket, thick gloves and a warm hat.',
-      clothes: [].concat(
+      clothes:
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants', 'man_boot']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot'],
       emojis: '❄️🥶',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
@@ -167,15 +168,15 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
           : '👢'
       )
     }
-  } else if (feelsLike < -25) // extremely cold
+  } else // if (feelsLike < -25) extremely cold
   {
     return {
       name: 'Extremely cold',
       msg: 'Don\'t go out, but if you must, take all precautions: wear long, multiple-layered clothes, a thick jacket, thick gloves and a warm hat.',
-      clothes: [].concat(
+      clothes:
         profile.gender == Gender.MAN
           ? ['man_beanie_hat', 'man_winter_jacket', 'man_winter_jumper', 'man_long_pants', 'man_boot']
-          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot']),
+          : ['man_beanie_hat', 'woman_long_coat_gray', 'woman_long_sleeve_buttoned', 'woman_tight_pants_blue', 'man_boot'],
       emojis: '❄️🥶',
       clothesEmojis: '🧥🧣🧤'.concat(
         profile.gender == Gender.MAN
@@ -187,34 +188,30 @@ function getTempRecommendation(weatherForecast: WeatherForecast, profile: UserPr
 }
 
 function getRainRecommendation(weatherForecast: WeatherForecast, profile: UserProfile): RainRecommendation {
-  let weathers = []
+  let weathers: WeatherForecast[] = []
   if (isTodayTrue(profile.commute.days)) {
     if (profile.commute.leaveTime) { weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.leaveTime.hours).weather) }
     if (profile.commute.returnTime) { weathers = weathers.concat(getHourlyForecast(weatherForecast, profile.commute.returnTime.hours).weather) }
   }
   if (weathers.length === 0) { weathers = getTodayWeather(weatherForecast).weather }
 
+  const noRecommendation = {
+    name: null,
+    msg: null,
+    clothes: [],
+    emojis: null,
+    clothesEmojis: null
+  }
+
   const rainWeathers = weathers.filter(w => ['Snow', 'Thunderstorm', 'Rain', 'Drizzle'].includes(w.main))
   if (rainWeathers.length === 0) {
-    return {
-      name: null,
-      msg: null,
-      clothes: [],
-      emojis: null,
-      clothesEmojis: null
-    }
+    return noRecommendation
   }
 
   const worstWeather = minByFn(rainWeathers, w => rainOrder.indexOf(w.description)) // weather with worst rain according to rain order
 
   if (worstWeather == null) {
-    return {
-      name: null,
-      msg: null,
-      clothes: [],
-      emojis: null,
-      clothesEmojis: null
-    }
+    return noRecommendation
   }
 
   const name = worstWeather.description ? capitalizeFirstLetterOnly(worstWeather.description) : null
@@ -250,6 +247,8 @@ function getRainRecommendation(weatherForecast: WeatherForecast, profile: UserPr
       emojis: '🌧️',
       clothesEmojis: '🌂'
     }
+  } else {
+    return noRecommendation
   }
 }
 

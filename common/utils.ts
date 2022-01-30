@@ -1,12 +1,12 @@
-export function maxByFn(array: Array<number>, fn: (x: number) => number): Array<number> {
+export function maxByFn<Type>(array: Array<Type>, fn: (x: Type) => number): Type {
   return array.reduce((r, a) => (fn(a) > fn(r) ? a : r))
 }
 
-export function minByFn(array: Array<number>, fn: (x: number) => number): Array<number> {
+export function minByFn<Type>(array: Array<Type>, fn: (x: Type) => number): Type {
   return array.reduce((r, a) => (fn(a) < fn(r) ? a : r))
 }
 
-export function copyString(oldString: string): string {
+export function copyString(oldString: string): string | null {
   if (oldString == null) { return null }
   return oldString.slice()
 }

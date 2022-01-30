@@ -1,8 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { EventEmitter } from 'eventemitter3'
 import { Gender, TemperatureUnit } from '../common/enums'
 import UserProfile from '../common/UserProfile'
 import Time from '../common/Time'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { EventEmitter } from 'eventemitter3'
 
 const INITIAL_PROFILE = new UserProfile(
   null,
@@ -22,7 +22,7 @@ const INITIAL_PROFILE = new UserProfile(
 )
 
 class Store {
-  emitter: EventEmitter
+  emitter
 
   constructor() {
     this.emitter = new EventEmitter()
@@ -46,7 +46,7 @@ class Store {
     }
   }
 
-  async retrieveProfile(): Promise<UserProfile> {
+  async retrieveProfile(): Promise<UserProfile | null> {
     try {
       const profile = await AsyncStorage.getItem('@store:profile')
       if (profile === null) { return null }
@@ -67,11 +67,11 @@ class Store {
     }
   }
 
-  subscribe(callback) {
+  subscribe(callback: any) {
     this.emitter.addListener('update', callback)
   }
 
-  unsubscribe(callback) {
+  unsubscribe(callback: any) {
     this.emitter.removeListener('update', callback)
   }
 }

@@ -1,19 +1,29 @@
 import React from 'react'
-import { View, StyleSheet, FlatList } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { Text, ListItem, Button } from 'react-native-elements'
 
 import LocationService from '../services/LocationService'
 import * as Colors from '../constants/colors'
 import Store from '../services/Store'
 import { styles as gStyles } from '../constants/styles'
+import UserProfile from '../common/UserProfile'
+import Location from '../common/Location'
 
-export default class SettingsLocationScreen extends React.Component {
-  constructor({ route, navigation }) {
-    super()
-    this.navigation = navigation
+type SettingsLocationScreenState = {
+  profile: UserProfile | null
+  currentLocation: Location | null
+}
+
+export default class SettingsLocationScreen extends React.Component<any, SettingsLocationScreenState> {
+
+  navigation: any
+
+  constructor(props) {
+    super(props)
+    this.navigation = props.navigation
     this.state = {
       profile: null,
-      currentLocation: false
+      currentLocation: null
     }
 
     this.updateProfile()
@@ -44,7 +54,7 @@ export default class SettingsLocationScreen extends React.Component {
     })
   }
 
-  setLocation = (location: string) => {
+  setLocation = (location: Location) => {
     this.setState({
       currentLocation: location
     })
@@ -64,39 +74,33 @@ export default class SettingsLocationScreen extends React.Component {
     return (
       <>
         <View style={styles.container}>
-          <FlatList
-            ListHeaderComponent={
-              <>
-                <View style={styles.list}>
-                  <ListItem>
-                    <ListItem.Content>
-                      <ListItem.Title>
-                        Home
-                      </ListItem.Title>
-                    </ListItem.Content>
-                    <Text>
-                      {profile.home ? profile.home.toString() : 'Not set'}
-                    </Text>
-                  </ListItem>
-                  <ListItem containerStyle={{ paddingTop: 0 }}>
-                    <View style={[gStyles.center]}>
-                      <ListItem.Subtitle style={[gStyles.small, gStyles.centerText]}>
-                        Current location: {currentLocation ? currentLocation.toString() : 'Unknown'}
-                      </ListItem.Subtitle>
-                      <Button
-                        title='Use current location'
-                        onPress={this.setHomeLocationToCurrent}
-                        disabled={!currentLocation}
-                        containerStyle={[gStyles.center, { marginTop: 10 }]}
-                        titleStyle={[gStyles.normal]}
-                        raised
-                      />
-                    </View>
-                  </ListItem>
-                </View>
-              </>
-            }
-          />
+          <View style={styles.list}>
+            <ListItem containerStyle={styles.listItemContainer}>
+              <ListItem.Content>
+                <ListItem.Title style={styles.listItemTitle}>
+                  Home
+                </ListItem.Title>
+              </ListItem.Content>
+              <Text style={[styles.grayText]}>
+                {profile.home ? profile.home.toString() : 'Not set'}
+              </Text>
+            </ListItem>
+            <ListItem containerStyle={styles.listItemContainer}>
+              <View style={[gStyles.center]}>
+                <ListItem.Subtitle style={[gStyles.small, gStyles.centerText]}>
+                  Current location: {currentLocation ? currentLocation.toString() : 'Unknown'}
+                </ListItem.Subtitle>
+                <Button
+                  title='Use current location'
+                  onPress={this.setHomeLocationToCurrent}
+                  disabled={!currentLocation}
+                  containerStyle={[gStyles.center, { marginTop: 10 }]}
+                  titleStyle={[gStyles.normal]}
+                  raised
+                />
+              </View>
+            </ListItem>
+          </View>
         </View>
       </>
     )
@@ -111,5 +115,14 @@ const styles = StyleSheet.create({
   list: {
     borderTopWidth: 1,
     borderColor: Colors.lightAccent
-  }
+  },
+  listItemContainer: {
+    backgroundColor: 'white'
+  },
+  listItemTitle: {
+    color: Colors.darkAccent
+  },
+  grayText: {
+    color: Colors.darkerGray
+  },
 })

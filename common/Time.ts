@@ -1,8 +1,8 @@
 export default class Time {
-  hours: int
-  minutes: int
+  hours: number
+  minutes: number
 
-  constructor(hours: int, minutes: int) {
+  constructor(hours: number, minutes: number) {
     this.hours = hours
     this.minutes = minutes
   }
@@ -13,7 +13,7 @@ export default class Time {
     return hoursStr + ':' + minutesStr
   }
 
-  static fromObject(obj: Record): Time {
-    return Object.assign(new Time(), obj)
+  static fromObject(obj: Record<string, unknown>): Time {
+    return Object.setPrototypeOf(obj, Time.prototype)
   }
 }
