@@ -358,11 +358,6 @@ class WearRecommendation extends React.Component<WearRecommendationProps, null> 
         padding: 18,
         backgroundColor: Colors.darkBackground,
         borderRadius: 5,
-        borderWidth: 10,
-        borderColor: Colors.darkBackground,
-        shadowColor: 'black',
-        shadowRadius: 10,
-        shadowOpacity: 1.0,
       }}
       >
         <View style={{

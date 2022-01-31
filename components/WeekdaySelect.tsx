@@ -20,7 +20,7 @@ export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
 
   const defaultContainerStyle = {
     marginLeft: 0,
-    marginRight: 15,
+    marginRight: 5,
     padding: 5
   }
 

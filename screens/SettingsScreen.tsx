@@ -78,6 +78,7 @@ export default class SettingsScreen extends React.Component<any, SettingsScreenS
               <ListItem.Input
                 placeholder={this.namePlaceholder}
                 onChangeText={value => this.handleEdit('name', value)}
+                style={styles.inputStyle}
               />
             </ListItem>
             <ListItem bottomDivider containerStyle={styles.listItemContainer}>
@@ -158,6 +159,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   listItemTitle: {
+    color: Colors.darkAccent
+  },
+  inputStyle: {
     color: Colors.darkAccent
   },
   grayText: {
