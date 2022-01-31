@@ -162,7 +162,7 @@ export default class SettingsAlertScreen extends React.Component<any, SettingsAl
               <Button
                 title={profile.alert.time != null ? profile.alert.time.toString() : ''}
                 onPress={profile.alert.enabled ? () => this.toggleDateTimePicker() : undefined}
-                titleStyle={[gStyles.normal, [styles.listItemTitle, profile.alert.enabled ? null : styles.disabledText]]}
+                titleStyle={[gStyles.normal, profile.alert.enabled ? null : styles.disabledText]}
                 disabledTitleStyle={[styles.disabledText]}
                 disabled={!profile.alert.enabled}
               />
