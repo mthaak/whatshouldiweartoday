@@ -24,7 +24,7 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
       linking={LinkingConfiguration}
       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
     >
-      <ThemeProvider theme={theme} useDark={colorScheme === 'dark'}>
+      <ThemeProvider theme={theme}>
         <RootNavigator />
       </ThemeProvider>
     </NavigationContainer>
