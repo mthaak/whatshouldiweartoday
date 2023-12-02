@@ -1,92 +1,104 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Text, ListItem, Button } from 'react-native-elements'
-import DateTimePicker from '@react-native-community/datetimepicker'
+import DateTimePicker from "@react-native-community/datetimepicker";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, ListItem, Text } from "react-native-elements";
 
-import Time from '../common/Time'
-import * as Colors from '../constants/colors'
-import Store from '../services/Store'
-import { styles as gStyles } from '../constants/styles'
-import WeekdaySelect from '../components/WeekdaySelect'
-import UserProfile from '../common/UserProfile'
+import * as Colors from "../constants/colors";
+import Time from "../common/Time";
+import UserProfile from "../common/UserProfile";
+import WeekdaySelect from "../components/WeekdaySelect";
+import { styles as gStyles } from "../constants/styles";
+import Store from "../services/Store";
 
 type SettingsCommuteScreenState = {
-  profile: UserProfile | null
-  dateTimePickerShown: string | null
-}
+  profile: UserProfile | null;
+  dateTimePickerShown: string | null;
+};
 
-export default class SettingsCommuteScreen extends React.Component<any, SettingsCommuteScreenState> {
-
-  navigation: any
+export default class SettingsCommuteScreen extends React.Component<
+  any,
+  SettingsCommuteScreenState
+> {
+  navigation: any;
 
   constructor(props) {
-    super(props)
-    this.navigation = props.navigation
+    super(props);
+    this.navigation = props.navigation;
     this.state = {
       profile: null,
-      dateTimePickerShown: null
-    }
+      dateTimePickerShown: null,
+    };
 
-    this.updateProfile()
+    this.updateProfile();
   }
 
   componentDidMount() {
-    Store.subscribe(this.updateProfile)
+    Store.subscribe(this.updateProfile);
   }
 
   componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile)
+    Store.unsubscribe(this.updateProfile);
   }
 
   updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile)
-  }
+    return await Store.retrieveProfile().then(this.setProfile);
+  };
 
   setProfile = (profile: UserProfile) => {
     this.setState({
-      profile: profile
-    })
-  }
+      profile: profile,
+    });
+  };
 
   showDateTimePicker = (timeProp: string) => {
-    this.setState({ dateTimePickerShown: timeProp })
-  }
+    this.setState({ dateTimePickerShown: timeProp });
+  };
 
   handleTimeEdit = (selectedDate: Date) => {
-    if (selectedDate == undefined) { return }
-    const { profile, dateTimePickerShown } = this.state
-    if (dateTimePickerShown == 'leave') {
-      profile.commute.leaveTime = new Time(selectedDate.getHours(), selectedDate.getMinutes())
-    } else if (dateTimePickerShown == 'return') {
-      profile.commute.returnTime = new Time(selectedDate.getHours(), selectedDate.getMinutes())
+    if (selectedDate === undefined) {
+      return;
     }
-    this.setState({ profile: profile, dateTimePickerShown: null })
-    Store.saveProfile(profile)
-  }
+    const { profile, dateTimePickerShown } = this.state;
+    if (dateTimePickerShown === "leave") {
+      profile.commute.leaveTime = new Time(
+        selectedDate.getHours(),
+        selectedDate.getMinutes(),
+      );
+    } else if (dateTimePickerShown === "return") {
+      profile.commute.returnTime = new Time(
+        selectedDate.getHours(),
+        selectedDate.getMinutes(),
+      );
+    }
+    this.setState({ profile: profile, dateTimePickerShown: null });
+    Store.saveProfile(profile);
+  };
 
   handleCheckboxToggle = (dayIdx: number) => {
-    const { profile } = this.state
-    profile.commute.days[dayIdx] = !profile.commute.days[dayIdx]
-    this.setState({ profile: profile })
-    Store.saveProfile(profile)
-  }
+    const { profile } = this.state;
+    profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
+    this.setState({ profile: profile });
+    Store.saveProfile(profile);
+  };
 
   render() {
-    const { profile, dateTimePickerShown } = this.state
-    if (profile == null) { return <Text>Loading...</Text> }
+    const { profile, dateTimePickerShown } = this.state;
+    if (profile === null) {
+      return <Text>Loading...</Text>;
+    }
 
-    let pickerValue
+    let pickerValue;
     if (dateTimePickerShown) {
-      let time
-      if (dateTimePickerShown == 'leave') {
-        time = this.state.profile.commute.leaveTime
-      } else if (dateTimePickerShown == 'return') {
-        time = this.state.profile.commute.returnTime
+      let time;
+      if (dateTimePickerShown === "leave") {
+        time = this.state.profile.commute.leaveTime;
+      } else if (dateTimePickerShown === "return") {
+        time = this.state.profile.commute.returnTime;
       }
-      if (time && time.hours && time.minutes) {
-        pickerValue = new Date(2000, 1, 1, time.hours, time.minutes)
+      if (time?.hours && time.minutes) {
+        pickerValue = new Date(2000, 1, 1, time.hours, time.minutes);
       } else {
-        pickerValue = new Date(2000, 1, 1, 8, 0) // default is 8 am
+        pickerValue = new Date(2000, 1, 1, 8, 0); // default is 8 am
       }
     }
 
@@ -99,7 +111,10 @@ export default class SettingsCommuteScreen extends React.Component<any, Settings
                 <ListItem.Title style={styles.listItemTitle}>
                   Commute days
                 </ListItem.Title>
-                <WeekdaySelect values={profile.commute.days} onToggle={this.handleCheckboxToggle} />
+                <WeekdaySelect
+                  values={profile.commute.days}
+                  onToggle={this.handleCheckboxToggle}
+                />
               </ListItem.Content>
             </ListItem>
             <ListItem bottomDivider containerStyle={styles.listItemContainer}>
@@ -109,8 +124,12 @@ export default class SettingsCommuteScreen extends React.Component<any, Settings
                 </ListItem.Title>
               </ListItem.Content>
               <Button
-                title={profile.commute.leaveTime != null ? profile.commute.leaveTime.toString() : ''}
-                onPress={() => this.showDateTimePicker('leave')}
+                title={
+                  profile.commute.leaveTime != null
+                    ? profile.commute.leaveTime.toString()
+                    : ""
+                }
+                onPress={() => this.showDateTimePicker("leave")}
                 titleStyle={[gStyles.normal]}
               />
             </ListItem>
@@ -121,8 +140,12 @@ export default class SettingsCommuteScreen extends React.Component<any, Settings
                 </ListItem.Title>
               </ListItem.Content>
               <Button
-                title={profile.commute.returnTime != null ? profile.commute.returnTime.toString() : ''}
-                onPress={() => this.showDateTimePicker('return')}
+                title={
+                  profile.commute.returnTime != null
+                    ? profile.commute.returnTime.toString()
+                    : ""
+                }
+                onPress={() => this.showDateTimePicker("return")}
                 titleStyle={[gStyles.normal]}
               />
             </ListItem>
@@ -130,38 +153,40 @@ export default class SettingsCommuteScreen extends React.Component<any, Settings
 
           {this.state.dateTimePickerShown && (
             <DateTimePicker
-              testID='dateTimePicker'
+              testID="dateTimePicker"
               value={pickerValue}
-              mode='time'
+              mode="time"
               is24Hour
-              display='default'
-              onChange={(event, selectedTime) => this.handleTimeEdit(selectedTime)}
+              display="default"
+              onChange={(event, selectedTime) =>
+                this.handleTimeEdit(selectedTime)
+              }
             />
           )}
         </View>
       </>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.background,
   },
   list: {
     borderTopWidth: 1,
-    borderColor: Colors.lightAccent
+    borderColor: Colors.lightAccent,
   },
   listItemContainer: {
-    backgroundColor: 'white'
+    backgroundColor: "white",
   },
   listItemTitle: {
-    color: Colors.darkAccent
+    color: Colors.darkAccent,
   },
   checkboxContainer: {
     marginLeft: 0,
     marginRight: 0,
-    padding: 5
-  }
-})
+    padding: 5,
+  },
+});
