@@ -1,20 +1,20 @@
-import * as Linking from 'expo-linking'
+import * as Linking from "expo-linking";
 
 export default {
-  prefixes: [Linking.makeUrl('/')],
+  prefixes: [Linking.makeUrl("/")],
   config: {
     screens: {
-      WeatherScreen: 'Weather',
+      WeatherScreen: "Weather",
       Settings: {
-        path: 'Settings',
+        path: "Settings",
         screens: {
-          SettingsScreen: 'Main',
-          SettingsLocationScreen: 'Location',
-          SettingsCommuteScreen: 'Commute',
-          SettingsAlertScreen: 'Alert'
-        }
+          SettingsScreen: "Main",
+          SettingsLocationScreen: "Location",
+          SettingsCommuteScreen: "Commute",
+          SettingsAlertScreen: "Alert",
+        },
       },
-      NotFound: '*'
-    }
-  }
-}
+      NotFound: "*",
+    },
+  },
+};

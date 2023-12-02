@@ -1,75 +1,79 @@
-import React from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Text, ListItem, Button } from 'react-native-elements'
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, ListItem, Text } from "react-native-elements";
 
-import LocationService from '../services/LocationService'
-import * as Colors from '../constants/colors'
-import Store from '../services/Store'
-import { styles as gStyles } from '../constants/styles'
-import UserProfile from '../common/UserProfile'
-import Location from '../common/Location'
+import * as Colors from "../constants/colors";
+import Location from "../common/Location";
+import UserProfile from "../common/UserProfile";
+import { styles as gStyles } from "../constants/styles";
+import LocationService from "../services/LocationService";
+import Store from "../services/Store";
 
 type SettingsLocationScreenState = {
-  profile: UserProfile | null
-  currentLocation: Location | null
-}
+  profile: UserProfile | null;
+  currentLocation: Location | null;
+};
 
-export default class SettingsLocationScreen extends React.Component<any, SettingsLocationScreenState> {
-
-  navigation: any
+export default class SettingsLocationScreen extends React.Component<
+  any,
+  SettingsLocationScreenState
+> {
+  navigation: any;
 
   constructor(props) {
-    super(props)
-    this.navigation = props.navigation
+    super(props);
+    this.navigation = props.navigation;
     this.state = {
       profile: null,
-      currentLocation: null
-    }
+      currentLocation: null,
+    };
 
-    this.updateProfile()
-    this.updateLocation()
+    this.updateProfile();
+    this.updateLocation();
   }
 
   componentDidMount() {
-    Store.subscribe(this.updateProfile)
-    LocationService.subscribe(this.updateLocation)
+    Store.subscribe(this.updateProfile);
+    LocationService.subscribe(this.updateLocation);
   }
 
   componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile)
-    LocationService.unsubscribe(this.updateLocation)
+    Store.unsubscribe(this.updateProfile);
+    LocationService.unsubscribe(this.updateLocation);
   }
 
   updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile)
-  }
+    return await Store.retrieveProfile().then(this.setProfile);
+  };
 
   updateLocation = async () => {
-    return await LocationService.getLocationAsync().then(this.setLocation)
-  }
+    return await LocationService.getLocationAsync().then(this.setLocation);
+  };
 
   setProfile = (profile: UserProfile) => {
     this.setState({
-      profile: profile
-    })
-  }
+      profile: profile,
+    });
+  };
 
   setLocation = (location: Location) => {
     this.setState({
-      currentLocation: location
-    })
-  }
+      currentLocation: location,
+    });
+  };
 
   setHomeLocationToCurrent = () => {
-    const { profile, currentLocation } = this.state
-    profile.home = currentLocation
-    this.setState({ profile: profile })
-    Store.saveProfile(profile)
-  }
+    const { profile, currentLocation } = this.state;
+    profile.home = currentLocation;
+    this.setState({ profile: profile });
+    Store.saveProfile(profile);
+  };
 
   render() {
-    const { profile, currentLocation } = this.state
-    if (profile == null) { return <Text>Loading...</Text> }
+    const { profile, currentLocation } = this.state;
+    if (profile == null) {
+      return <Text>Loading...</Text>;
+    }
 
     return (
       <>
@@ -82,16 +86,17 @@ export default class SettingsLocationScreen extends React.Component<any, Setting
                 </ListItem.Title>
               </ListItem.Content>
               <Text style={[styles.grayText]}>
-                {profile.home ? profile.home.toString() : 'Not set'}
+                {profile.home ? profile.home.toString() : "Not set"}
               </Text>
             </ListItem>
             <ListItem containerStyle={styles.listItemContainer}>
               <View style={[gStyles.center]}>
                 <ListItem.Subtitle style={[gStyles.small, gStyles.centerText]}>
-                  Current location: {currentLocation ? currentLocation.toString() : 'Unknown'}
+                  Current location:{" "}
+                  {currentLocation ? currentLocation.toString() : "Unknown"}
                 </ListItem.Subtitle>
                 <Button
-                  title='Use current location'
+                  title="Use current location"
                   onPress={this.setHomeLocationToCurrent}
                   disabled={!currentLocation}
                   containerStyle={[gStyles.center, { marginTop: 10 }]}
@@ -103,26 +108,26 @@ export default class SettingsLocationScreen extends React.Component<any, Setting
           </View>
         </View>
       </>
-    )
+    );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.background,
   },
   list: {
     borderTopWidth: 1,
-    borderColor: Colors.lightAccent
+    borderColor: Colors.lightAccent,
   },
   listItemContainer: {
-    backgroundColor: 'white'
+    backgroundColor: "white",
   },
   listItemTitle: {
-    color: Colors.darkAccent
+    color: Colors.darkAccent,
   },
   grayText: {
-    color: Colors.darkerGray
+    color: Colors.darkerGray,
   },
-})
+});
