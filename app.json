@@ -15,9 +15,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "android": {
       "package": "com.mthaak.whatshouldiweartoday",
       "versionCode": 1
@@ -29,6 +27,6 @@
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    },
+    }
   }
 }
