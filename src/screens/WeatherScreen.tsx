@@ -171,8 +171,8 @@ export default class WeatherScreen extends React.Component<
             }
           />
         }
-        centerContainerStyle={{ justifyContent: "center" }}
-        containerStyle={{ minHeight: 64, zIndex: 1 }}
+        centerContainerStyle={{ justifyContent: "center"}}
+        containerStyle={{ minHeight: 64, zIndex: 1, backgroundColor: Colors.background  }}
       />
     );
   }
