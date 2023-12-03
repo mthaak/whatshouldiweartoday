@@ -47,7 +47,5 @@ repos:
         files: ^.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
         additional_dependencies:
           - eslint@8.55.0
-          - "@typescript-eslint/parser@5.23.0"
-          - "@typescript-eslint/eslint-plugin@^5.23.0"
-          - typescript@4.6.4
+          - typescript@5.1.3
           - eslint-config-universe@12.0.0
