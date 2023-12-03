@@ -20,12 +20,12 @@ The weather forecast comes from [OpenWeather](https://openweathermap.org/api).
 
 This is a React Native app, developed using [Expo](https://expo.io/).
 
-Make sure that NodeJS and the Expo CLI are installed before starting.
+Make sure that NodeJS 20 is installed before starting.
 
 ### How to set up
 
 - Clone the repo
-- Create a `.env` file in the repo root with the following variables (ask me for the values):
+- Create a `.env` file in the repo root with the following variables:
 
 ```
 OPENWEATHERMAP_APPID=<...>
@@ -52,4 +52,6 @@ To perform over-the-air (OTA) updates of the built app, run:
 
 ### Style
 
-Use `npx eslint . --fix` to check and fix the style
+Use `npm run lint` to check the style of the code.
+
+Use `npm run format` to format the code.
