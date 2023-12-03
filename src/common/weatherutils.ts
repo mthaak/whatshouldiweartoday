@@ -1,4 +1,4 @@
-import { TemperatureUnit } from "../common/enums";
+import { TemperatureUnit } from "./enums";
 
 export function formatTemperatureUnit(unit: TemperatureUnit): string {
   switch (unit) {
