@@ -5,8 +5,8 @@ import {
   NavigationContainer,
 } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { ThemeProvider } from "@rneui/themed";
 import { ColorSchemeName } from "react-native";
-import { ThemeProvider } from "react-native-elements";
 
 import * as colors from "../constants/colors";
 import { theme } from "../constants/RNE-Theme";

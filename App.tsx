@@ -4,17 +4,17 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import useCachedResources from "./hooks/useCachedResources";
-import useColorScheme from "./hooks/useColorScheme";
-import Navigation from "./navigation";
-import LocationService from "./services/LocationService";
-import { NotificationService } from "./services/NotificationService";
-import Store from "./services/Store";
+import useCachedResources from "./src/hooks/useCachedResources";
+import useColorScheme from "./src/hooks/useColorScheme";
+import Navigation from "./src/navigation";
+import LocationService from "./src/services/LocationService";
+import { NotificationService } from "./src/services/NotificationService";
+import Store from "./src/services/Store";
 import {
   setUpBackgroundTasks,
   startBackgroundTasks,
   stopBackgroundTasks,
-} from "./services/background";
+} from "./src/services/background";
 
 export default function App(): JSX.Element | null {
   const isLoadingComplete = useCachedResources();
