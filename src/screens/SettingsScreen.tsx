@@ -109,7 +109,7 @@ export default class SettingsScreen extends React.Component<
               </Text>
               <ListItem.Chevron
                 size={24}
-                onPress={(index) => this.navigation.navigate("Location")}
+                onPress={() => this.navigation.navigate("Location")}
               />
             </ListItem>
             <ListItem bottomDivider containerStyle={styles.listItemContainer}>
@@ -120,7 +120,7 @@ export default class SettingsScreen extends React.Component<
               </ListItem.Content>
               <ListItem.Chevron
                 size={24}
-                onPress={(index) => this.navigation.navigate("Commute")}
+                onPress={() => this.navigation.navigate("Commute")}
               />
             </ListItem>
             <ListItem bottomDivider containerStyle={styles.listItemContainer}>
@@ -131,7 +131,7 @@ export default class SettingsScreen extends React.Component<
               </ListItem.Content>
               <ListItem.Chevron
                 size={24}
-                onPress={(index) => this.navigation.navigate("Alert")}
+                onPress={() => this.navigation.navigate("Alert")}
               />
             </ListItem>
             <ListItem bottomDivider containerStyle={styles.listItemContainer}>

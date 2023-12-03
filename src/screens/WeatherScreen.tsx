@@ -18,6 +18,7 @@ import LocationService from "../services/LocationService";
 import Store from "../services/Store";
 import WeatherService from "../services/WeatherService";
 import {
+  WeatherForecastAtTime,
   getTodayWeather,
   getWearRecommendation,
   getWeatherAtTime,
@@ -171,8 +172,12 @@ export default class WeatherScreen extends React.Component<
             }
           />
         }
-        centerContainerStyle={{ justifyContent: "center"}}
-        containerStyle={{ minHeight: 64, zIndex: 1, backgroundColor: Colors.background  }}
+        centerContainerStyle={{ justifyContent: "center" }}
+        containerStyle={{
+          minHeight: 64,
+          zIndex: 1,
+          backgroundColor: Colors.background,
+        }}
       />
     );
   }
@@ -208,21 +213,21 @@ export default class WeatherScreen extends React.Component<
     const { profile, weatherForecast } = this.state as any;
 
     if (isTodayTrue(profile.commute.days)) {
-      let weatherAtLeave = null;
+      let weatherAtLeave: WeatherForecastAtTime | null = null;
       if (profile.commute.leaveTime) {
         weatherAtLeave = getWeatherAtTime(
           weatherForecast,
           profile.commute.leaveTime,
         );
       }
-      let weatherAtReturn = null;
+      let weatherAtReturn: WeatherForecastAtTime | null = null;
       if (profile.commute.returnTime) {
         weatherAtReturn = getWeatherAtTime(
           weatherForecast,
           profile.commute.returnTime,
         );
       }
-      if (weatherAtReturn || weatherAtLeave) {
+      if (weatherAtReturn && weatherAtLeave) {
         return (
           <Commute
             leaveTime={profile.commute.leaveTime}
