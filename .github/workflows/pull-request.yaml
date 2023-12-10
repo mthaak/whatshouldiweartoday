@@ -5,9 +5,9 @@ jobs:
   Main:
     runs-on: ubuntu-latest
     steps:
-      - name: 🏗 Checkout repo
+      - name: 🏗️ Checkout repo
         uses: actions/checkout@v3
-      - name: 🏗 Setup Node
+      - name: 🏗️ Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -15,7 +15,7 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: 📦 Install dependencies
         run: npm install --immutable
-      - name: Run pre-commit
+      - name: 📝 Run pre-commit
         uses: pre-commit/action@v3.0.0
         with:
           extra_args: --all-files
