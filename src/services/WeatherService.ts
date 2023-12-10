@@ -47,9 +47,7 @@ class WeatherService {
     location: Location,
     unit: TemperatureUnit,
   ): Promise<WeatherForecast> {
-    console.log("Retrieving weather forecast from openweathermap.org...");
     const url = this.buildOpenWeatherMapUrl(location, unit);
-    console.log("Fetch " + url);
     const response = await fetch(url);
     const json = response.json();
     return await json;
