@@ -71,11 +71,17 @@ export default class WeatherScreen extends React.Component<
   }
 
   updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile);
+    return await Store.retrieveProfile().then((profile) => {
+      this.setProfile(profile);
+      return profile;
+    });
   };
 
   updateLocation = async () => {
-    return await LocationService.getLocationAsync().then(this.setLocation);
+    return await LocationService.getLocationAsync().then((location) => {
+      this.setLocation(location);
+      return location;
+    });
   };
 
   updateWeather = async () => {
@@ -86,11 +92,14 @@ export default class WeatherScreen extends React.Component<
     ).then(this.setWeather);
   };
 
-  refreshWeather = async (force = false) => {
+  refreshWeather = async (
+    profile: UserProfile,
+    location: Location,
+    force = false,
+  ) => {
     const { isRefreshing } = this.state;
     if (isRefreshing) return; // don't refresh simultaneously
 
-    const { profile, location } = this.state;
     if (profile) {
       if (location?.lon && location.lat) {
         this.setState({ isRefreshing: true });
@@ -120,19 +129,23 @@ export default class WeatherScreen extends React.Component<
       (Date.now() - this.timeLastRefreshed) / 1e3 > REFRESH_PERIOD
     ) {
       // Weather gets updated after profile or location are updated
-      Promise.all([this.updateProfile(), this.updateLocation()]).then(() =>
-        this.refreshWeather(false),
+      Promise.all([this.updateProfile(), this.updateLocation()]).then(
+        ([profile, location]) => this.refreshWeather(profile, location, false),
       );
       this.timeLastRefreshed = Date.now();
     }
   };
 
   updateProfileAndThenRefreshWeather = async () => {
-    return await this.updateProfile().then(() => this.refreshWeather(true));
+    return await this.updateProfile().then((profile) =>
+      this.refreshWeather(profile, this.state.location, true),
+    );
   };
 
   updateLocationAndThenRefreshWeather = async () => {
-    return await this.updateLocation().then(() => this.refreshWeather());
+    return await this.updateLocation().then((location) =>
+      this.refreshWeather(this.state.profile, location),
+    );
   };
 
   setProfile = (profile: UserProfile) => {
