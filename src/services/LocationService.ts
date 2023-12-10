@@ -3,8 +3,10 @@ import { GOOGLE_GEOCODING_API_KEY } from "@env";
 import { EventEmitter } from "eventemitter3";
 
 import Location from "../common/Location";
+import { ReverseGeocodeResponse } from "../common/ReverseGeocodeResponse";
 
-ExpoLocation.setGoogleApiKey(GOOGLE_GEOCODING_API_KEY);
+const REVERSE_GEOCODE_BASE_URL =
+  "https://maps.googleapis.com/maps/api/geocode/json";
 
 const REFRESH_PERIOD = 900; // minimal time (s) between each location refresh
 
@@ -50,27 +52,53 @@ class LocationService {
     }
     try {
       const location = await ExpoLocation.getCurrentPositionAsync({});
-      const results = await ExpoLocation.reverseGeocodeAsync(location.coords);
-      const address =
-        results.find((_) => "city") || // not all results contain city
-        results.find((result) => "subregion" in result) || // fall back to subregion
-        results.find((result) => "country" in result); // finally fall back to country
-      if (address) {
-        return new Location(
-          location.coords.latitude,
-          location.coords.longitude,
-          address.city || address.subregion,
-          address.country,
-        );
-      } else {
-        console.error("Could not extract city from reverse geocode");
-        return null;
-      }
+      const address = await this.reverseGeocode(location.coords);
+      return new Location(
+        location.coords.latitude,
+        location.coords.longitude,
+        address?.city ?? null,
+        address?.country ?? null,
+      );
     } catch (error: any) {
       console.error("Could not retrieve current location: " + error.message);
       alert("Could not retrieve current location: " + error.message);
       return null;
     }
+  }
+
+  async reverseGeocode(coords: {
+    latitude: number;
+    longitude: number;
+  }): Promise<{ city?: string; country?: string }> {
+    if (!this.isEnabled) {
+      return undefined;
+    }
+    try {
+      const url = this.buildReverseGeocodeUrl(coords);
+      const response = await fetch(url);
+      const json = (await response.json()) as ReverseGeocodeResponse;
+      if (json.results.length == 0) {
+        throw new Error("No results");
+      }
+      return {
+        city: json.results[0].address_components.find(
+          (component) =>
+            component.types.includes("locality") ||
+            component.types.includes("postal_town"),
+        )?.long_name,
+        country: json.results[0].address_components.find((component) =>
+          component.types.includes("country"),
+        )?.long_name,
+      };
+    } catch (error: any) {
+      console.error("Could not reverse geocode: " + error.message);
+      alert("Could not reverse geocode: " + error.message);
+      return undefined;
+    }
+  }
+
+  buildReverseGeocodeUrl(coords: { latitude: number; longitude: number }) {
+    return `${REVERSE_GEOCODE_BASE_URL}?latlng=${coords.latitude},${coords.longitude}&result_type=street_address&key=${GOOGLE_GEOCODING_API_KEY}`;
   }
 
   async getPermission(): Promise<boolean> {
