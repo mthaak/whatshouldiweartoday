@@ -157,7 +157,7 @@ export default class SettingsScreen extends React.Component<
             </ListItem>
           </View>
           <Text style={[styles.footer]}>
-            Build date: {Constants.manifest.extra.buildDate}
+            Build date: {Constants.expoConfig.extra.buildDate}
           </Text>
         </View>
       </>
