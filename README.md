@@ -34,7 +34,7 @@ GOOGLE_GEOCODING_API_KEY=<...>
 
 - Start Expo from the repo root: `expo start`
 - Open the app (follow the Expo instructions). Either:
-  - On your phone with the Expo client
+  - On your phone with the Expo Go client
   - In your web browser
 - Start developing and see the changes reflected automatically in the app
 
@@ -43,12 +43,10 @@ Also have a look at the [amazing documentation](https://docs.expo.io/get-started
 ### How to build
 
 If you want to build a new version of the Android app, run:
-`expo build:android -t apk`
-Or using EAS:
-`eas build -p android`
+`eas build --profile development --platform android`
 
 To perform over-the-air (OTA) updates of the built app, run:
-`expo publish`
+`eas update --channel development`
 
 ### Style
 
