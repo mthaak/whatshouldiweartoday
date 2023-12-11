@@ -1,5 +1,6 @@
 import { Lato_400Regular, useFonts } from "@expo-google-fonts/lato";
 import Constants from "expo-constants";
+import "expo-dev-client";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
