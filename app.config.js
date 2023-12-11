@@ -16,6 +16,12 @@ module.exports = {
     android: {
       package: "com.mthaak.whatshouldiweartoday",
       versionCode: 1,
+      permissions: [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+      ],
     },
     ios: {
       bundleIdentifier: "com.mthaak.whatshouldiweartoday",
