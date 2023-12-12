@@ -3,9 +3,9 @@ import { StyleSheet, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
 import * as Colors from "../constants/colors";
-import Location from "../common/Location";
-import UserProfile from "../common/UserProfile";
 import { styles as gStyles } from "../constants/styles";
+import Location from "../models/Location";
+import UserProfile from "../models/UserProfile";
 import LocationService from "../services/LocationService";
 import Store from "../services/Store";
 

@@ -2,8 +2,8 @@ import * as ExpoLocation from "expo-location";
 import { GOOGLE_GEOCODING_API_KEY } from "@env";
 import { EventEmitter } from "eventemitter3";
 
-import Location from "../common/Location";
-import { ReverseGeocodeResponse } from "../common/ReverseGeocodeResponse";
+import Location from "../models/Location";
+import { ReverseGeocodeResponse } from "../models/ReverseGeocodeResponse";
 
 const REVERSE_GEOCODE_BASE_URL =
   "https://maps.googleapis.com/maps/api/geocode/json";
