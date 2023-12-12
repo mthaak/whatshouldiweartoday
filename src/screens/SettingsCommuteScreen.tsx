@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
@@ -10,164 +10,152 @@ import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
 
-type SettingsCommuteScreenState = {
-  profile: UserProfile | null;
-  dateTimePickerShown: string | null;
-};
+const SettingsCommuteScreen: React.FC = () => {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [dateTimePickerShown, setDateTimePickerShown] = useState<string | null>(
+    null,
+  );
 
-export default class SettingsCommuteScreen extends React.Component<
-  any,
-  SettingsCommuteScreenState
-> {
-  navigation: any;
-
-  constructor(props) {
-    super(props);
-    this.navigation = props.navigation;
-    this.state = {
-      profile: null,
-      dateTimePickerShown: null,
+  useEffect(() => {
+    const updateProfile = async () => {
+      const retrievedProfile = await Store.retrieveProfile();
+      setProfile(retrievedProfile);
     };
 
-    this.updateProfile();
-  }
+    const handleMount = async () => {
+      await updateProfile();
+    };
 
-  componentDidMount() {
-    Store.subscribe(this.updateProfile);
-  }
+    handleMount();
+    Store.subscribe(updateProfile);
 
-  componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile);
-  }
+    return () => {
+      Store.unsubscribe(updateProfile);
+    };
+  }, []);
 
-  updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile);
+  const showDateTimePicker = (timeProp: string) => {
+    setDateTimePickerShown(timeProp);
   };
 
-  setProfile = (profile: UserProfile) => {
-    this.setState({
-      profile: profile,
-    });
-  };
-
-  showDateTimePicker = (timeProp: string) => {
-    this.setState({ dateTimePickerShown: timeProp });
-  };
-
-  handleTimeEdit = (selectedDate: Date) => {
+  const handleTimeEdit = (selectedDate: Date) => {
     if (selectedDate === undefined) {
       return;
     }
-    const { profile, dateTimePickerShown } = this.state;
+
+    if (!profile) return;
+
+    const updatedProfile = { ...profile };
     if (dateTimePickerShown === "leave") {
-      profile.commute.leaveTime = new Time(
+      updatedProfile.commute.leaveTime = new Time(
         selectedDate.getHours(),
         selectedDate.getMinutes(),
       );
     } else if (dateTimePickerShown === "return") {
-      profile.commute.returnTime = new Time(
+      updatedProfile.commute.returnTime = new Time(
         selectedDate.getHours(),
         selectedDate.getMinutes(),
       );
     }
-    this.setState({ profile: profile, dateTimePickerShown: null });
-    Store.saveProfile(profile);
+
+    setProfile(updatedProfile);
+    setDateTimePickerShown(null);
+    Store.saveProfile(updatedProfile);
   };
 
-  handleCheckboxToggle = (dayIdx: number) => {
-    const { profile } = this.state;
-    profile.commute.days[dayIdx] = !profile.commute.days[dayIdx];
-    this.setState({ profile: profile });
-    Store.saveProfile(profile);
+  const handleCheckboxToggle = (dayIdx: number) => {
+    if (!profile) return;
+
+    const updatedProfile = {
+      ...profile,
+      commute: { ...profile.commute, days: [...profile.commute.days] },
+    };
+    updatedProfile.commute.days[dayIdx] = !updatedProfile.commute.days[dayIdx];
+
+    setProfile(updatedProfile);
+    Store.saveProfile(updatedProfile);
   };
 
-  render() {
-    const { profile, dateTimePickerShown } = this.state;
-    if (profile === null) {
-      return <Text>Loading...</Text>;
-    }
-
-    let pickerValue;
-    if (dateTimePickerShown) {
-      let time;
-      if (dateTimePickerShown === "leave") {
-        time = this.state.profile.commute.leaveTime;
-      } else if (dateTimePickerShown === "return") {
-        time = this.state.profile.commute.returnTime;
-      }
-      if (time?.hours && time.minutes) {
-        pickerValue = new Date(2000, 1, 1, time.hours, time.minutes);
-      } else {
-        pickerValue = new Date(2000, 1, 1, 8, 0); // default is 8 am
-      }
-    }
-
-    return (
-      <>
-        <View style={styles.container}>
-          <View style={styles.list}>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Commute days
-                </ListItem.Title>
-                <WeekdaySelect
-                  values={profile.commute.days}
-                  onToggle={this.handleCheckboxToggle}
-                />
-              </ListItem.Content>
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Leave time
-                </ListItem.Title>
-              </ListItem.Content>
-              <Button
-                title={
-                  profile.commute.leaveTime != null
-                    ? profile.commute.leaveTime.toString()
-                    : ""
-                }
-                onPress={() => this.showDateTimePicker("leave")}
-                titleStyle={[gStyles.normal]}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Return time
-                </ListItem.Title>
-              </ListItem.Content>
-              <Button
-                title={
-                  profile.commute.returnTime != null
-                    ? profile.commute.returnTime.toString()
-                    : ""
-                }
-                onPress={() => this.showDateTimePicker("return")}
-                titleStyle={[gStyles.normal]}
-              />
-            </ListItem>
-          </View>
-
-          {this.state.dateTimePickerShown && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={pickerValue}
-              mode="time"
-              is24Hour
-              display="default"
-              onChange={(event, selectedTime) =>
-                this.handleTimeEdit(selectedTime)
-              }
-            />
-          )}
-        </View>
-      </>
-    );
+  if (!profile) {
+    return <Text>Loading...</Text>;
   }
-}
+
+  let pickerValue;
+  if (dateTimePickerShown) {
+    let time;
+    if (dateTimePickerShown === "leave") {
+      time = profile.commute.leaveTime;
+    } else if (dateTimePickerShown === "return") {
+      time = profile.commute.returnTime;
+    }
+    if (time?.hours && time.minutes) {
+      pickerValue = new Date(2000, 1, 1, time.hours, time.minutes);
+    } else {
+      pickerValue = new Date(2000, 1, 1, 8, 0); // default is 8 am
+    }
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.list}>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>
+              Commute days
+            </ListItem.Title>
+            <WeekdaySelect
+              values={profile.commute.days}
+              onToggle={handleCheckboxToggle}
+            />
+          </ListItem.Content>
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>
+              Leave time
+            </ListItem.Title>
+          </ListItem.Content>
+          <Button
+            title={
+              profile.commute.leaveTime != null
+                ? profile.commute.leaveTime.toString()
+                : ""
+            }
+            onPress={() => showDateTimePicker("leave")}
+            titleStyle={[gStyles.normal]}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>
+              Return time
+            </ListItem.Title>
+          </ListItem.Content>
+          <Button
+            title={
+              profile.commute.returnTime != null
+                ? profile.commute.returnTime.toString()
+                : ""
+            }
+            onPress={() => showDateTimePicker("return")}
+            titleStyle={[gStyles.normal]}
+          />
+        </ListItem>
+      </View>
+
+      {dateTimePickerShown && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={pickerValue}
+          mode="time"
+          is24Hour
+          display="default"
+          onChange={(event, selectedTime) => handleTimeEdit(selectedTime)}
+        />
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -190,3 +178,5 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
+
+export default SettingsCommuteScreen;

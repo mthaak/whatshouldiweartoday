@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, StyleSheet } from "react-native";
 import { Button, Header, Icon } from "react-native-elements";
 
@@ -30,91 +31,126 @@ type WeatherScreenState = {
   profile: UserProfile | null;
   location: Location | null;
   isRefreshing: boolean;
-  weatherForecast: WeatherForecast;
+  weatherForecast: WeatherForecast | null;
   weatherForecastFailed: boolean;
+  timeLastRefreshed?: number;
 };
 
-export default class WeatherScreen extends React.Component<
-  any,
-  WeatherScreenState
-> {
-  navigation: any;
-  focusListener: any;
-  timeLastRefreshed: any;
+const WeatherScreen: React.FC<any> = (props) => {
+  const [state, setState] = useState<WeatherScreenState>({
+    profile: null,
+    location: null,
+    isRefreshing: false,
+    weatherForecast: null,
+    weatherForecastFailed: false,
+    timeLastRefreshed: undefined,
+  });
 
-  constructor(props) {
-    super(props);
-    this.navigation = props.navigation;
-    this.state = {
-      profile: null,
-      location: null,
-      isRefreshing: false,
-      weatherForecast: null,
-      weatherForecastFailed: false,
+  const navigation = props.navigation;
+
+  useEffect(() => {
+    const refreshData = async () => {
+      if (
+        !state.timeLastRefreshed ||
+        (Date.now() - state.timeLastRefreshed) / 1e3 > REFRESH_PERIOD
+      ) {
+        Promise.all([updateProfile(), updateLocation()]).then(
+          ([profile, location]) => refreshWeather(profile, location, false),
+        );
+        setState((prevState) => ({
+          ...prevState,
+          timeLastRefreshed: Date.now(),
+        }));
+      }
     };
-  }
 
-  componentDidMount() {
-    this.refreshData();
+    const updateProfileAndThenRefreshWeather = async () => {
+      const profile = await updateProfile();
+      refreshWeather(profile, state.location, true);
+    };
 
-    Store.subscribe(this.updateProfileAndThenRefreshWeather);
-    LocationService.subscribe(this.updateLocationAndThenRefreshWeather);
-    WeatherService.subscribe(this.updateWeather);
+    const updateLocationAndThenRefreshWeather = async () => {
+      const location = await updateLocation();
+      refreshWeather(state.profile, location);
+    };
 
-    this.focusListener = this.navigation.addListener("focus", this.refreshData);
-  }
+    const handleMount = async () => {
+      refreshData();
+      Store.subscribe(updateProfileAndThenRefreshWeather);
+      LocationService.subscribe(updateLocationAndThenRefreshWeather);
+      WeatherService.subscribe(updateWeather);
+    };
 
-  componentWillUnmount() {
-    Store.unsubscribe(this.updateProfileAndThenRefreshWeather);
-    LocationService.unsubscribe(this.updateLocationAndThenRefreshWeather);
-    WeatherService.unsubscribe(this.updateWeather);
-  }
+    handleMount();
 
-  updateProfile = async () => {
-    return await Store.retrieveProfile().then((profile) => {
-      this.setProfile(profile);
-      return profile;
-    });
+    const focusListener = navigation.addListener("focus", refreshData);
+
+    return () => {
+      focusListener();
+      Store.unsubscribe(updateProfileAndThenRefreshWeather);
+      LocationService.unsubscribe(updateLocationAndThenRefreshWeather);
+      WeatherService.unsubscribe(updateWeather);
+    };
+  }, [state.timeLastRefreshed, state.location, state.profile, navigation]);
+
+  const updateProfile = async () => {
+    const profile = await Store.retrieveProfile();
+    setProfile(profile);
+    return profile;
   };
 
-  updateLocation = async () => {
-    return await LocationService.getLocationAsync().then((location) => {
-      this.setLocation(location);
-      return location;
-    });
+  const updateLocation = async () => {
+    const location = await LocationService.getLocationAsync();
+    setLocation(location);
+    return location;
   };
 
-  updateWeather = async () => {
-    const { profile, location } = this.state;
-    return await WeatherService.getWeatherAsync(
+  const updateWeather = async () => {
+    const { profile, location } = state;
+    const weatherForecast = await WeatherService.getWeatherAsync(
       location,
       profile.tempUnit,
-    ).then(this.setWeather);
+    );
+    setWeather(weatherForecast);
+    return weatherForecast;
   };
 
-  refreshWeather = async (
+  const refreshWeather = async (
     profile: UserProfile,
     location: Location,
     force = false,
   ) => {
-    const { isRefreshing } = this.state;
-    if (isRefreshing) return; // don't refresh simultaneously
+    const { isRefreshing } = state;
+    if (isRefreshing) return;
 
     if (profile) {
       if (location?.lon && location.lat) {
-        this.setState({ isRefreshing: true });
+        setState((prevState) => ({
+          ...prevState,
+          isRefreshing: true,
+        }));
         try {
           const weatherForecast = await WeatherService.getWeatherAsync(
             location,
             profile.tempUnit,
             force,
           );
-          this.setWeather(weatherForecast);
-          this.setState({ weatherForecastFailed: false });
+          setWeather(weatherForecast);
+          setState((prevState) => ({
+            ...prevState,
+            weatherForecastFailed: false,
+          }));
         } catch {
-          this.setState({ weatherForecastFailed: true });
+          setState((prevState) => ({
+            ...prevState,
+            weatherForecastFailed: true,
+          }));
+        } finally {
+          setState((prevState) => ({
+            ...prevState,
+            isRefreshing: false,
+          }));
         }
-        this.setState({ isRefreshing: false });
       } else {
         console.warn(
           "Current location not available. Cannot retrieve weather forecast",
@@ -123,50 +159,28 @@ export default class WeatherScreen extends React.Component<
     }
   };
 
-  refreshData = () => {
-    if (
-      !this.timeLastRefreshed ||
-      (Date.now() - this.timeLastRefreshed) / 1e3 > REFRESH_PERIOD
-    ) {
-      // Weather gets updated after profile or location are updated
-      Promise.all([this.updateProfile(), this.updateLocation()]).then(
-        ([profile, location]) => this.refreshWeather(profile, location, false),
-      );
-      this.timeLastRefreshed = Date.now();
-    }
+  const setProfile = (profile: UserProfile) => {
+    setState((prevState) => ({
+      ...prevState,
+      profile,
+    }));
   };
 
-  updateProfileAndThenRefreshWeather = async () => {
-    return await this.updateProfile().then((profile) =>
-      this.refreshWeather(profile, this.state.location, true),
-    );
+  const setLocation = (location: Location) => {
+    setState((prevState) => ({
+      ...prevState,
+      location,
+    }));
   };
 
-  updateLocationAndThenRefreshWeather = async () => {
-    return await this.updateLocation().then((location) =>
-      this.refreshWeather(this.state.profile, location),
-    );
+  const setWeather = (weatherForecast: WeatherForecast) => {
+    setState((prevState) => ({
+      ...prevState,
+      weatherForecast,
+    }));
   };
 
-  setProfile = (profile: UserProfile) => {
-    this.setState({
-      profile: profile,
-    });
-  };
-
-  setLocation = (location: Location) => {
-    this.setState({
-      location: location,
-    });
-  };
-
-  setWeather = (weatherForecast: WeatherForecast) => {
-    this.setState({
-      weatherForecast: weatherForecast,
-    });
-  };
-
-  renderTopBar() {
+  const renderTopBar = () => {
     return (
       <Header
         centerComponent={
@@ -180,9 +194,7 @@ export default class WeatherScreen extends React.Component<
             size={30}
             color={Colors.foreground}
             style={gStyles.shadow}
-            onPress={() =>
-              this.navigation.navigate("Settings", { screen: "Main" })
-            }
+            onPress={() => navigation.navigate("Settings", { screen: "Main" })}
           />
         }
         centerContainerStyle={{ justifyContent: "center" }}
@@ -193,11 +205,10 @@ export default class WeatherScreen extends React.Component<
         }}
       />
     );
-  }
+  };
 
-  renderTodayWeather() {
-    const { profile, location, weatherForecast } = this.state;
-
+  const renderTodayWeather = () => {
+    const { profile, location, weatherForecast } = state;
     const todayWeather = getTodayWeather(weatherForecast);
     return (
       <TodayWeather
@@ -208,11 +219,10 @@ export default class WeatherScreen extends React.Component<
         location={location}
       />
     );
-  }
+  };
 
-  renderWearRecommendation() {
-    const { profile, weatherForecast } = this.state as any;
-
+  const renderWearRecommendation = () => {
+    const { profile, weatherForecast } = state;
     const wearRecommendation = getWearRecommendation(weatherForecast, profile);
     return (
       <WearRecommendation
@@ -220,10 +230,10 @@ export default class WeatherScreen extends React.Component<
         profile={profile}
       />
     );
-  }
+  };
 
-  renderCommuteWeather() {
-    const { profile, weatherForecast } = this.state as any;
+  const renderCommuteWeather = () => {
+    const { profile, weatherForecast } = state;
 
     if (isTodayTrue(profile.commute.days)) {
       let weatherAtLeave: WeatherForecastAtTime | null = null;
@@ -260,16 +270,16 @@ export default class WeatherScreen extends React.Component<
     } else {
       return null;
     }
-  }
+  };
 
-  renderContent() {
+  const renderContent = () => {
     const {
       profile,
       location,
       weatherForecast,
       isRefreshing,
       weatherForecastFailed,
-    } = this.state;
+    } = state;
 
     if (isRefreshing) {
       return (
@@ -327,31 +337,29 @@ export default class WeatherScreen extends React.Component<
     return (
       <>
         <View style={{ height: "20%", justifyContent: "center" }}>
-          {this.renderTodayWeather()}
+          {renderTodayWeather()}
         </View>
 
         <View style={{ height: "60%", justifyContent: "center" }}>
-          {this.renderWearRecommendation()}
+          {renderWearRecommendation()}
         </View>
 
         <View style={{ height: "20%", justifyContent: "center" }}>
-          {this.renderCommuteWeather()}
+          {renderCommuteWeather()}
         </View>
       </>
     );
-  }
+  };
 
-  render() {
-    return (
-      <View style={[styles.container]}>
-        {this.renderTopBar()}
-        <View style={{ flex: 1, paddingHorizontal: 15 }}>
-          {this.renderContent()}
-        </View>
-      </View>
-    );
-  }
-}
+  return (
+    <View style={[styles.container]}>
+      {renderTopBar()}
+      <View style={{ flex: 1, paddingHorizontal: 15 }}>{renderContent()}</View>
+    </View>
+  );
+};
+
+export default WeatherScreen;
 
 type TodayWeatherProps = {
   location: Location | null;
@@ -360,124 +368,110 @@ type TodayWeatherProps = {
   dayTemp: number;
   feelsLikeTemp: number;
 };
+const TodayWeather: React.FC<TodayWeatherProps> = (props) => {
+  const locationStr = props.location ? props.location.toString() : "Unknown";
 
-class TodayWeather extends React.Component<TodayWeatherProps, null> {
-  render() {
-    const locationStr = this.props.location
-      ? this.props.location.toString()
-      : "Unknown";
-    return (
-      <>
-        <View style={{ marginLeft: "auto", marginRight: "auto" }}>
-          <View style={{ flexDirection: "row" }}>
-            <View style={{ width: 120 }}>
-              <WeatherIcon weather={this.props.weatherDescr} size={120} />
-            </View>
-            <View style={{ width: "60%", justifyContent: "center", top: -10 }}>
-              <Text style={[gStyles.shadow, gStyles.xxlarge]}>
-                {formatTemp(this.props.dayTemp, this.props.tempUnit)}
-              </Text>
-              <Text style={[gStyles.shadow, gStyles.small]}>
-                feels like{" "}
-                {formatTemp(this.props.feelsLikeTemp, this.props.tempUnit)}
-              </Text>
-            </View>
+  return (
+    <>
+      <View style={{ marginLeft: "auto", marginRight: "auto" }}>
+        <View style={{ flexDirection: "row" }}>
+          <View style={{ width: 120 }}>
+            <WeatherIcon weather={props.weatherDescr} size={120} />
           </View>
-          <View
-            style={{
-              position: "relative",
-              top: -25,
-              left: 20,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <View style={{ marginRight: 7 }}>
-              <Icon name="place" size={20} color={Colors.foreground} />
-            </View>
-            <View>
-              <Text style={[gStyles.shadow, gStyles.small]}>{locationStr}</Text>
-            </View>
+          <View style={{ width: "60%", justifyContent: "center", top: -10 }}>
+            <Text style={[gStyles.shadow, gStyles.xxlarge]}>
+              {formatTemp(props.dayTemp, props.tempUnit)}
+            </Text>
+            <Text style={[gStyles.shadow, gStyles.small]}>
+              feels like {formatTemp(props.feelsLikeTemp, props.tempUnit)}
+            </Text>
           </View>
         </View>
-      </>
-    );
-  }
-}
+        <View
+          style={{
+            position: "relative",
+            top: -25,
+            left: 20,
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View style={{ marginRight: 7 }}>
+            <Icon name="place" size={20} color={Colors.foreground} />
+          </View>
+          <View>
+            <Text style={[gStyles.shadow, gStyles.small]}>{locationStr}</Text>
+          </View>
+        </View>
+      </View>
+    </>
+  );
+};
 
 type WearRecommendationProps = {
   wearRecommendation: Record<any, any>;
   profile: UserProfile;
 };
 
-class WearRecommendation extends React.Component<
-  WearRecommendationProps,
-  null
-> {
-  render() {
-    const tempImages = this.props.wearRecommendation.temp.clothes.map(
-      (name) => (
-        <ClothingImage
-          key={name}
-          name={name}
-          style={{ width: 50, height: 80, margin: 8 }}
-        />
-      ),
-    );
-    const rainImages = this.props.wearRecommendation.rain.clothes.map(
-      (name) => (
-        <ClothingImage
-          key={name}
-          name={name}
-          style={{ width: 50, height: 80, margin: 8 }}
-        />
-      ),
-    );
-    return (
+const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
+  const tempImages = props.wearRecommendation.temp.clothes.map((name) => (
+    <ClothingImage
+      key={name}
+      name={name}
+      style={{ width: 50, height: 80, margin: 8 }}
+    />
+  ));
+  const rainImages = props.wearRecommendation.rain.clothes.map((name) => (
+    <ClothingImage
+      key={name}
+      name={name}
+      style={{ width: 50, height: 80, margin: 8 }}
+    />
+  ));
+  return (
+    <View
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-around",
+        padding: 18,
+        backgroundColor: Colors.darkBackground,
+        borderRadius: 5,
+      }}
+    >
       <View
         style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-around",
-          padding: 18,
-          backgroundColor: Colors.darkBackground,
-          borderRadius: 5,
+          marginLeft: "auto",
+          marginRight: "auto",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          backgroundColor: "none",
+          minHeight: 10,
         }}
       >
-        <View
-          style={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            backgroundColor: "none",
-            minHeight: 10,
-          }}
-        >
-          {tempImages}
-        </View>
-        <Text style={[gStyles.large, { marginTop: 0 }]}>
-          {this.props.wearRecommendation.temp.msg}
-        </Text>
-        <View
-          style={{
-            marginLeft: "auto",
-            marginRight: "auto",
-            flexDirection: "row",
-            flexWrap: "wrap",
-            backgroundColor: "none",
-            minHeight: 10,
-          }}
-        >
-          {rainImages}
-        </View>
-        <Text style={[gStyles.large, { marginTop: 0 }]}>
-          {this.props.wearRecommendation.rain.msg}
-        </Text>
+        {tempImages}
       </View>
-    );
-  }
-}
+      <Text style={[gStyles.large, { marginTop: 0 }]}>
+        {props.wearRecommendation.temp.msg}
+      </Text>
+      <View
+        style={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          backgroundColor: "none",
+          minHeight: 10,
+        }}
+      >
+        {rainImages}
+      </View>
+      <Text style={[gStyles.large, { marginTop: 0 }]}>
+        {props.wearRecommendation.rain.msg}
+      </Text>
+    </View>
+  );
+};
 
 type CommuteProps = {
   leaveTime: Time;
@@ -491,131 +485,109 @@ type CommuteProps = {
   tempUnit: TemperatureUnit;
 };
 
-class Commute extends React.Component<CommuteProps, null> {
-  render() {
-    return (
-      <>
-        <Text style={[gStyles.subtitle]}>Commute</Text>
-        <View style={{ width: "100%", flexDirection: "row" }}>
-          <View style={styles.commuteElem}>
-            {this.props.leaveTime && (
-              <>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View style={{ marginRight: 10 }}>
-                    <Icon
-                      name="arrow-forward"
-                      size={20}
-                      color={Colors.foreground}
-                    />
-                  </View>
-                  <Text style={[gStyles.shadow, gStyles.normal]}>
-                    Leave {this.props.leaveTime.toString()}
+const Commute: React.FC<CommuteProps> = (props) => {
+  return (
+    <>
+      <Text style={[gStyles.subtitle]}>Commute</Text>
+      <View style={{ width: "100%", flexDirection: "row" }}>
+        <View style={styles.commuteElem}>
+          {props.leaveTime && (
+            <>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ marginRight: 10 }}>
+                  <Icon
+                    name="arrow-forward"
+                    size={20}
+                    color={Colors.foreground}
+                  />
+                </View>
+                <Text style={[gStyles.shadow, gStyles.normal]}>
+                  Leave {props.leaveTime.toString()}
+                </Text>
+              </View>
+              <View style={{ width: "100%", flexDirection: "row" }}>
+                <WeatherIcon weather={props.weatherDescrAtLeave} size={70} />
+                <View style={{ justifyContent: "center" }}>
+                  <Text style={[gStyles.shadow, gStyles.xlarge]}>
+                    {formatTemp(props.tempAtLeave, props.tempUnit)}
+                  </Text>
+                  <Text style={[gStyles.shadow, gStyles.xsmall]}>
+                    feels like{" "}
+                    {formatTemp(props.feelsLikeAtLeave, props.tempUnit)}
                   </Text>
                 </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                  <WeatherIcon
-                    weather={this.props.weatherDescrAtLeave}
-                    size={70}
-                  />
-                  <View style={{ justifyContent: "center" }}>
-                    <Text style={[gStyles.shadow, gStyles.xlarge]}>
-                      {formatTemp(this.props.tempAtLeave, this.props.tempUnit)}
-                    </Text>
-                    <Text style={[gStyles.shadow, gStyles.xsmall]}>
-                      feels like{" "}
-                      {formatTemp(
-                        this.props.feelsLikeAtLeave,
-                        this.props.tempUnit,
-                      )}
-                    </Text>
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
-          <View style={styles.commuteElem}>
-            {this.props.returnTime && (
-              <>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                  <View style={{ marginRight: 10 }}>
-                    <Icon
-                      name="arrow-back"
-                      size={20}
-                      color={Colors.foreground}
-                    />
-                  </View>
-                  <Text style={[gStyles.shadow, gStyles.normal]}>
-                    Return {this.props.returnTime.toString()}
-                  </Text>
-                </View>
-                <View style={{ width: "100%", flexDirection: "row" }}>
-                  <WeatherIcon
-                    weather={this.props.weatherDescrAtReturn}
-                    size={70}
-                  />
-                  <View style={{ justifyContent: "center" }}>
-                    <Text style={[gStyles.shadow, gStyles.xlarge]}>
-                      {formatTemp(this.props.tempAtReturn, this.props.tempUnit)}
-                    </Text>
-                    <Text style={[gStyles.shadow, gStyles.xsmall]}>
-                      feels like{" "}
-                      {formatTemp(
-                        this.props.feelsLikeAtReturn,
-                        this.props.tempUnit,
-                      )}
-                    </Text>
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
+              </View>
+            </>
+          )}
         </View>
-      </>
-    );
-  }
-}
+        <View style={styles.commuteElem}>
+          {props.returnTime && (
+            <>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ marginRight: 10 }}>
+                  <Icon name="arrow-back" size={20} color={Colors.foreground} />
+                </View>
+                <Text style={[gStyles.shadow, gStyles.normal]}>
+                  Return {props.returnTime.toString()}
+                </Text>
+              </View>
+              <View style={{ width: "100%", flexDirection: "row" }}>
+                <WeatherIcon weather={props.weatherDescrAtReturn} size={70} />
+                <View style={{ justifyContent: "center" }}>
+                  <Text style={[gStyles.shadow, gStyles.xlarge]}>
+                    {formatTemp(props.tempAtReturn, props.tempUnit)}
+                  </Text>
+                  <Text style={[gStyles.shadow, gStyles.xsmall]}>
+                    feels like{" "}
+                    {formatTemp(props.feelsLikeAtReturn, props.tempUnit)}
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </>
+  );
+};
 
 type ClothingImageProps = {
   name: string;
   style: any;
 };
 
-class ClothingImage extends React.Component<ClothingImageProps, null> {
-  render() {
-    return (
-      <Image
-        source={ClothingImages[this.props.name]}
-        resizeMode="contain"
-        style={this.props.style}
-      />
-    );
-  }
-}
+const ClothingImage: React.FC<ClothingImageProps> = (props) => {
+  return (
+    <Image
+      source={ClothingImages[props.name]}
+      resizeMode="contain"
+      style={props.style}
+    />
+  );
+};
 
 type WeatherIconProps = {
   weather: any;
   size: number;
 };
 
-class WeatherIcon extends React.Component<WeatherIconProps, null> {
-  render() {
-    if (this.props.weather) {
-      const url = `http://openweathermap.org/img/wn/${this.props.weather.icon}@2x.png`;
-      const accessibilityLabel = this.props.weather.description;
-      return (
-        <Image
-          source={{ uri: url }}
-          accessibilityLabel={accessibilityLabel}
-          style={{
-            width: this.props.size || "100%",
-            height: this.props.size || "100%",
-          }}
-        />
-      );
-    }
-    return null;
+const WeatherIcon = (props: WeatherIconProps) => {
+  if (props.weather) {
+    const url = `http://openweathermap.org/img/wn/${props.weather.icon}@2x.png`;
+    const accessibilityLabel = props.weather.description;
+    return (
+      <Image
+        source={{ uri: url }}
+        accessibilityLabel={accessibilityLabel}
+        style={{
+          width: props.size || "100%",
+          height: props.size || "100%",
+        }}
+      />
+    );
   }
-}
+  return null;
+};
 
 type CenterMessageProps = {
   message: string;
@@ -623,34 +595,32 @@ type CenterMessageProps = {
   bottom?: any;
 };
 
-class CenterMessage extends React.Component<CenterMessageProps, null> {
-  render() {
-    let animation;
-    if (this.props.active) {
-      animation = <ActivityIndicator size={50} color={Colors.foreground} />;
-    } else {
-      animation = <Icon name="error" size={40} color={Colors.foreground} />;
-    }
-    return (
-      <>
-        <View style={[gStyles.center, gStyles.centerVertical]}>
-          {animation}
-          <Text
-            style={[
-              gStyles.large,
-              gStyles.shadow,
-              gStyles.centerText,
-              { marginTop: 20, marginBottom: 20 },
-            ]}
-          >
-            {this.props.message}
-          </Text>
-          {this.props.bottom}
-        </View>
-      </>
-    );
+const CenterMessage: React.FC<CenterMessageProps> = (props) => {
+  let animation;
+  if (props.active) {
+    animation = <ActivityIndicator size={50} color={Colors.foreground} />;
+  } else {
+    animation = <Icon name="error" size={40} color={Colors.foreground} />;
   }
-}
+  return (
+    <>
+      <View style={[gStyles.center, gStyles.centerVertical]}>
+        {animation}
+        <Text
+          style={[
+            gStyles.large,
+            gStyles.shadow,
+            gStyles.centerText,
+            { marginTop: 20, marginBottom: 20 },
+          ]}
+        >
+          {props.message}
+        </Text>
+        {props.bottom}
+      </View>
+    </>
+  );
+};
 
 function formatDateToday() {
   return new Date().toDateString();

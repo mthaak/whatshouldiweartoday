@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
@@ -9,161 +9,134 @@ import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
 import { stopBackgroundTasks } from "../services/background";
 
-type SettingsScreenState = {
-  profile: UserProfile | null;
-};
+const SettingsScreen: React.FC<any> = (props) => {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [namePlaceholder, setNamePlaceholder] =
+    useState<string>("Type your name");
 
-export default class SettingsScreen extends React.Component<
-  any,
-  SettingsScreenState
-> {
-  navigation: any;
-  namePlaceholder: string;
+  const navigation = props.navigation;
 
-  constructor(props) {
-    super(props);
-    this.navigation = props.navigation;
-    this.state = { profile: null };
+  useEffect(() => {
+    const handleMount = async () => {
+      const retrievedProfile = await Store.retrieveProfile();
+      setProfile(retrievedProfile);
+      setNamePlaceholder(retrievedProfile.name || "Type your name");
+    };
 
-    // Dynamic placeholders need to be set only once at init
-    Store.retrieveProfile().then((profile) => {
-      this.namePlaceholder = profile.name || "Type your name";
-      this.setState({ profile: profile });
-    });
-  }
+    handleMount();
+    Store.subscribe(updateProfile);
+    return () => {
+      Store.unsubscribe(updateProfile);
+    };
+  }, []);
 
-  componentDidMount() {
-    Store.subscribe(this.updateProfile);
-  }
-
-  componentWillUnmount() {
-    Store.unsubscribe(this.updateProfile);
-  }
-
-  updateProfile = async () => {
-    return await Store.retrieveProfile().then(this.setProfile);
+  const updateProfile = async () => {
+    const retrievedProfile = await Store.retrieveProfile();
+    setProfile(retrievedProfile);
+    setNamePlaceholder(retrievedProfile.name || "Type your name");
   };
 
-  setProfile = (profile: UserProfile) => {
-    this.setState({
-      profile: profile,
-    });
+  const handleEdit = (key: string, value: any) => {
+    if (!profile) return;
+
+    const updatedProfile = { ...profile, [key]: value };
+    setProfile(updatedProfile);
+    Store.saveProfile(updatedProfile);
   };
 
-  handleEdit(key, value) {
-    const { profile } = this.state;
-    profile[key] = value;
-
-    this.setState({ profile });
-    Store.saveProfile(profile);
-  }
-
-  resetSettings() {
-    this.namePlaceholder = "Type your name";
+  const resetSettings = () => {
+    setNamePlaceholder("Type your name");
     Store.resetProfile();
     stopBackgroundTasks();
+  };
+
+  if (!profile) {
+    return <Text>Loading...</Text>;
   }
 
-  render() {
-    const { profile } = this.state;
-    if (profile == null) {
-      return <Text>Loading...</Text>;
-    }
-
-    return (
-      <>
-        <View style={styles.container}>
-          <View style={styles.list}>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Name
-                </ListItem.Title>
-              </ListItem.Content>
-              <ListItem.Input
-                placeholder={this.namePlaceholder}
-                onChangeText={(value) => this.handleEdit("name", value)}
-                style={styles.inputStyle}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Gender
-                </ListItem.Title>
-              </ListItem.Content>
-              <ListItem.ButtonGroup
-                buttons={["Man", "Woman"]}
-                selectedIndex={profile.gender}
-                onPress={(index) => this.handleEdit("gender", index)}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Home
-                </ListItem.Title>
-              </ListItem.Content>
-              <Text style={[styles.grayText]}>
-                {profile.home ? profile.home.toString() : "Not set"}
-              </Text>
-              <ListItem.Chevron
-                size={24}
-                onPress={() => this.navigation.navigate("Location")}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Commute
-                </ListItem.Title>
-              </ListItem.Content>
-              <ListItem.Chevron
-                size={24}
-                onPress={() => this.navigation.navigate("Commute")}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Alert
-                </ListItem.Title>
-              </ListItem.Content>
-              <ListItem.Chevron
-                size={24}
-                onPress={() => this.navigation.navigate("Alert")}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>
-                  Temperature unit
-                </ListItem.Title>
-              </ListItem.Content>
-              <ListItem.ButtonGroup
-                buttons={["°C", "°F"]}
-                selectedIndex={profile.tempUnit}
-                onPress={(index) => this.handleEdit("tempUnit", index)}
-              />
-            </ListItem>
-            <ListItem bottomDivider containerStyle={styles.listItemContainer}>
-              <Button
-                title="Reset to default settings"
-                onPress={() => this.resetSettings()}
-                containerStyle={[gStyles.center]}
-                titleStyle={[gStyles.normal]}
-                raised
-              />
-            </ListItem>
-          </View>
-          <Text style={[styles.footer]}>
-            Build date: {Constants.expoConfig.extra.buildDate}
+  return (
+    <View style={styles.container}>
+      <View style={styles.list}>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>Name</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Input
+            placeholder={namePlaceholder}
+            onChangeText={(value) => handleEdit("name", value)}
+            style={styles.inputStyle}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>Gender</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.ButtonGroup
+            buttons={["Man", "Woman"]}
+            selectedIndex={profile.gender}
+            onPress={(index) => handleEdit("gender", index)}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>Home</ListItem.Title>
+          </ListItem.Content>
+          <Text style={[styles.grayText]}>
+            {profile.home ? profile.home.toString() : "Not set"}
           </Text>
-        </View>
-      </>
-    );
-  }
-}
+          <ListItem.Chevron
+            size={24}
+            onPress={() => navigation.navigate("Location")}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>
+              Commute
+            </ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Chevron
+            size={24}
+            onPress={() => navigation.navigate("Commute")}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>Alert</ListItem.Title>
+          </ListItem.Content>
+          <ListItem.Chevron
+            size={24}
+            onPress={() => navigation.navigate("Alert")}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <ListItem.Content>
+            <ListItem.Title style={styles.listItemTitle}>
+              Temperature unit
+            </ListItem.Title>
+          </ListItem.Content>
+          <ListItem.ButtonGroup
+            buttons={["°C", "°F"]}
+            selectedIndex={profile.tempUnit}
+            onPress={(index) => handleEdit("tempUnit", index)}
+          />
+        </ListItem>
+        <ListItem bottomDivider containerStyle={styles.listItemContainer}>
+          <Button
+            title="Reset to default settings"
+            onPress={resetSettings}
+            containerStyle={[gStyles.center]}
+            titleStyle={[gStyles.normal]}
+            raised
+          />
+        </ListItem>
+      </View>
+      <Text style={[styles.footer]}>
+        Build date: {Constants.expoConfig.extra?.buildDate}
+      </Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -192,3 +165,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
+export default SettingsScreen;
