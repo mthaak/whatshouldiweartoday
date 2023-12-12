@@ -4,8 +4,8 @@ import { StyleSheet, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
 import * as Colors from "../constants/colors";
-import UserProfile from "../common/UserProfile";
 import { styles as gStyles } from "../constants/styles";
+import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
 import { stopBackgroundTasks } from "../services/background";
 

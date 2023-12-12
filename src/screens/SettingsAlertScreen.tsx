@@ -4,10 +4,10 @@ import { StyleSheet, Switch, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
 import * as Colors from "../constants/colors";
-import Time from "../common/Time";
-import UserProfile from "../common/UserProfile";
 import WeekdaySelect from "../components/WeekdaySelect";
 import { styles as gStyles } from "../constants/styles";
+import Time from "../models/Time";
+import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
 import {
   startBackgroundTasks,

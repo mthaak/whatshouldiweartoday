@@ -1,13 +1,13 @@
-import Time from "../common/Time";
-import UserProfile from "../common/UserProfile";
-import WeatherForecast from "../common/WeatherForecast";
-import { Gender, TemperatureUnit } from "../common/enums";
-import { isInHour, isToday, isTodayTrue } from "../common/timeutils";
+import { isInHour, isToday, isTodayTrue } from "../common/timeUtils";
 import {
   capitalizeFirstLetterOnly,
   fahrenheitToCelsius,
   minByFn,
 } from "../common/utils";
+import Time from "../models/Time";
+import UserProfile from "../models/UserProfile";
+import WeatherForecast from "../models/WeatherForecast";
+import { Gender, TemperatureUnit } from "../models/enums";
 import { rainOrder } from "./rainorder";
 
 // TODO define more strict types

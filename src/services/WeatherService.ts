@@ -1,9 +1,9 @@
 import { OPENWEATHERMAP_APPID } from "@env";
 import { EventEmitter } from "eventemitter3";
 
-import Location from "../common/Location";
-import WeatherForecast from "../common/WeatherForecast";
-import { TemperatureUnit } from "../common/enums";
+import Location from "../models/Location";
+import WeatherForecast from "../models/WeatherForecast";
+import { TemperatureUnit } from "../models/enums";
 
 const OPENWEATHERMAP_BASE_URL =
   "https://api.openweathermap.org/data/2.5/onecall";

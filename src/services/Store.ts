@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { EventEmitter } from "eventemitter3";
 
-import Time from "../common/Time";
-import UserProfile from "../common/UserProfile";
-import { Gender, TemperatureUnit } from "../common/enums";
+import Time from "../models/Time";
+import UserProfile from "../models/UserProfile";
+import { Gender, TemperatureUnit } from "../models/enums";
 
 const INITIAL_PROFILE = new UserProfile(
   null,

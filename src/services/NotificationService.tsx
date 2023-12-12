@@ -1,8 +1,8 @@
 import * as Notifications from "expo-notifications";
 
-import Time from "../common/Time";
-import UserProfile from "../common/UserProfile";
-import { formatTemp } from "../common/weatherutils";
+import { formatTemp } from "../common/weatherUtils";
+import Time from "../models/Time";
+import UserProfile from "../models/UserProfile";
 import { WearRecommendation, WeatherForecastAtTime } from "./weatherrules";
 
 class NotificationService {
