@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { View } from "react-native";
 import { CheckBox } from "react-native-elements";
 
@@ -13,7 +13,7 @@ interface WeekdaySelectProps {
   checkedColorDisabled?: string;
 }
 
-export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
+const WeekdaySelect: React.FC<WeekdaySelectProps> = (props) => {
   const defaultStyle = {
     color: Colors.darkAccent,
   };
@@ -28,10 +28,10 @@ export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
     borderColor: "rgba(0,0,0,0)",
   };
 
-  const containerStyleDisabled = {
-    ...defaultContainerStyleDisabled,
-    ...props.containerStyleDisabled,
-  };
+  const containerStyleDisabled = [
+    defaultContainerStyleDisabled,
+    ...(props.containerStyleDisabled || []),
+  ];
 
   const checkboxes = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
     (name, i) => (
@@ -67,4 +67,6 @@ export default function WeekdaySelect(props: WeekdaySelectProps): JSX.Element {
       {checkboxes}
     </View>
   );
-}
+};
+
+export default WeekdaySelect;
