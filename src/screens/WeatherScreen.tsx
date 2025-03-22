@@ -573,7 +573,7 @@ type WeatherIconProps = {
 
 const WeatherIcon = (props: WeatherIconProps) => {
   if (props.weather) {
-    const url = `http://openweathermap.org/img/wn/${props.weather.icon}@2x.png`;
+    const url = `https://openweathermap.org/img/wn/${props.weather.icon}@2x.png`;
     const accessibilityLabel = props.weather.description;
     return (
       <Image
