@@ -60,7 +60,7 @@ export default function App(): JSX.Element | null {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
+      <SafeAreaProvider testID="app-root">
         <Navigation colorScheme={colorScheme} />
         <StatusBar />
       </SafeAreaProvider>
