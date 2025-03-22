@@ -117,7 +117,7 @@ function getTempRecommendation(
       msg: "It will be warm. Wear something short but also bring extra layers for the colder parts of the day. Also bring extra water.",
       clothes: ["sunglasses", "man_cap"].concat(
         profile.gender === Gender.MAN
-          ? ["man_striped_tshirt", "man_shorts", "main_long_sleeve_buttoned"]
+          ? ["man_striped_tshirt", "man_shorts", "man_long_sleeve_buttoned"]
           : [
               "woman_long_sleeve",
               "woman_tshirt_yellow",
