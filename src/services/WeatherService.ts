@@ -78,11 +78,11 @@ class WeatherService {
 
     const lat = location.lat;
     const lon = location.lon;
-    let units_system = "metric";
+    let units = "metric";
     if (unit === TemperatureUnit.FAHRENHEIT) {
-      units_system = "imperial";
+      units = "imperial";
     }
-    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${appId}&units_system=${units_system}&exclude=minutely&version=3.0`;
+    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${appId}&units=${units}&exclude=minutely&version=3.0`;
   }
 
   subscribe(callback: any) {
