@@ -79,13 +79,10 @@ const SettingsAlertScreen: React.FC = () => {
     setShowDateTimePicker((prev) => !prev);
   };
 
-  const handleTimeEdit = (selectedDate: Date) => {
-    if (selectedDate === undefined) {
-      return;
-    }
+  const handleTimeEdit = (selectedDate: Date | undefined) => {
+    if (!selectedDate || !profile) return;
 
-    if (!profile) return;
-
+    setShowDateTimePicker(false);
     const updatedProfile = {
       ...profile,
       alert: {
@@ -93,11 +90,8 @@ const SettingsAlertScreen: React.FC = () => {
         time: new Time(selectedDate.getHours(), selectedDate.getMinutes()),
       },
     };
-
     setProfile(updatedProfile);
-    setShowDateTimePicker(false);
     Store.saveProfile(updatedProfile);
-
     updateNotification();
   };
 

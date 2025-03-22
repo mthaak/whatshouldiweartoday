@@ -1,8 +1,8 @@
-import { Gender, TemperatureUnit } from '../models/enums';
-import Location from '../models/Location';
-import UserProfile from '../models/UserProfile';
-import WeatherForecast from '../models/WeatherForecast';
-import Time from '../models/Time';
+import Location from "../models/Location";
+import Time from "../models/Time";
+import UserProfile from "../models/UserProfile";
+import WeatherForecast from "../models/WeatherForecast";
+import { Gender, TemperatureUnit } from "../models/enums";
 
 export const mockNavigation = {
   navigate: jest.fn(),
@@ -17,18 +17,18 @@ export const mockProfile: UserProfile = {
   commute: {
     days: [true, true, true, true, true, false, false], // Monday - Sunday
     leaveTime: new Time(9, 0),
-    returnTime: new Time(17, 0)
+    returnTime: new Time(17, 0),
   },
   alert: {
-    enabled: true
-  }
+    enabled: true,
+  },
 } as UserProfile;
 
 export const mockLocation: Location = {
   lat: 40.7128,
-  lon: -74.0060,
-  city: 'New York',
-  country: 'US'
+  lon: -74.006,
+  city: "New York",
+  country: "US",
 } as Location;
 
 export const mockWeatherData: WeatherForecast = {
@@ -37,11 +37,13 @@ export const mockWeatherData: WeatherForecast = {
     feels_like: 19,
     humidity: 65,
     wind_speed: 5,
-    weather: [{
-      main: 'Clear',
-      description: 'clear sky',
-      icon: '01d'
-    }]
+    weather: [
+      {
+        main: "Clear",
+        description: "clear sky",
+        icon: "01d",
+      },
+    ],
   },
   daily: [
     {
@@ -49,28 +51,32 @@ export const mockWeatherData: WeatherForecast = {
       temp: {
         day: 22,
         min: 18,
-        max: 25
+        max: 25,
       },
       feels_like: {
-        day: 21
+        day: 21,
       },
-      weather: [{
-        main: 'Clear',
-        description: 'clear sky',
-        icon: '01d'
-      }]
-    }
+      weather: [
+        {
+          main: "Clear",
+          description: "clear sky",
+          icon: "01d",
+        },
+      ],
+    },
   ],
   hourly: [
     {
       dt: Date.now() / 1000,
       temp: 21,
       feels_like: 20,
-      weather: [{
-        main: 'Clear',
-        description: 'clear sky',
-        icon: '01d'
-      }]
-    }
-  ]
-} as WeatherForecast; 
+      weather: [
+        {
+          main: "Clear",
+          description: "clear sky",
+          icon: "01d",
+        },
+      ],
+    },
+  ],
+} as WeatherForecast;

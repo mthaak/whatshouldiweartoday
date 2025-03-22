@@ -38,28 +38,19 @@ const SettingsCommuteScreen: React.FC = () => {
     setDateTimePickerShown(timeProp);
   };
 
-  const handleTimeEdit = (selectedDate: Date) => {
-    if (selectedDate === undefined) {
-      return;
-    }
+  const handleTimeEdit = (selectedDate: Date | undefined) => {
+    if (!selectedDate || !profile) return;
 
-    if (!profile) return;
-
-    const updatedProfile = { ...profile };
-    if (dateTimePickerShown === "leave") {
-      updatedProfile.commute.leaveTime = new Time(
-        selectedDate.getHours(),
-        selectedDate.getMinutes(),
-      );
-    } else if (dateTimePickerShown === "return") {
-      updatedProfile.commute.returnTime = new Time(
-        selectedDate.getHours(),
-        selectedDate.getMinutes(),
-      );
-    }
-
-    setProfile(updatedProfile);
     setDateTimePickerShown(null);
+    const updatedProfile = {
+      ...profile,
+      commute: {
+        ...profile.commute,
+        [dateTimePickerShown === "leave" ? "leaveTime" : "returnTime"]:
+          new Time(selectedDate.getHours(), selectedDate.getMinutes()),
+      },
+    };
+    setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
   };
 
@@ -146,7 +137,7 @@ const SettingsCommuteScreen: React.FC = () => {
       {dateTimePickerShown && (
         <DateTimePicker
           testID="dateTimePicker"
-          value={pickerValue}
+          value={pickerValue ?? new Date()}
           mode="time"
           is24Hour
           display="default"

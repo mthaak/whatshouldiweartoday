@@ -33,8 +33,7 @@ repos:
         name: typescript
         entry: |
           bash -c '
-            npm install -g typescript &&
-            tsc --noEmit --outDir /tmp/tsc-output
+            ./node_modules/.bin/tsc --noEmit --outDir /tmp/tsc-output
           '
         language: system
         pass_filenames: false

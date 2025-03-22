@@ -20,7 +20,7 @@ const SettingsScreen: React.FC<any> = (props) => {
     const handleMount = async () => {
       const retrievedProfile = await Store.retrieveProfile();
       setProfile(retrievedProfile);
-      setNamePlaceholder(retrievedProfile.name || "Type your name");
+      setNamePlaceholder(retrievedProfile?.name ?? "Type your name");
     };
 
     handleMount();
@@ -32,8 +32,12 @@ const SettingsScreen: React.FC<any> = (props) => {
 
   const updateProfile = async () => {
     const retrievedProfile = await Store.retrieveProfile();
-    setProfile(retrievedProfile);
-    setNamePlaceholder(retrievedProfile.name || "Type your name");
+    if (retrievedProfile) {
+      setProfile(retrievedProfile);
+      setNamePlaceholder(retrievedProfile.name ?? "Type your name");
+    } else {
+      setNamePlaceholder("Type your name");
+    }
   };
 
   const handleEdit = (key: string, value: any) => {
@@ -132,7 +136,7 @@ const SettingsScreen: React.FC<any> = (props) => {
         </ListItem>
       </View>
       <Text style={[styles.footer]}>
-        Build date: {Constants.expoConfig.extra?.buildDate}
+        Build date: {Constants.expoConfig?.extra?.buildDate ?? "Unknown"}
       </Text>
     </View>
   );

@@ -1,7 +1,13 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
-import { Button, Header, Icon } from "react-native-elements";
+import {
+  ActivityIndicator,
+  Image,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+} from "react-native";
+import { Header, Icon } from "react-native-elements";
 
 import * as ClothingImages from "../assets/images/clothing";
 import * as Colors from "../constants/colors";
@@ -20,7 +26,6 @@ import Store from "../services/Store";
 import WeatherService from "../services/WeatherService";
 import {
   WeatherForecastAtTime,
-  getTodayWeather,
   getWearRecommendation,
   getWeatherAtTime,
 } from "../services/weatherrules";
@@ -34,6 +39,13 @@ type WeatherScreenState = {
   weatherForecast: WeatherForecast | null;
   weatherForecastFailed: boolean;
   timeLastRefreshed?: number;
+};
+
+type ClothingImageName = keyof typeof ClothingImages;
+
+type ClothingImageProps = {
+  name: ClothingImageName;
+  style: Record<string, unknown>;
 };
 
 const WeatherScreen: React.FC<any> = (props) => {
@@ -94,68 +106,51 @@ const WeatherScreen: React.FC<any> = (props) => {
   }, [state.timeLastRefreshed, state.location, state.profile, navigation]);
 
   const updateProfile = async () => {
-    const profile = await Store.retrieveProfile();
-    setProfile(profile);
-    return profile;
+    const retrievedProfile = await Store.retrieveProfile();
+    if (retrievedProfile) {
+      setProfile(retrievedProfile);
+      return retrievedProfile;
+    }
+    return null;
   };
 
   const updateLocation = async () => {
-    const location = await LocationService.getLocationAsync();
-    setLocation(location);
-    return location;
+    const retrievedLocation = await LocationService.getLocationAsync();
+    if (retrievedLocation) {
+      setLocation(retrievedLocation);
+      return retrievedLocation;
+    }
+    return null;
   };
 
   const updateWeather = async () => {
-    const { profile, location } = state;
-    const weatherForecast = await WeatherService.getWeatherAsync(
-      location,
-      profile.tempUnit,
-    );
-    setWeather(weatherForecast);
-    return weatherForecast;
+    const currentProfile = state.profile;
+    const currentLocation = state.location;
+    if (currentProfile && currentLocation) {
+      await refreshWeather(currentProfile, currentLocation, true);
+    }
   };
 
   const refreshWeather = async (
-    profile: UserProfile,
-    location: Location,
+    profile: UserProfile | null,
+    location: Location | null,
     force = false,
   ) => {
-    const { isRefreshing } = state;
-    if (isRefreshing) return;
+    if (!profile || !location) return;
 
-    if (profile) {
-      if (location?.lon && location.lat) {
-        setState((prevState) => ({
-          ...prevState,
-          isRefreshing: true,
-        }));
-        try {
-          const weatherForecast = await WeatherService.getWeatherAsync(
-            location,
-            profile.tempUnit,
-            force,
-          );
-          setWeather(weatherForecast);
-          setState((prevState) => ({
-            ...prevState,
-            weatherForecastFailed: false,
-          }));
-        } catch {
-          setState((prevState) => ({
-            ...prevState,
-            weatherForecastFailed: true,
-          }));
-        } finally {
-          setState((prevState) => ({
-            ...prevState,
-            isRefreshing: false,
-          }));
-        }
-      } else {
-        console.warn(
-          "Current location not available. Cannot retrieve weather forecast",
-        );
+    try {
+      const forecast = await WeatherService.getWeatherAsync(
+        location,
+        profile.tempUnit,
+        force,
+      );
+      if (forecast) {
+        setWeather(forecast);
+        setState((prev) => ({ ...prev, weatherForecastFailed: false }));
       }
+    } catch (error) {
+      console.error("Failed to fetch weather:", error);
+      setState((prev) => ({ ...prev, weatherForecastFailed: true }));
     }
   };
 
@@ -208,21 +203,25 @@ const WeatherScreen: React.FC<any> = (props) => {
   };
 
   const renderTodayWeather = () => {
-    const { profile, location, weatherForecast } = state;
-    const todayWeather = getTodayWeather(weatherForecast);
+    const { profile, weatherForecast, location } = state;
+    if (!profile || !weatherForecast || !location) return null;
+
+    const currentWeather = weatherForecast.current;
     return (
       <TodayWeather
-        dayTemp={todayWeather.temp.day}
-        feelsLikeTemp={todayWeather.feels_like.day}
-        weatherDescr={todayWeather.weather[0]}
-        tempUnit={profile ? profile.tempUnit : TemperatureUnit.CELSIUS}
         location={location}
+        weatherDescr={currentWeather.weather[0].description}
+        tempUnit={profile.tempUnit}
+        dayTemp={currentWeather.temp}
+        feelsLikeTemp={currentWeather.feels_like}
       />
     );
   };
 
   const renderWearRecommendation = () => {
     const { profile, weatherForecast } = state;
+    if (!profile || !weatherForecast) return null;
+
     const wearRecommendation = getWearRecommendation(weatherForecast, profile);
     return (
       <WearRecommendation
@@ -234,6 +233,8 @@ const WeatherScreen: React.FC<any> = (props) => {
 
   const renderCommuteWeather = () => {
     const { profile, weatherForecast } = state;
+
+    if (!profile || !weatherForecast) return null;
 
     if (isTodayTrue(profile.commute.days)) {
       let weatherAtLeave: WeatherForecastAtTime | null = null;
@@ -250,7 +251,12 @@ const WeatherScreen: React.FC<any> = (props) => {
           profile.commute.returnTime,
         );
       }
-      if (weatherAtReturn && weatherAtLeave) {
+      if (
+        weatherAtReturn &&
+        weatherAtLeave &&
+        profile.commute.leaveTime &&
+        profile.commute.returnTime
+      ) {
         return (
           <Commute
             leaveTime={profile.commute.leaveTime}
@@ -264,12 +270,9 @@ const WeatherScreen: React.FC<any> = (props) => {
             tempUnit={profile.tempUnit}
           />
         );
-      } else {
-        return null;
       }
-    } else {
-      return null;
     }
+    return null;
   };
 
   const renderContent = () => {
@@ -278,7 +281,11 @@ const WeatherScreen: React.FC<any> = (props) => {
     if (isRefreshing) {
       return (
         <View style={styles.centerContainer}>
-          <ActivityIndicator testID="loading-indicator" size="large" color={Colors.foreground} />
+          <ActivityIndicator
+            testID="loading-indicator"
+            size="large"
+            color={Colors.foreground}
+          />
         </View>
       );
     }
@@ -306,9 +313,9 @@ const WeatherScreen: React.FC<any> = (props) => {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={() => {
-              console.log("onRefresh");
               Promise.all([updateProfile(), updateLocation()]).then(
-                ([profile, location]) => refreshWeather(profile, location, false)
+                ([profile, location]) =>
+                  refreshWeather(profile, location, false),
               );
             }}
             tintColor={Colors.foreground}
@@ -394,20 +401,25 @@ type WearRecommendationProps = {
 };
 
 const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
-  const tempImages = props.wearRecommendation.temp.clothes.map((name) => (
-    <ClothingImage
-      key={name}
-      name={name}
-      style={{ width: 50, height: 80, margin: 8 }}
-    />
-  ));
-  const rainImages = props.wearRecommendation.rain.clothes.map((name) => (
-    <ClothingImage
-      key={name}
-      name={name}
-      style={{ width: 50, height: 80, margin: 8 }}
-    />
-  ));
+  const tempImages = props.wearRecommendation.temp.clothes.map(
+    (name: string) => (
+      <ClothingImage
+        key={name}
+        name={name as ClothingImageName}
+        style={styles.clothingImage}
+      />
+    ),
+  );
+
+  const rainImages = props.wearRecommendation.rain.clothes.map(
+    (name: string) => (
+      <ClothingImage
+        key={name}
+        name={name as ClothingImageName}
+        style={styles.clothingImage}
+      />
+    ),
+  );
   return (
     <View
       style={{
@@ -531,11 +543,6 @@ const Commute: React.FC<CommuteProps> = (props) => {
   );
 };
 
-type ClothingImageProps = {
-  name: string;
-  style: any;
-};
-
 const ClothingImage: React.FC<ClothingImageProps> = (props) => {
   return (
     <Image
@@ -569,39 +576,6 @@ const WeatherIcon = (props: WeatherIconProps) => {
   return null;
 };
 
-type CenterMessageProps = {
-  message: string;
-  active?: boolean;
-  bottom?: any;
-};
-
-const CenterMessage: React.FC<CenterMessageProps> = (props) => {
-  let animation;
-  if (props.active) {
-    animation = <ActivityIndicator size={50} color={Colors.foreground} />;
-  } else {
-    animation = <Icon name="error" size={40} color={Colors.foreground} />;
-  }
-  return (
-    <>
-      <View style={[gStyles.center, gStyles.centerVertical]}>
-        {animation}
-        <Text
-          style={[
-            gStyles.large,
-            gStyles.shadow,
-            gStyles.centerText,
-            { marginTop: 20, marginBottom: 20 },
-          ]}
-        >
-          {props.message}
-        </Text>
-        {props.bottom}
-      </View>
-    </>
-  );
-};
-
 function formatDateToday() {
   return new Date().toDateString();
 }
@@ -623,5 +597,10 @@ const styles = StyleSheet.create({
     color: Colors.foreground,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  clothingImage: {
+    width: 50,
+    height: 80,
+    margin: 8,
   },
 });

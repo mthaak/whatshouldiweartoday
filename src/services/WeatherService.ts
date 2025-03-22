@@ -56,7 +56,7 @@ class WeatherService {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
-        url: url.replace(ConfigService.getOpenWeatherMapAppId(), 'REDACTED'), // Log URL without API key
+        url: url.replace(ConfigService.getOpenWeatherMapAppId(), "REDACTED"), // Log URL without API key
       });
       throw new Error(
         `OpenWeather API Error: ${response.status} ${response.statusText}`,
@@ -70,8 +70,10 @@ class WeatherService {
   buildOpenWeatherMapUrl(location: Location, unit: TemperatureUnit) {
     const appId = ConfigService.getOpenWeatherMapAppId();
     if (!appId) {
-      console.error('OpenWeather API key is not loaded from environment variables');
-      throw new Error('OpenWeather API key is missing');
+      console.error(
+        "OpenWeather API key is not loaded from environment variables",
+      );
+      throw new Error("OpenWeather API key is missing");
     }
 
     const lat = location.lat;
