@@ -49,28 +49,32 @@ class WeatherService {
   ): Promise<WeatherForecast> {
     const url = this.buildOpenWeatherMapUrl(location, unit);
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('OpenWeather API Error:', {
+      console.error("OpenWeather API Error:", {
         status: response.status,
         statusText: response.statusText,
         error: errorText,
-        url: url.replace(OPENWEATHERMAP_APPID, 'REDACTED') // Log URL without API key
+        url: url.replace(OPENWEATHERMAP_APPID, "REDACTED"), // Log URL without API key
       });
-      throw new Error(`OpenWeather API Error: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `OpenWeather API Error: ${response.status} ${response.statusText}`,
+      );
     }
-    
+
     const json = response.json();
     return await json;
   }
 
   buildOpenWeatherMapUrl(location: Location, unit: TemperatureUnit) {
     if (!OPENWEATHERMAP_APPID) {
-      console.error('OpenWeather API key is not loaded from environment variables');
-      throw new Error('OpenWeather API key is missing');
+      console.error(
+        "OpenWeather API key is not loaded from environment variables",
+      );
+      throw new Error("OpenWeather API key is missing");
     }
-    
+
     const lat = location.lat;
     const lon = location.lon;
     let units_system = "metric";
