@@ -6,7 +6,7 @@ import WeatherForecast from "../models/WeatherForecast";
 import { TemperatureUnit } from "../models/enums";
 
 const OPENWEATHERMAP_BASE_URL =
-  "https://api.openweathermap.org/data/2.5/onecall";
+  "https://api.openweathermap.org/data/3.0/onecall";
 const REFRESH_PERIOD = 900; // minimal time (s) between each forecast refresh
 
 class WeatherService {
@@ -49,18 +49,35 @@ class WeatherService {
   ): Promise<WeatherForecast> {
     const url = this.buildOpenWeatherMapUrl(location, unit);
     const response = await fetch(url);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenWeather API Error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText,
+        url: url.replace(OPENWEATHERMAP_APPID, 'REDACTED') // Log URL without API key
+      });
+      throw new Error(`OpenWeather API Error: ${response.status} ${response.statusText}`);
+    }
+    
     const json = response.json();
     return await json;
   }
 
   buildOpenWeatherMapUrl(location: Location, unit: TemperatureUnit) {
+    if (!OPENWEATHERMAP_APPID) {
+      console.error('OpenWeather API key is not loaded from environment variables');
+      throw new Error('OpenWeather API key is missing');
+    }
+    
     const lat = location.lat;
     const lon = location.lon;
-    let units = "metric";
+    let units_system = "metric";
     if (unit === TemperatureUnit.FAHRENHEIT) {
-      units = "imperial";
+      units_system = "imperial";
     }
-    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_APPID}&units=${units}&exclude=minutely`;
+    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHERMAP_APPID}&units_system=${units_system}&exclude=minutely&version=3.0`;
   }
 
   subscribe(callback: any) {
