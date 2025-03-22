@@ -8,8 +8,8 @@ class ConfigService {
   private constructor() {
     // In production, this would come from @env
     this.config = {
-      OPENWEATHERMAP_APPID: process.env.OPENWEATHERMAP_APPID || '',
-      GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY || ''
+      OPENWEATHERMAP_APPID: process.env.OPENWEATHERMAP_APPID ?? "",
+      GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY ?? "",
     };
   }
 
@@ -40,4 +40,4 @@ class ConfigService {
 
 // Export a singleton instance
 const configService = ConfigService.getInstance();
-export default configService; 
+export default configService;

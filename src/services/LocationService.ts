@@ -69,15 +69,15 @@ class LocationService {
   async reverseGeocode(coords: {
     latitude: number;
     longitude: number;
-  }): Promise<{ city?: string; country?: string }> {
+  }): Promise<{ city?: string; country?: string } | null> {
     if (!this.isEnabled) {
-      return undefined;
+      return null;
     }
     try {
       const url = this.buildReverseGeocodeUrl(coords);
       const response = await fetch(url);
       const json = (await response.json()) as ReverseGeocodeResponse;
-      if (json.results.length == 0) {
+      if (json.results.length === 0) {
         throw new Error("No results");
       }
       return {
@@ -93,14 +93,14 @@ class LocationService {
     } catch (error: any) {
       console.error("Could not reverse geocode: " + error.message);
       alert("Could not reverse geocode: " + error.message);
-      return undefined;
+      return null;
     }
   }
 
   buildReverseGeocodeUrl(coords: { latitude: number; longitude: number }) {
     const apiKey = ConfigService.getGoogleGeocodingApiKey();
     if (!apiKey) {
-      throw new Error('Google Geocoding API key is not configured');
+      throw new Error("Google Geocoding API key is not configured");
     }
     return `${REVERSE_GEOCODE_BASE_URL}?latlng=${coords.latitude},${coords.longitude}&result_type=street_address&key=${apiKey}`;
   }

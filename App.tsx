@@ -35,7 +35,7 @@ export default function App(): JSX.Element | null {
       if (granted) LocationService.getLocationAsync();
     });
     // Notifications and background tasks not supported in web
-  } else if (Constants.platform.android || Constants.platform.ios) {
+  } else if (Constants.platform.android ?? Constants.platform.ios) {
     // Wait for permissions before setting up background tasks
     Promise.all([
       LocationService.requestPermission().then((granted) => {
@@ -61,7 +61,7 @@ export default function App(): JSX.Element | null {
   } else {
     return (
       <SafeAreaProvider testID="app-root">
-        <Navigation colorScheme={colorScheme} />
+        <Navigation colorScheme={colorScheme ?? "light"} />
         <StatusBar />
       </SafeAreaProvider>
     );
