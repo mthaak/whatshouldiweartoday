@@ -1,9 +1,9 @@
 import * as ExpoLocation from "expo-location";
-import { GOOGLE_GEOCODING_API_KEY } from "@env";
 import { EventEmitter } from "eventemitter3";
 
 import Location from "../models/Location";
 import { ReverseGeocodeResponse } from "../models/ReverseGeocodeResponse";
+import ConfigService from "./ConfigService";
 
 const REVERSE_GEOCODE_BASE_URL =
   "https://maps.googleapis.com/maps/api/geocode/json";
@@ -98,7 +98,11 @@ class LocationService {
   }
 
   buildReverseGeocodeUrl(coords: { latitude: number; longitude: number }) {
-    return `${REVERSE_GEOCODE_BASE_URL}?latlng=${coords.latitude},${coords.longitude}&result_type=street_address&key=${GOOGLE_GEOCODING_API_KEY}`;
+    const apiKey = ConfigService.getGoogleGeocodingApiKey();
+    if (!apiKey) {
+      throw new Error('Google Geocoding API key is not configured');
+    }
+    return `${REVERSE_GEOCODE_BASE_URL}?latlng=${coords.latitude},${coords.longitude}&result_type=street_address&key=${apiKey}`;
   }
 
   async getPermission(): Promise<boolean> {

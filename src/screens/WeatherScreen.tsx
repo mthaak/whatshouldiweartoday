@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { Button, Header, Icon } from "react-native-elements";
 
 import * as ClothingImages from "../assets/images/clothing";
@@ -273,69 +273,49 @@ const WeatherScreen: React.FC<any> = (props) => {
   };
 
   const renderContent = () => {
-    const {
-      profile,
-      location,
-      weatherForecast,
-      isRefreshing,
-      weatherForecastFailed,
-    } = state;
+    const { isRefreshing, weatherForecastFailed, weatherForecast } = state;
 
     if (isRefreshing) {
       return (
-        <CenterMessage message="Weather forecast is being retrieved" active />
+        <View style={styles.centerContainer}>
+          <ActivityIndicator testID="loading-indicator" size="large" color={Colors.foreground} />
+        </View>
       );
     }
 
     if (weatherForecastFailed) {
       return (
-        <CenterMessage message="Could not retrieve weather forecast" active />
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>Failed to fetch weather data</Text>
+        </View>
       );
-    }
-
-    if (!profile) {
-      return <CenterMessage message="Profile is incomplete" />;
-    }
-
-    if (!location) {
-      if (LocationService.hasPermission()) {
-        return (
-          <CenterMessage message="Weather forecast is being retrieved" active />
-        );
-      } else {
-        const button = (
-          <Button
-            title="Give permission"
-            onPress={async () =>
-              await LocationService.requestPermission().then((granted) => {
-                if (granted) LocationService.getLocationAsync();
-              })
-            }
-            type="solid"
-            containerStyle={[gStyles.center, { alignSelf: "flex-start" }]}
-            buttonStyle={{ backgroundColor: Colors.foreground }}
-            titleStyle={[gStyles.normal, { color: Colors.background }]}
-          />
-        );
-        return (
-          <>
-            <CenterMessage
-              message="Does not have permission for current location"
-              bottom={button}
-            />
-          </>
-        );
-      }
     }
 
     if (!weatherForecast) {
       return (
-        <CenterMessage message="Weather forecast is being retrieved" active />
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>No weather data available</Text>
+        </View>
       );
     }
 
     return (
-      <>
+      <ScrollView
+        testID="refresh-control"
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={() => {
+              console.log("onRefresh");
+              Promise.all([updateProfile(), updateLocation()]).then(
+                ([profile, location]) => refreshWeather(profile, location, false)
+              );
+            }}
+            tintColor={Colors.foreground}
+            colors={[Colors.foreground]}
+          />
+        }
+      >
         <View style={{ height: "20%", justifyContent: "center" }}>
           {renderTodayWeather()}
         </View>
@@ -347,7 +327,7 @@ const WeatherScreen: React.FC<any> = (props) => {
         <View style={{ height: "20%", justifyContent: "center" }}>
           {renderCommuteWeather()}
         </View>
-      </>
+      </ScrollView>
     );
   };
 
@@ -633,5 +613,15 @@ const styles = StyleSheet.create({
   commuteElem: {
     width: "50%",
     padding: 10,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  errorText: {
+    color: Colors.foreground,
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
