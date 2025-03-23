@@ -64,7 +64,7 @@ export async function updateNotification(): Promise<void> {
     profile.alert.time,
   );
 
-  console.log("Alert updated");
+  console.log("Notification updated");
 }
 
 function defineTask(taskName: string, func: CallableFunction) {
