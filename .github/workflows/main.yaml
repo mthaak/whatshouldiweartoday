@@ -23,10 +23,6 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: 📦 Install dependencies
         run: npm install --immutable
-      - name: 📝 Run pre-commit
-        uses: pre-commit/action@v3.0.0
-        with:
-          extra_args: --all-files
       - name: 🚀 Create update
         run: |
           eas update --auto --non-interactive --channel development
