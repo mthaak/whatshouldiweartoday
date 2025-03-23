@@ -1,6 +1,7 @@
 import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
 
+import { isTodayTrue } from "../common/timeUtils";
 import {
   NotificationService,
   createContentForWearRecommendation,
@@ -9,7 +10,7 @@ import Store from "./Store";
 import WeatherService from "./WeatherService";
 import { getTodayWeather, getWearRecommendation } from "./weatherrules";
 
-const INTERVAL = 3600; // update interval in seconds
+const INTERVAL = 6 * 3600; // update interval in seconds
 const TASK_NAME = "UPDATE_NOTIFICATION";
 
 export async function updateNotification(): Promise<void> {
@@ -20,8 +21,13 @@ export async function updateNotification(): Promise<void> {
     return;
   }
 
-  if (!profile.alert.enabled || !profile.alert.time) {
-    NotificationService.cancelAllScheduledNotifications();
+  const weekday = new Date().getDay();
+
+  if (
+    !profile.alert.enabled ||
+    !profile.alert.time ||
+    !isTodayTrue(profile.alert.days)
+  ) {
     return;
   }
 
@@ -52,19 +58,11 @@ export async function updateNotification(): Promise<void> {
 
   // Remove all previous scheduled notifications before scheduling new
   NotificationService.cancelAllScheduledNotifications();
-  profile.alert.days.map((enabled, dayIdx) => {
-    if (enabled) {
-      // Conversion needed because weekdays are counted differently in my app
-      // My app: Monday - Sunday: 0 - 6
-      // Expo API object: Sunday - Saturday: 1 - 7
-      const dayIdxMod = ((dayIdx + 1) % 7) + 1;
-      NotificationService.scheduleNotificationWeekly(
-        content,
-        dayIdxMod,
-        profile.alert.time,
-      );
-    }
-  });
+  NotificationService.scheduleNotificationWeekly(
+    content,
+    weekday,
+    profile.alert.time,
+  );
 
   console.log("Alert updated");
 }
