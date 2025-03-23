@@ -43,10 +43,13 @@ Also have a look at the [amazing documentation](https://docs.expo.io/get-started
 ### How to build
 
 If you want to build a new version of the Android app, run:
-`eas build --profile development --platform android`
+`eas build --profile preview --platform android`
 
 To perform over-the-air (OTA) updates of the built app, run:
 `eas update --channel development`
+
+If you want a development build, run:
+`eas build --profile development --platform android`
 
 ### Style
 
