@@ -1,15 +1,19 @@
+interface Config {
+  OPENWEATHERMAP_APPID: string;
+  GOOGLE_GEOCODING_API_KEY: string;
+}
+
 class ConfigService {
   private static instance: ConfigService;
-  private config: {
-    OPENWEATHERMAP_APPID: string;
-    GOOGLE_GEOCODING_API_KEY: string;
-  };
+  private config: Config;
 
   private constructor() {
-    // In production, this would come from @env
+    // These variables are not public but we are the only user of this app. It wouldn't be safer
+    // to publish the app.
     this.config = {
-      OPENWEATHERMAP_APPID: process.env.OPENWEATHERMAP_APPID ?? "",
-      GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY ?? "",
+      OPENWEATHERMAP_APPID: process.env.EXPO_PUBLIC_OPENWEATHERMAP_APPID ?? "",
+      GOOGLE_GEOCODING_API_KEY:
+        process.env.EXPO_PUBLIC_GOOGLE_GEOCODING_API_KEY ?? "",
     };
   }
 
