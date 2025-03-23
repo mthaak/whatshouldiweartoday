@@ -132,12 +132,12 @@ export function createContentForWearRecommendation(
 export function createWeeklyTrigger(
   weekday: number,
   time: Time,
-): Record<string, unknown> {
+): Notifications.NotificationTriggerInput {
   // Note: Weekdays are specified with a number from 1 through 7, with 1 indicating Sunday
   return {
+    type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
     weekday: weekday,
     hour: time.hours,
     minute: time.minutes,
-    repeats: true,
   };
 }
