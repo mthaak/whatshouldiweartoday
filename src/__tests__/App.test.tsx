@@ -14,6 +14,50 @@ import WeatherService from "../services/WeatherService";
 import { setUpBackgroundTasks } from "../services/background";
 import { mockLocation, mockProfile, mockWeatherData } from "./mockData";
 
+// Mock Expo modules
+jest.mock("expo-font", () => ({
+  loadAsync: jest.fn().mockResolvedValue([]),
+  isLoaded: jest.fn().mockReturnValue(true),
+  isLoadedSync: jest.fn().mockReturnValue(true),
+}));
+
+jest.mock("expo-splash-screen", () => ({
+  preventAutoHideAsync: jest.fn(),
+  hideAsync: jest.fn(),
+  isLoaded: jest.fn().mockReturnValue(true),
+}));
+
+jest.mock("expo-location", () => ({
+  requestForegroundPermissionsAsync: jest
+    .fn()
+    .mockResolvedValue({ status: "granted" }),
+  getCurrentPositionAsync: jest.fn().mockResolvedValue({
+    coords: {
+      latitude: 0,
+      longitude: 0,
+      altitude: null,
+      accuracy: null,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+    },
+    timestamp: 0,
+  }),
+  getLastKnownPositionAsync: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock("expo-asset", () => ({
+  Asset: {
+    fromModule: jest.fn().mockReturnValue({
+      downloadAsync: jest.fn().mockResolvedValue(undefined),
+    }),
+  },
+}));
+
+jest.mock("@expo/vector-icons", () => ({
+  Ionicons: "Ionicons",
+}));
+
 // Define mock components outside of mock factory
 const MockNavigation = () => null;
 MockNavigation.displayName = "MockNavigation";

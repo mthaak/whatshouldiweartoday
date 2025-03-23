@@ -1,8 +1,8 @@
 import { Lato_400Regular, useFonts } from "@expo-google-fonts/lato";
-import Constants from "expo-constants";
 import "expo-dev-client";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import useCachedResources from "./src/hooks/useCachedResources";
@@ -23,19 +23,30 @@ export default function App(): JSX.Element | null {
   const [areFontsLoaded] = useFonts({
     Lato_400Regular,
   });
+  const [isStoreInitialized, setIsStoreInitialized] = useState(false);
 
-  Store.initializeStorage();
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        await Store.initializeStorage();
+        setIsStoreInitialized(true);
+      } catch (error) {
+        console.error("Failed to initialize store:", error);
+      }
+    };
 
-  // LocationService.setEnabled(false);
+    initializeApp();
+  }, []);
 
-  if (!Constants.platform) return null;
+  const isWeb = Platform.OS === "web";
+  const isMobile = Platform.OS === "android" || Platform.OS === "ios";
 
-  if (Constants.platform.web) {
+  if (isWeb) {
     LocationService.requestPermission().then((granted) => {
       if (granted) LocationService.getLocationAsync();
     });
     // Notifications and background tasks not supported in web
-  } else if (Constants.platform.android ?? Constants.platform.ios) {
+  } else if (isMobile) {
     // Wait for permissions before setting up background tasks
     Promise.all([
       LocationService.requestPermission().then((granted) => {
@@ -56,14 +67,14 @@ export default function App(): JSX.Element | null {
     });
   }
 
-  if (!isLoadingComplete || !areFontsLoaded) {
+  if (!isLoadingComplete || !areFontsLoaded || !isStoreInitialized) {
     return null;
-  } else {
-    return (
-      <SafeAreaProvider testID="app-root">
-        <Navigation colorScheme={colorScheme ?? "light"} />
-        <StatusBar />
-      </SafeAreaProvider>
-    );
   }
+
+  return (
+    <SafeAreaProvider testID="app-root">
+      <Navigation colorScheme={colorScheme ?? "light"} />
+      <StatusBar />
+    </SafeAreaProvider>
+  );
 }

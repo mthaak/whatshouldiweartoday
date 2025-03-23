@@ -12,6 +12,34 @@ import {
   mockWeatherData,
 } from "./mockData";
 
+// Mock Expo modules
+jest.mock("expo-location", () => ({
+  requestForegroundPermissionsAsync: jest
+    .fn()
+    .mockResolvedValue({ status: "granted" }),
+  getCurrentPositionAsync: jest.fn().mockResolvedValue({
+    coords: {
+      latitude: 0,
+      longitude: 0,
+      altitude: null,
+      accuracy: null,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+    },
+    timestamp: 0,
+  }),
+  getLastKnownPositionAsync: jest.fn().mockResolvedValue(null),
+}));
+
+jest.mock("expo-asset", () => ({
+  Asset: {
+    fromModule: jest.fn().mockReturnValue({
+      downloadAsync: jest.fn().mockResolvedValue(undefined),
+    }),
+  },
+}));
+
 // Mock the services
 jest.mock("../services/WeatherService");
 jest.mock("../services/LocationService");
@@ -74,6 +102,11 @@ describe("WeatherScreen", () => {
   }, 15000);
 
   it("shows error message when weather fetch fails", async () => {
+    // Suppress console.error for this specific test
+    const consoleSpy = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
+
     // Mock weather service to throw error
     (WeatherService.getWeatherAsync as jest.Mock).mockRejectedValue(
       new Error("Failed to fetch"),
@@ -88,6 +121,9 @@ describe("WeatherScreen", () => {
       },
       { timeout: 10000 },
     );
+
+    // Restore console.error
+    consoleSpy.mockRestore();
   }, 15000);
 
   it("refreshes data when pull-to-refresh is triggered", async () => {

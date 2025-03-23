@@ -71,9 +71,9 @@ export async function updateNotification(): Promise<void> {
 
 function defineTask(taskName: string, func: CallableFunction) {
   try {
-    TaskManager.defineTask(taskName, () => {
+    TaskManager.defineTask(taskName, async () => {
       try {
-        func();
+        await func();
         return BackgroundFetch.BackgroundFetchResult.NewData;
       } catch {
         return BackgroundFetch.BackgroundFetchResult.Failed;
