@@ -22,6 +22,7 @@ module.exports = {
         "ACCESS_BACKGROUND_LOCATION",
         "FOREGROUND_SERVICE",
       ],
+      googleServicesFile: "./google-services.json",
     },
     ios: {
       bundleIdentifier: "com.mthaak.whatshouldiweartoday",

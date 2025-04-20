@@ -24,7 +24,9 @@
     "eventemitter3": "^5.0.1",
     "expo": "52",
     "expo-background-fetch": "~13.0.5",
+    "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.14",
+    "expo-device": "~7.0.3",
     "expo-linking": "~7.0.5",
     "expo-location": "~18.0.8",
     "expo-notifications": "~0.29.14",
@@ -65,5 +67,9 @@
         "listUnknownPackages": false
       }
     }
-  }
+  },
+  "description": "Do you also wonder every morning whether you can wear a skirt or shorts? Or whether you perhaps need to wear a thick jacket because it will be chilly? Or do you want to know about potential rainfall, so you know whether to bring an umbrella?",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

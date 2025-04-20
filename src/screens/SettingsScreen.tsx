@@ -5,6 +5,7 @@ import { Button, ListItem, Text } from "react-native-elements";
 
 import * as Colors from "../constants/colors";
 import { styles as gStyles } from "../constants/styles";
+import { useNotification } from "../context/NotificationContext";
 import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
 import { stopBackgroundTasks } from "../services/background";
@@ -15,6 +16,8 @@ const SettingsScreen: React.FC<any> = (props) => {
     useState<string>("Type your name");
 
   const navigation = props.navigation;
+
+  const { notification, expoPushToken, error } = useNotification();
 
   useEffect(() => {
     const handleMount = async () => {
@@ -135,6 +138,9 @@ const SettingsScreen: React.FC<any> = (props) => {
           />
         </ListItem>
       </View>
+      <Text>Notification: {JSON.stringify(notification)}</Text>
+      <Text>Expo Push Token: {JSON.stringify(expoPushToken)}</Text>
+      <Text>Error: {JSON.stringify(error)}</Text>
       <Text style={[styles.footer]}>
         Build date: {Constants.expoConfig?.extra?.buildDate ?? "Unknown"}
       </Text>
