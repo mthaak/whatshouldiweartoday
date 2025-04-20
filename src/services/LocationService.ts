@@ -125,14 +125,6 @@ class LocationService {
       );
       return false;
     }
-    const permissionBg = await ExpoLocation.requestBackgroundPermissionsAsync();
-    if (!permissionBg.granted) {
-      console.error(
-        "Permission to use location in background not given by user",
-      );
-      return false;
-    }
-    this.hasPermissionGranted = true;
     return true;
   }
 
