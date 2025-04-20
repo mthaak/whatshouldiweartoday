@@ -21,7 +21,7 @@ export async function updateNotification(): Promise<void> {
     return;
   }
 
-  const weekday = new Date().getDay();
+  const weekday = (new Date().getDay() + 1) % 7;
 
   if (
     !profile.alert.enabled ||
