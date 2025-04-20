@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { signInAnonymouslyUser } from "./src/config/firebase";
 import useCachedResources from "./src/hooks/useCachedResources";
 import useColorScheme from "./src/hooks/useColorScheme";
 import Navigation from "./src/navigation";
@@ -16,7 +17,6 @@ import {
   startBackgroundTasks,
   stopBackgroundTasks,
 } from "./src/services/background";
-import { signInAnonymouslyUser } from "./src/config/firebase";
 
 export default function App(): JSX.Element | null {
   const isLoadingComplete = useCachedResources();

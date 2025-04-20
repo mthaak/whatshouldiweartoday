@@ -16,4 +16,4 @@
 *.yml text eol=lf
 *.yaml text eol=lf
 *.config.js text eol=lf
-.eslintrc.js text eol=lf 
+.eslintrc.js text eol=lf

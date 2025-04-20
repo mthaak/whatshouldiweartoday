@@ -5,7 +5,7 @@
 [debug] [2025-04-20T22:22:28.353Z] Node Version:  v20.19.0
 [debug] [2025-04-20T22:22:28.353Z] Time:          Sun Apr 20 2025 23:22:28 GMT+0100 (British Summer Time)
 [debug] [2025-04-20T22:22:28.353Z] ----------------------------------------------------------------------
-[debug] 
+[debug]
 [debug] [2025-04-20T22:22:28.614Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
 [debug] [2025-04-20T22:22:28.615Z] > authorizing via signed-in user (martin.ter.haak@gmail.com)
 [debug] [2025-04-20T22:22:28.615Z] [iam] checking project whatshouldiweartoday-e1a4b for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]

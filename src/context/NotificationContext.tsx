@@ -1,6 +1,7 @@
+import * as Localization from "expo-localization";
 import * as Notifications from "expo-notifications";
 import { Subscription } from "expo-notifications";
-import * as Localization from 'expo-localization';
+import { getFunctions, httpsCallable } from "firebase/functions";
 import React, {
   ReactNode,
   createContext,
@@ -9,10 +10,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { getFunctions, httpsCallable } from "firebase/functions";
-import { auth } from "../config/firebase";
 
 import { registerForPushNotificationsAsync } from "../common/registerForPushNotificationsAsync";
+import { auth } from "../config/firebase";
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -54,33 +54,33 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
       try {
         // Wait for auth to be initialized
         if (!auth.currentUser) {
-          console.log('Waiting for authentication...');
+          console.log("Waiting for authentication...");
           return;
         }
 
         const token = await registerForPushNotificationsAsync();
         setExpoPushToken(token);
-        
+
         if (token) {
           // Ensure token starts with ExponentPushToken
-          if (!token.startsWith('ExponentPushToken[')) {
-            console.error('Invalid token format:', token);
+          if (!token.startsWith("ExponentPushToken[")) {
+            console.error("Invalid token format:", token);
             return;
           }
 
           const functions = getFunctions();
-          const registerToken = httpsCallable(functions, 'registerPushToken');
-          
-          const response = await registerToken({ 
+          const registerToken = httpsCallable(functions, "registerPushToken");
+
+          const response = await registerToken({
             token: token,
             userId: auth.currentUser.uid,
-            timezone: Localization.timezone
+            timezone: Localization.timezone,
           });
-          
-          console.log('Token registration response:', response); // Debug log
+
+          console.log("Token registration response:", response); // Debug log
         }
       } catch (error) {
-        console.error('Error setting up notifications:', error);
+        console.error("Error setting up notifications:", error);
         setError(error instanceof Error ? error : new Error(String(error)));
       }
     };

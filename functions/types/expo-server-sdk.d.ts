@@ -29,6 +29,8 @@ declare module "expo-server-sdk" {
     /** Splits messages into chunks for batch sending */
     chunkPushNotifications(messages: ExpoPushMessage[]): ExpoPushMessage[][];
     /** Sends push notifications to Expo servers */
-    sendPushNotificationsAsync(messages: ExpoPushMessage[]): Promise<ExpoPushResult[]>;
+    sendPushNotificationsAsync(
+      messages: ExpoPushMessage[],
+    ): Promise<ExpoPushResult[]>;
   }
 }

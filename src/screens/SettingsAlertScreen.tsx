@@ -1,13 +1,14 @@
+import * as Localization from "expo-localization";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { getAuth } from "firebase/auth";
+import { httpsCallable } from "firebase/functions";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Switch, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
-import { httpsCallable } from "firebase/functions";
-import { getAuth } from "firebase/auth";
-import * as Localization from 'expo-localization';
 
 import * as Colors from "../constants/colors";
 import WeekdaySelect from "../components/WeekdaySelect";
+import { functions } from "../config/firebase";
 import { styles as gStyles } from "../constants/styles";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
@@ -17,8 +18,6 @@ import {
   stopBackgroundTasks,
   updateNotification,
 } from "../services/background";
-import { useNotification } from "../context/NotificationContext";
-import { functions } from "../config/firebase";
 
 const SettingsAlertScreen: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -70,16 +69,23 @@ const SettingsAlertScreen: React.FC = () => {
     // Update the alert settings in Firebase
     if (auth.currentUser) {
       try {
-        const updateAlertSettings = httpsCallable(functions, 'updateAlertSettings');
-        await updateAlertSettings({ 
+        const updateAlertSettings = httpsCallable(
+          functions,
+          "updateAlertSettings",
+        );
+        await updateAlertSettings({
           userId: auth.currentUser.uid,
-          alertTime: `${profile.alert.time.hours.toString().padStart(2, '0')}:${profile.alert.time.minutes.toString().padStart(2, '0')}`,
+          alertTime: `${profile.alert.time.hours
+            .toString()
+            .padStart(2, "0")}:${profile.alert.time.minutes
+            .toString()
+            .padStart(2, "0")}`,
           alertDays: profile.alert.days,
           alertEnabled: value,
-          timezone: Localization.timezone
+          timezone: Localization.timezone,
         });
       } catch (error) {
-        console.error('Error updating alert settings:', error);
+        console.error("Error updating alert settings:", error);
       }
     }
   };
@@ -99,16 +105,23 @@ const SettingsAlertScreen: React.FC = () => {
     // Update the alert settings in Firebase
     if (auth.currentUser) {
       try {
-        const updateAlertSettings = httpsCallable(functions, 'updateAlertSettings');
-        await updateAlertSettings({ 
+        const updateAlertSettings = httpsCallable(
+          functions,
+          "updateAlertSettings",
+        );
+        await updateAlertSettings({
           userId: auth.currentUser.uid,
-          alertTime: `${profile.alert.time.hours.toString().padStart(2, '0')}:${profile.alert.time.minutes.toString().padStart(2, '0')}`,
+          alertTime: `${profile.alert.time.hours
+            .toString()
+            .padStart(2, "0")}:${profile.alert.time.minutes
+            .toString()
+            .padStart(2, "0")}`,
           alertDays: updatedProfile.alert.days,
           alertEnabled: profile.alert.enabled,
-          timezone: Localization.timezone
+          timezone: Localization.timezone,
         });
       } catch (error) {
-        console.error('Error updating alert settings:', error);
+        console.error("Error updating alert settings:", error);
       }
     }
   };
@@ -135,16 +148,25 @@ const SettingsAlertScreen: React.FC = () => {
     // Update the alert settings in Firebase
     if (auth.currentUser) {
       try {
-        const updateAlertSettings = httpsCallable(functions, 'updateAlertSettings');
-        await updateAlertSettings({ 
+        const updateAlertSettings = httpsCallable(
+          functions,
+          "updateAlertSettings",
+        );
+        await updateAlertSettings({
           userId: auth.currentUser.uid,
-          alertTime: `${selectedDate.getHours().toString().padStart(2, '0')}:${selectedDate.getMinutes().toString().padStart(2, '0')}`,
+          alertTime: `${selectedDate
+            .getHours()
+            .toString()
+            .padStart(2, "0")}:${selectedDate
+            .getMinutes()
+            .toString()
+            .padStart(2, "0")}`,
           alertDays: profile.alert.days,
           alertEnabled: profile.alert.enabled,
-          timezone: Localization.timezone
+          timezone: Localization.timezone,
         });
       } catch (error) {
-        console.error('Error updating alert settings:', error);
+        console.error("Error updating alert settings:", error);
       }
     }
   };
