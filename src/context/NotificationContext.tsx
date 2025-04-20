@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { Subscription } from "expo-notifications";
+import * as Localization from 'expo-localization';
 import React, {
   ReactNode,
   createContext,
@@ -8,6 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { auth } from "../config/firebase";
 
 import { registerForPushNotificationsAsync } from "../common/registerForPushNotificationsAsync";
 
@@ -47,10 +50,42 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   const responseListener = useRef<Subscription>();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(
-      (token: string | null) => setExpoPushToken(token),
-      (error: Error) => setError(error),
-    );
+    const initializeNotifications = async () => {
+      try {
+        // Wait for auth to be initialized
+        if (!auth.currentUser) {
+          console.log('Waiting for authentication...');
+          return;
+        }
+
+        const token = await registerForPushNotificationsAsync();
+        setExpoPushToken(token);
+        
+        if (token) {
+          // Ensure token starts with ExponentPushToken
+          if (!token.startsWith('ExponentPushToken[')) {
+            console.error('Invalid token format:', token);
+            return;
+          }
+
+          const functions = getFunctions();
+          const registerToken = httpsCallable(functions, 'registerPushToken');
+          
+          const response = await registerToken({ 
+            token: token,
+            userId: auth.currentUser.uid,
+            timezone: Localization.timezone
+          });
+          
+          console.log('Token registration response:', response); // Debug log
+        }
+      } catch (error) {
+        console.error('Error setting up notifications:', error);
+        setError(error instanceof Error ? error : new Error(String(error)));
+      }
+    };
+
+    initializeNotifications();
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
@@ -78,7 +113,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         Notifications.removeNotificationSubscription(responseListener.current);
       }
     };
-  }, []);
+  }, [auth.currentUser]);
 
   return (
     <NotificationContext.Provider

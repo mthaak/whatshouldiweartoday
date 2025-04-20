@@ -38,7 +38,13 @@ export async function registerForPushNotificationsAsync() {
           projectId,
         })
       ).data;
-      console.log(pushTokenString);
+      
+      // Validate token format
+      if (!pushTokenString.startsWith('ExponentPushToken[')) {
+        throw new Error(`Invalid token format: ${pushTokenString}`);
+      }
+      
+      console.log('Generated push token:', pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       throw new Error(`${e}`);

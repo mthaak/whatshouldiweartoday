@@ -33,6 +33,7 @@ module.exports = {
       favicon: "./src/assets/images/favicon.png",
     },
     plugins: [
+      "expo-localization",
       [
         "expo-updates",
         {

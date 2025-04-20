@@ -16,6 +16,7 @@ import {
   startBackgroundTasks,
   stopBackgroundTasks,
 } from "./src/services/background";
+import { signInAnonymouslyUser } from "./src/config/firebase";
 
 export default function App(): JSX.Element | null {
   const isLoadingComplete = useCachedResources();
@@ -30,9 +31,10 @@ export default function App(): JSX.Element | null {
     const initializeApp = async () => {
       try {
         await Store.initializeStorage();
+        await signInAnonymouslyUser(); // Sign in anonymously
         setIsStoreInitialized(true);
       } catch (error) {
-        console.error("Failed to initialize store:", error);
+        console.error("Failed to initialize app:", error);
       }
     };
 
