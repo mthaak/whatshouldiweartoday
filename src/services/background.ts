@@ -1,7 +1,9 @@
 import * as BackgroundFetch from "expo-background-fetch";
+import * as Notifications from "expo-notifications";
 import * as TaskManager from "expo-task-manager";
 
 import { isTodayTrue } from "../common/timeUtils";
+import UserProfile from "../models/UserProfile";
 import {
   NotificationService,
   createContentForWearRecommendation,
@@ -21,8 +23,27 @@ export async function updateNotification(): Promise<void> {
     return;
   }
 
+  const content = await getNotificationContent(profile);
+  if (!content) {
+    return;
+  }
+
   const weekday = (new Date().getDay() + 1) % 7;
 
+  // Remove all previous scheduled notifications before scheduling new
+  NotificationService.cancelAllScheduledNotifications();
+  NotificationService.scheduleNotificationWeekly(
+    content,
+    weekday,
+    profile.alert.time,
+  );
+
+  console.log("Notification updated");
+}
+
+export async function getNotificationContent(
+  profile: UserProfile,
+): Promise<Notifications.NotificationContentInput | undefined> {
   if (
     !profile.alert.enabled ||
     !profile.alert.time ||
@@ -56,15 +77,7 @@ export async function updateNotification(): Promise<void> {
     profile,
   );
 
-  // Remove all previous scheduled notifications before scheduling new
-  NotificationService.cancelAllScheduledNotifications();
-  NotificationService.scheduleNotificationWeekly(
-    content,
-    weekday,
-    profile.alert.time,
-  );
-
-  console.log("Notification updated");
+  return content;
 }
 
 function defineTask(taskName: string, func: CallableFunction) {

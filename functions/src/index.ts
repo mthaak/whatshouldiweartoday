@@ -12,16 +12,40 @@ const db = getFirestore(app, "database");
 const expo = new Expo();
 
 interface RegisterTokenData {
-  userId: string;
   token: string;
 }
 
-interface UpdateAlertSettingsData {
+interface UpdateProfileData {
   userId: string;
-  alertTime: string; // Format: "HH:mm" in 24-hour format
-  alertDays: boolean[]; // Array of 7 booleans representing days of the week
-  // (0 = Sunday, 6 = Saturday)
-  alertEnabled: boolean;
+  profile: {
+    name: string | null;
+    gender: number;
+    home: {
+      lat: number;
+      lon: number;
+    } | null;
+    commute: {
+      days: boolean[];
+      leaveTime: {
+        hours: number;
+        minutes: number;
+      };
+      returnTime: {
+        hours: number;
+        minutes: number;
+      };
+    };
+    alert: {
+      days: boolean[];
+      enabled: boolean;
+      time: {
+        hours: number;
+        minutes: number;
+      };
+    };
+    tempUnit: number;
+  };
+
   timezone: string;
 }
 
@@ -38,7 +62,7 @@ export const registerPushToken = onCall<RegisterTokenData>(
       );
     }
 
-    const { userId, token } = request.data;
+    const { token } = request.data;
 
     if (!Expo.isExpoPushToken(token)) {
       throw new HttpsError(
@@ -48,7 +72,7 @@ export const registerPushToken = onCall<RegisterTokenData>(
     }
 
     try {
-      await db.collection("users").doc(userId).set(
+      await db.collection("users").doc(request.auth.uid).set(
         {
           pushToken: token,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -67,7 +91,7 @@ export const registerPushToken = onCall<RegisterTokenData>(
   },
 );
 
-export const updateAlertSettings = onCall<UpdateAlertSettingsData>(
+export const updateProfile = onCall<UpdateProfileData>(
   {
     region: "us-central1",
     cors: true,
@@ -80,22 +104,16 @@ export const updateAlertSettings = onCall<UpdateAlertSettingsData>(
       );
     }
 
-    const { userId, alertTime, alertDays, alertEnabled, timezone } =
-      request.data;
+    const { profile, timezone } = request.data;
 
-    if (!alertTime || !alertDays || alertDays.length !== 7) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Both alertTime and alertDays (7 days) are required.",
-      );
+    if (!profile) {
+      throw new HttpsError("invalid-argument", "Profile data is required.");
     }
 
     try {
-      await db.collection("users").doc(userId).set(
+      await db.collection("users").doc(request.auth.uid).set(
         {
-          alertTime,
-          alertDays,
-          alertEnabled,
+          profile,
           timezone,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
@@ -104,10 +122,10 @@ export const updateAlertSettings = onCall<UpdateAlertSettingsData>(
 
       return { success: true };
     } catch (error) {
-      console.error("Error updating alert settings:", error);
+      console.error("Error updating profile:", error);
       throw new HttpsError(
         "internal",
-        "An error occurred while updating alert settings.",
+        "An error occurred while updating profile.",
       );
     }
   },
@@ -134,7 +152,7 @@ export const checkAndSendNotifications = onSchedule(
       // Get all users with alerts enabled
       const usersSnapshot = await db
         .collection("users")
-        .where("alertEnabled", "==", true)
+        .where("profile.alert.enabled", "==", true)
         .get();
 
       console.log(`Found ${usersSnapshot.size} users with alerts enabled`);
@@ -142,14 +160,17 @@ export const checkAndSendNotifications = onSchedule(
       const messages = [];
 
       for (const doc of usersSnapshot.docs) {
-        const { pushToken, alertTime, alertDays, timezone } = doc.data();
+        const { pushToken, profile, timezone } = doc.data() as {
+          pushToken: string;
+          profile: UpdateProfileData["profile"];
+          timezone: string;
+        };
 
         // Parse the alert time in the user's timezone
-        const [alertHour, alertMinute] = alertTime.split(":");
         const userAlertTime = new Date();
         userAlertTime.setHours(
-          parseInt(alertHour),
-          parseInt(alertMinute),
+          profile.alert.time.hours,
+          profile.alert.time.minutes,
           0,
           0,
         );
@@ -161,21 +182,27 @@ export const checkAndSendNotifications = onSchedule(
         );
 
         console.log(`Processing user ${doc.id}:`, {
-          timezone,
-          localAlertTime: alertTime,
+          timezone: timezone,
+          localAlertTime: profile.alert.time,
           utcAlertTime: utcTime,
           currentUTCTime: currentTime,
-          alertForToday: alertDays?.[currentDay],
+          alertForToday: profile.alert.days?.[currentDay],
         });
 
         // Skip if not the right time or day
-        if (utcTime !== currentTime || !alertDays?.[currentDay]) {
+        if (utcTime !== currentTime || !profile.alert.days?.[currentDay]) {
           console.log(`Skipping user ${doc.id}: wrong time or day`);
           continue;
         }
 
         if (!pushToken || !Expo.isExpoPushToken(pushToken)) {
           console.warn(`Invalid push token found for user ${doc.id}`);
+          continue;
+        }
+
+        const content = await getNotificationContent(profile);
+        if (!content) {
+          console.warn(`No notification content found for user ${doc.id}`);
           continue;
         }
 

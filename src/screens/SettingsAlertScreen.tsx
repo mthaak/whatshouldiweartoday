@@ -1,14 +1,10 @@
-import * as Localization from "expo-localization";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { getAuth } from "firebase/auth";
-import { httpsCallable } from "firebase/functions";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Switch, View } from "react-native";
 import { Button, ListItem, Text } from "react-native-elements";
 
 import * as Colors from "../constants/colors";
 import WeekdaySelect from "../components/WeekdaySelect";
-import { functions } from "../config/firebase";
 import { styles as gStyles } from "../constants/styles";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
@@ -22,7 +18,6 @@ import {
 const SettingsAlertScreen: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
-  const auth = getAuth();
 
   useEffect(() => {
     const updateProfile = async () => {
@@ -65,29 +60,6 @@ const SettingsAlertScreen: React.FC = () => {
     } else {
       stopBackgroundTasks();
     }
-
-    // Update the alert settings in Firebase
-    if (auth.currentUser) {
-      try {
-        const updateAlertSettings = httpsCallable(
-          functions,
-          "updateAlertSettings",
-        );
-        await updateAlertSettings({
-          userId: auth.currentUser.uid,
-          alertTime: `${profile.alert.time.hours
-            .toString()
-            .padStart(2, "0")}:${profile.alert.time.minutes
-            .toString()
-            .padStart(2, "0")}`,
-          alertDays: profile.alert.days,
-          alertEnabled: value,
-          timezone: Localization.timezone,
-        });
-      } catch (error) {
-        console.error("Error updating alert settings:", error);
-      }
-    }
   };
 
   const handleCheckboxToggle = async (dayIdx: number) => {
@@ -101,29 +73,6 @@ const SettingsAlertScreen: React.FC = () => {
 
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
-
-    // Update the alert settings in Firebase
-    if (auth.currentUser) {
-      try {
-        const updateAlertSettings = httpsCallable(
-          functions,
-          "updateAlertSettings",
-        );
-        await updateAlertSettings({
-          userId: auth.currentUser.uid,
-          alertTime: `${profile.alert.time.hours
-            .toString()
-            .padStart(2, "0")}:${profile.alert.time.minutes
-            .toString()
-            .padStart(2, "0")}`,
-          alertDays: updatedProfile.alert.days,
-          alertEnabled: profile.alert.enabled,
-          timezone: Localization.timezone,
-        });
-      } catch (error) {
-        console.error("Error updating alert settings:", error);
-      }
-    }
   };
 
   const toggleDateTimePicker = () => {
@@ -144,31 +93,6 @@ const SettingsAlertScreen: React.FC = () => {
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
     updateNotification();
-
-    // Update the alert settings in Firebase
-    if (auth.currentUser) {
-      try {
-        const updateAlertSettings = httpsCallable(
-          functions,
-          "updateAlertSettings",
-        );
-        await updateAlertSettings({
-          userId: auth.currentUser.uid,
-          alertTime: `${selectedDate
-            .getHours()
-            .toString()
-            .padStart(2, "0")}:${selectedDate
-            .getMinutes()
-            .toString()
-            .padStart(2, "0")}`,
-          alertDays: profile.alert.days,
-          alertEnabled: profile.alert.enabled,
-          timezone: Localization.timezone,
-        });
-      } catch (error) {
-        console.error("Error updating alert settings:", error);
-      }
-    }
   };
 
   if (!profile) {

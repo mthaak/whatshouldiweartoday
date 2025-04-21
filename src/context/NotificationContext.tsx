@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
 import { Subscription } from "expo-notifications";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { httpsCallable } from "firebase/functions";
 import React, {
   ReactNode,
   createContext,
@@ -11,7 +11,7 @@ import React, {
 } from "react";
 
 import { registerForPushNotificationsAsync } from "../common/registerForPushNotificationsAsync";
-import { auth } from "../config/firebase";
+import { auth, functions } from "../config/firebase";
 
 interface NotificationContextType {
   expoPushToken: string | null;
@@ -67,15 +67,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
             return;
           }
 
-          const functions = getFunctions();
           const registerToken = httpsCallable(functions, "registerPushToken");
 
           const response = await registerToken({
-            userId: auth.currentUser.uid,
             token: token,
           });
 
-          console.log("Token registration response:", response); // Debug log
+          console.log("Push token registered");
         }
       } catch (error) {
         console.error("Error setting up notifications:", error);
