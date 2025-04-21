@@ -1,4 +1,3 @@
-import * as Localization from "expo-localization";
 import * as Notifications from "expo-notifications";
 import { Subscription } from "expo-notifications";
 import { getFunctions, httpsCallable } from "firebase/functions";
@@ -72,9 +71,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           const registerToken = httpsCallable(functions, "registerPushToken");
 
           const response = await registerToken({
-            token: token,
             userId: auth.currentUser.uid,
-            timezone: Localization.timezone,
+            token: token,
           });
 
           console.log("Token registration response:", response); // Debug log

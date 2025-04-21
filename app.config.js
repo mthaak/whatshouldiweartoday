@@ -44,9 +44,7 @@ module.exports = {
     updates: {
       url: "https://u.expo.dev/d6bc1442-7252-4039-97c5-a359e22e2fe7",
     },
-    runtimeVersion: {
-      policy: "appVersion",
-    },
+    runtimeVersion: "1.0.0",
     extra: {
       buildDate:
         new Date().toISOString().replace("T", " ").substring(0, 19) + " UTC",

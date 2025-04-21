@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { Expo } from "expo-server-sdk";
 import { getFirestore } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
@@ -11,17 +12,17 @@ const db = getFirestore(app, "database");
 const expo = new Expo();
 
 interface RegisterTokenData {
-  token: string;
   userId: string;
-  timezone?: string;
+  token: string;
 }
 
 interface UpdateAlertSettingsData {
   userId: string;
   alertTime: string; // Format: "HH:mm" in 24-hour format
-  alertDays: boolean[]; // Array of 7 booleans representing days of the week (0 = Sunday, 6 = Saturday)
+  alertDays: boolean[]; // Array of 7 booleans representing days of the week
+  // (0 = Sunday, 6 = Saturday)
   alertEnabled: boolean;
-  timezone?: string; // Optional timezone, defaults to "Europe/London"
+  timezone: string;
 }
 
 export const registerPushToken = onCall<RegisterTokenData>(
@@ -37,7 +38,7 @@ export const registerPushToken = onCall<RegisterTokenData>(
       );
     }
 
-    const { token, userId, timezone = "Europe/London" } = request.data;
+    const { userId, token } = request.data;
 
     if (!Expo.isExpoPushToken(token)) {
       throw new HttpsError(
@@ -50,7 +51,6 @@ export const registerPushToken = onCall<RegisterTokenData>(
       await db.collection("users").doc(userId).set(
         {
           pushToken: token,
-          timezone,
           updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         },
         { merge: true },
@@ -80,13 +80,8 @@ export const updateAlertSettings = onCall<UpdateAlertSettingsData>(
       );
     }
 
-    const {
-      userId,
-      alertTime,
-      alertDays,
-      alertEnabled,
-      timezone = "Europe/London",
-    } = request.data;
+    const { userId, alertTime, alertDays, alertEnabled, timezone } =
+      request.data;
 
     if (!alertTime || !alertDays || alertDays.length !== 7) {
       throw new HttpsError(
@@ -128,13 +123,12 @@ export const checkAndSendNotifications = onSchedule(
   async () => {
     try {
       const now = new Date();
-      const currentHour = now.getHours().toString().padStart(2, "0");
-      const currentMinute = now.getMinutes().toString().padStart(2, "0");
-      const currentTime = `${currentHour}:${currentMinute}`;
+      const currentTime = formatInTimeZone(now, "UTC", "HH:mm");
       const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
 
       console.log(
-        `[${new Date().toISOString()}] Checking notifications for time: ${currentTime}, day: ${currentDay}`,
+        `[${new Date().toISOString()}] Checking notifications for time:
+        ${currentTime}, day: ${currentDay}`,
       );
 
       // Get all users with alerts enabled
@@ -148,14 +142,9 @@ export const checkAndSendNotifications = onSchedule(
       const messages = [];
 
       for (const doc of usersSnapshot.docs) {
-        const {
-          pushToken,
-          alertTime,
-          alertDays,
-          timezone = "Europe/London",
-        } = doc.data();
+        const { pushToken, alertTime, alertDays, timezone } = doc.data();
 
-        // Convert the user's alert time to UTC based on their timezone
+        // Parse the alert time in the user's timezone
         const [alertHour, alertMinute] = alertTime.split(":");
         const userAlertTime = new Date();
         userAlertTime.setHours(
@@ -164,14 +153,12 @@ export const checkAndSendNotifications = onSchedule(
           0,
           0,
         );
-
-        // Convert to UTC
-        const utcAlertTime = new Date(
-          userAlertTime.toLocaleString("en-US", { timeZone: timezone }),
+        // Convert the user's local time to UTC
+        const utcTime = formatInTimeZone(
+          fromZonedTime(userAlertTime, timezone),
+          "UTC",
+          "HH:mm",
         );
-        const utcHour = utcAlertTime.getHours().toString().padStart(2, "0");
-        const utcMinute = utcAlertTime.getMinutes().toString().padStart(2, "0");
-        const utcTime = `${utcHour}:${utcMinute}`;
 
         console.log(`Processing user ${doc.id}:`, {
           timezone,
