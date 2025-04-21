@@ -1,11 +1,11 @@
-import * as BackgroundFetch from "expo-background-fetch"; 
+import * as BackgroundFetch from "expo-background-fetch";
 import * as TaskManager from "expo-task-manager";
-import ConfigService from "./ConfigService";
-import {  
-  NotificationService,
-} from "./NotificationService";
-import Store from "./Store";
+
 import { getNotificationContent } from "../../shared/src/services/notification";
+import ConfigService from "./ConfigService";
+import { NotificationService } from "./NotificationService";
+import Store from "./Store";
+
 const INTERVAL = 6 * 3600; // update interval in seconds
 const TASK_NAME = "UPDATE_NOTIFICATION";
 
@@ -17,7 +17,10 @@ export async function updateNotification(): Promise<void> {
     return;
   }
 
-  const content = await getNotificationContent(profile, ConfigService.getOpenWeatherMapAppId());
+  const content = await getNotificationContent(
+    profile,
+    ConfigService.getOpenWeatherMapAppId(),
+  );
   if (!content) {
     return;
   }

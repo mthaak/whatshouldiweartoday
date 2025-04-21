@@ -1,10 +1,11 @@
-import UserProfile from '../types/UserProfile';
-import { getWearRecommendation, getTodayWeather } from './weatherrules';
-import { WearRecommendation, WeatherForecastAtTime } from './weatherrules';
-import * as Notifications from 'expo-notifications';
-import { isTodayTrue } from '../utils/timeUtils';
-import { formatTemp } from '../utils/weatherUtils';
-import { retrieveWeather } from './weather';
+import * as Notifications from "expo-notifications";
+
+import UserProfile from "../types/UserProfile";
+import { isTodayTrue } from "../utils/timeUtils";
+import { formatTemp } from "../utils/weatherUtils";
+import { retrieveWeather } from "./weather";
+import { getTodayWeather, getWearRecommendation } from "./weatherrules";
+import { WearRecommendation, WeatherForecastAtTime } from "./weatherrules";
 
 export async function getNotificationContent(
   profile: UserProfile,

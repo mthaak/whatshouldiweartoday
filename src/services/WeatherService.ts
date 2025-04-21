@@ -1,10 +1,10 @@
 import { EventEmitter } from "eventemitter3";
 
-import Location from "../models/Location";
+import { retrieveWeather } from "../../shared/src/services/weather";
 import WeatherForecast from "../../shared/types/WeatherForecast";
 import { TemperatureUnit } from "../../shared/types/enums";
+import Location from "../models/Location";
 import ConfigService from "./ConfigService";
-import { retrieveWeather } from "../../shared/src/services/weather";
 
 const REFRESH_PERIOD = 900; // minimal time (s) between each forecast refresh
 

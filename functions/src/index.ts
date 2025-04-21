@@ -2,19 +2,20 @@ import * as admin from "firebase-admin";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { Expo } from "expo-server-sdk";
 import { getFirestore } from "firebase-admin/firestore";
+import { defineString } from "firebase-functions/params";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
+
 import { getNotificationContent } from "../../shared/src/services/notification";
 import UserProfile from "../../shared/src/types/UserProfile";
-import { defineString } from "firebase-functions/params";
 
 const app = admin.initializeApp({
   projectId: "whatshouldiweartoday-e1a4b",
 });
-const db = getFirestore(app, "database"); 
+const db = getFirestore(app, "database");
 const expo = new Expo();
 
-const openWeatherMapAppId = defineString('OPENWEATHERMAP_APP_ID');       
+const openWeatherMapAppId = defineString("OPENWEATHERMAP_APP_ID");
 
 interface RegisterTokenData {
   token: string;
@@ -177,7 +178,10 @@ export const checkAndSendNotifications = onSchedule(
           continue;
         }
 
-        const content = await getNotificationContent(profile, openWeatherMapAppId.value());
+        const content = await getNotificationContent(
+          profile,
+          openWeatherMapAppId.value(),
+        );
         if (!content) {
           console.warn(`No notification content found for user ${doc.id}`);
           continue;

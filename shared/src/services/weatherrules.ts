@@ -1,13 +1,13 @@
-import { isInHour, isToday, isTodayTrue } from "../utils/timeUtils";
-import {
-  capitalizeFirstLetterOnly,
-  fahrenheitToCelsius,  
-  minByFn,  
-} from "../utils/utils";
 import { Time } from "../types/Time";
 import UserProfile from "../types/UserProfile";
 import WeatherForecast from "../types/WeatherForecast";
 import { Gender, TemperatureUnit } from "../types/enums";
+import { isInHour, isToday, isTodayTrue } from "../utils/timeUtils";
+import {
+  capitalizeFirstLetterOnly,
+  fahrenheitToCelsius,
+  minByFn,
+} from "../utils/utils";
 import { rainOrder } from "./rainorder";
 
 // TODO define more strict types

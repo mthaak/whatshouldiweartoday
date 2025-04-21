@@ -12,7 +12,5 @@
   "extends": "expo/tsconfig.base",
   "include": ["**/*.ts", "**/*.tsx"],
   "files": [],
-  "references": [
-    { "path": "./shared" }
-  ]
+  "references": [{ "path": "./shared" }]
 }

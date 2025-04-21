@@ -1,9 +1,12 @@
 import * as Notifications from "expo-notifications";
 
+import {
+  WearRecommendation,
+  WeatherForecastAtTime,
+} from "../../shared/src/services/weatherrules";
 import { formatTemp } from "../../shared/src/utils/weatherUtils";
-import Time from "../models/Time";
 import UserProfile from "../../shared/types/UserProfile";
-import { WearRecommendation, WeatherForecastAtTime } from "../../shared/src/services/weatherrules";
+import Time from "../models/Time";
 
 class NotificationService {
   permission: Promise<boolean> | null = null;

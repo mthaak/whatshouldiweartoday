@@ -1,6 +1,6 @@
+import { Gender, TemperatureUnit } from "../../shared/src/types/enums";
 import Location from "./Location";
 import Time from "./Time";
-import { Gender, TemperatureUnit } from "../../shared/src/types/enums";
 
 export default class UserProfile {
   name: string | null;
