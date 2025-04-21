@@ -73,7 +73,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
             token: token,
           });
 
-          console.log("Push token registered");
+          // @ts-ignore
+          if (response.data?.success) {
+            console.log("Push token registered");
+          } else {
+            console.error("Failed to register push token");
+          }
         }
       } catch (error) {
         console.error("Error setting up notifications:", error);
