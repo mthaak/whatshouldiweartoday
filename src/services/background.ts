@@ -1,17 +1,11 @@
-import * as BackgroundFetch from "expo-background-fetch";
-import * as Notifications from "expo-notifications";
+import * as BackgroundFetch from "expo-background-fetch"; 
 import * as TaskManager from "expo-task-manager";
-
-import { isTodayTrue } from "../common/timeUtils";
-import UserProfile from "../models/UserProfile";
-import {
+import ConfigService from "./ConfigService";
+import {  
   NotificationService,
-  createContentForWearRecommendation,
 } from "./NotificationService";
 import Store from "./Store";
-import WeatherService from "./WeatherService";
-import { getTodayWeather, getWearRecommendation } from "./weatherrules";
-
+import { getNotificationContent } from "../../shared/src/services/notification";
 const INTERVAL = 6 * 3600; // update interval in seconds
 const TASK_NAME = "UPDATE_NOTIFICATION";
 
@@ -23,7 +17,7 @@ export async function updateNotification(): Promise<void> {
     return;
   }
 
-  const content = await getNotificationContent(profile);
+  const content = await getNotificationContent(profile, ConfigService.getOpenWeatherMapAppId());
   if (!content) {
     return;
   }
@@ -39,45 +33,6 @@ export async function updateNotification(): Promise<void> {
   );
 
   console.log("Notification updated");
-}
-
-export async function getNotificationContent(
-  profile: UserProfile,
-): Promise<Notifications.NotificationContentInput | undefined> {
-  if (
-    !profile.alert.enabled ||
-    !profile.alert.time ||
-    !isTodayTrue(profile.alert.days)
-  ) {
-    return;
-  }
-
-  if (!profile.home) {
-    console.warn(
-      "Home location not available. Cannot update push notification",
-    );
-    return;
-  }
-
-  const weatherForecast = await WeatherService.getWeatherAsync(
-    profile.home,
-    profile.tempUnit,
-  );
-
-  if (!weatherForecast) {
-    console.error("Could not retrieve weather forecast");
-    return;
-  }
-
-  const wearRecommendation = getWearRecommendation(weatherForecast, profile);
-  const todayWeather = getTodayWeather(weatherForecast);
-  const content = createContentForWearRecommendation(
-    wearRecommendation,
-    todayWeather,
-    profile,
-  );
-
-  return content;
 }
 
 function defineTask(taskName: string, func: CallableFunction) {

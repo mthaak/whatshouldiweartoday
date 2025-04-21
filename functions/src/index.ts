@@ -4,12 +4,17 @@ import { Expo } from "expo-server-sdk";
 import { getFirestore } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
 import { onSchedule } from "firebase-functions/v2/scheduler";
+import { getNotificationContent } from "../../shared/src/services/notification";
+import UserProfile from "../../shared/src/types/UserProfile";
+import { defineString } from "firebase-functions/params";
 
 const app = admin.initializeApp({
   projectId: "whatshouldiweartoday-e1a4b",
 });
-const db = getFirestore(app, "database");
+const db = getFirestore(app, "database"); 
 const expo = new Expo();
+
+const openWeatherMapAppId = defineString('OPENWEATHERMAP_APP_ID');       
 
 interface RegisterTokenData {
   token: string;
@@ -17,35 +22,7 @@ interface RegisterTokenData {
 
 interface UpdateProfileData {
   userId: string;
-  profile: {
-    name: string | null;
-    gender: number;
-    home: {
-      lat: number;
-      lon: number;
-    } | null;
-    commute: {
-      days: boolean[];
-      leaveTime: {
-        hours: number;
-        minutes: number;
-      };
-      returnTime: {
-        hours: number;
-        minutes: number;
-      };
-    };
-    alert: {
-      days: boolean[];
-      enabled: boolean;
-      time: {
-        hours: number;
-        minutes: number;
-      };
-    };
-    tempUnit: number;
-  };
-
+  profile: UserProfile;
   timezone: string;
 }
 
@@ -162,7 +139,7 @@ export const checkAndSendNotifications = onSchedule(
       for (const doc of usersSnapshot.docs) {
         const { pushToken, profile, timezone } = doc.data() as {
           pushToken: string;
-          profile: UpdateProfileData["profile"];
+          profile: UserProfile;
           timezone: string;
         };
 
@@ -200,7 +177,7 @@ export const checkAndSendNotifications = onSchedule(
           continue;
         }
 
-        const content = await getNotificationContent(profile);
+        const content = await getNotificationContent(profile, openWeatherMapAppId.value());
         if (!content) {
           console.warn(`No notification content found for user ${doc.id}`);
           continue;
@@ -209,8 +186,8 @@ export const checkAndSendNotifications = onSchedule(
         messages.push({
           to: pushToken,
           sound: "default",
-          title: "Good Morning!",
-          body: "Time to check today's weather and pick your outfit!",
+          title: content.title as string,
+          body: content.body as string,
           data: { type: "daily_reminder" },
         });
       }

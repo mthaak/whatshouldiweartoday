@@ -8,7 +8,7 @@ import WeekdaySelect from "../components/WeekdaySelect";
 import { styles as gStyles } from "../constants/styles";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
-import Store from "../services/Store";
+import Store from "../services/Store";  
 
 const SettingsCommuteScreen: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);

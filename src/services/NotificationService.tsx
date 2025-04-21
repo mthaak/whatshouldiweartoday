@@ -1,9 +1,9 @@
 import * as Notifications from "expo-notifications";
 
-import { formatTemp } from "../common/weatherUtils";
+import { formatTemp } from "../../shared/src/utils/weatherUtils";
 import Time from "../models/Time";
-import UserProfile from "../models/UserProfile";
-import { WearRecommendation, WeatherForecastAtTime } from "./weatherrules";
+import UserProfile from "../../shared/types/UserProfile";
+import { WearRecommendation, WeatherForecastAtTime } from "../../shared/src/services/weatherrules";
 
 class NotificationService {
   permission: Promise<boolean> | null = null;
@@ -83,51 +83,6 @@ class NotificationService {
 const notificationService = new NotificationService();
 
 export { notificationService as NotificationService };
-
-export function createContentForWearRecommendation(
-  wearRecommendation: WearRecommendation,
-  todayWeather: WeatherForecastAtTime,
-  profile: UserProfile,
-): Record<string, unknown> {
-  const temp = todayWeather.temp.day;
-
-  let title =
-    wearRecommendation.temp.name + ` (${formatTemp(temp, profile.tempUnit)})`;
-
-  if (wearRecommendation.temp.emojis) {
-    title = wearRecommendation.temp.emojis + " " + title;
-  }
-
-  if (wearRecommendation.rain.name) {
-    title += " with " + wearRecommendation.rain.name.toLowerCase();
-    if (wearRecommendation.rain.emojis) {
-      title += " " + wearRecommendation.rain.emojis;
-    }
-  }
-
-  let body = "";
-
-  body += wearRecommendation.temp.msg;
-  if (wearRecommendation.temp.clothesEmojis) {
-    body += "\n" + wearRecommendation.temp.clothesEmojis;
-  }
-
-  if (wearRecommendation.rain.msg) {
-    body += "\n" + wearRecommendation.rain.msg;
-    if (wearRecommendation.rain.clothesEmojis) {
-      body += "\n" + wearRecommendation.rain.clothesEmojis;
-    }
-  }
-
-  const date = new Date();
-  body += `\nLast updated at: ${date.toLocaleString("en-GB")}`;
-
-  return {
-    sound: "default",
-    title: title,
-    body: body,
-  };
-}
 
 export function createWeeklyTrigger(
   weekday: number,
