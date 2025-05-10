@@ -7,7 +7,6 @@ import * as Colors from "../constants/colors";
 import { styles as gStyles } from "../constants/styles";
 import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
-import { stopBackgroundTasks } from "../services/background";
 
 const SettingsScreen: React.FC<any> = (props) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -51,7 +50,6 @@ const SettingsScreen: React.FC<any> = (props) => {
   const resetSettings = () => {
     setNamePlaceholder("Type your name");
     Store.resetProfile();
-    stopBackgroundTasks();
   };
 
   if (!profile) {

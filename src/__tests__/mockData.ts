@@ -1,8 +1,8 @@
+import UserProfile from "../../shared/src/types/UserProfile";
+import WeatherForecast from "../../shared/src/types/WeatherForecast";
+import { Gender, TemperatureUnit } from "../../shared/src/types/enums";
 import Location from "../models/Location";
 import Time from "../models/Time";
-import UserProfile from "../models/UserProfile";
-import WeatherForecast from "../models/WeatherForecast";
-import { Gender, TemperatureUnit } from "../models/enums";
 
 export const mockNavigation = {
   navigate: jest.fn(),

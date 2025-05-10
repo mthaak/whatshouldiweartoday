@@ -11,24 +11,24 @@ import { Header, Icon } from "react-native-elements";
 
 import * as ClothingImages from "../assets/images/clothing";
 import * as Colors from "../constants/colors";
-import { isTodayTrue } from "../common/timeUtils";
-import { formatTemp } from "../common/weatherUtils";
+import {
+  WeatherForecastAtTime,
+  getWearRecommendation,
+  getWeatherAtTime,
+} from "../../shared/src/services/weatherrules";
+import UserProfile from "../../shared/src/types/UserProfile";
+import WeatherForecast from "../../shared/src/types/WeatherForecast";
+import { TemperatureUnit } from "../../shared/src/types/enums";
+import { isTodayTrue } from "../../shared/src/utils/timeUtils";
+import { formatTemp } from "../../shared/src/utils/weatherUtils";
 import { Text } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { styles as gStyles } from "../constants/styles";
 import Location from "../models/Location";
 import Time from "../models/Time";
-import UserProfile from "../models/UserProfile";
-import WeatherForecast from "../models/WeatherForecast";
-import { TemperatureUnit } from "../models/enums";
 import LocationService from "../services/LocationService";
 import Store from "../services/Store";
 import WeatherService from "../services/WeatherService";
-import {
-  WeatherForecastAtTime,
-  getWearRecommendation,
-  getWeatherAtTime,
-} from "../services/weatherrules";
 
 const REFRESH_PERIOD = 300; // time (s) between each data refresh when screen is active
 

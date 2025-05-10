@@ -10,6 +10,7 @@ import { ColorSchemeName } from "react-native";
 
 import * as colors from "../constants/colors";
 import { theme } from "../constants/RNE-Theme";
+import { NotificationProvider } from "../context/NotificationContext";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import SettingsAlertScreen from "../screens/SettingsAlertScreen";
 import SettingsCommuteScreen from "../screens/SettingsCommuteScreen";
@@ -30,9 +31,11 @@ export default function Navigation({
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
-      <ThemeProvider theme={theme}>
-        <RootNavigator />
-      </ThemeProvider>
+      <NotificationProvider>
+        <ThemeProvider theme={theme}>
+          <RootNavigator />
+        </ThemeProvider>
+      </NotificationProvider>
     </NavigationContainer>
   );
 }

@@ -8,10 +8,8 @@ import useCachedResources from "../hooks/useCachedResources";
 import useColorScheme from "../hooks/useColorScheme";
 import ConfigService from "../services/ConfigService";
 import LocationService from "../services/LocationService";
-import { NotificationService } from "../services/NotificationService";
 import Store from "../services/Store";
 import WeatherService from "../services/WeatherService";
-import { setUpBackgroundTasks } from "../services/background";
 import { mockLocation, mockProfile, mockWeatherData } from "./mockData";
 
 // Mock Expo modules
@@ -137,8 +135,6 @@ jest.mock("react-native-safe-area-context", () => {
 jest.mock("../services/WeatherService");
 jest.mock("../services/LocationService");
 jest.mock("../services/Store");
-jest.mock("../services/NotificationService");
-jest.mock("../services/background");
 jest.mock("../hooks/useCachedResources");
 jest.mock("../hooks/useColorScheme");
 jest.mock("@expo-google-fonts/lato", () => ({
@@ -169,12 +165,8 @@ describe("App", () => {
       mockLocation,
     );
     (LocationService.requestPermission as jest.Mock).mockResolvedValue(true);
-    (NotificationService.requestPermission as jest.Mock).mockResolvedValue(
-      true,
-    );
     (Store.retrieveProfile as jest.Mock).mockResolvedValue(mockProfile);
     (Store.initializeStorage as jest.Mock).mockResolvedValue(undefined);
-    (setUpBackgroundTasks as jest.Mock).mockResolvedValue(undefined);
     (useCachedResources as jest.Mock).mockReturnValue(true);
     (useColorScheme as jest.Mock).mockReturnValue("light");
   });

@@ -1,7 +1,7 @@
 module.exports = {
   preset: "jest-expo",
   transformIgnorePatterns: [
-    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@rneui/themed|@rneui/base)",
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@rneui/themed|@rneui/base|firebase|@firebase)",
   ],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
@@ -11,5 +11,7 @@ module.exports = {
   ],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^firebase/(.*)$": "<rootDir>/src/__mocks__/firebase/$1",
+    "^@firebase/(.*)$": "<rootDir>/src/__mocks__/firebase/$1",
   },
 };
