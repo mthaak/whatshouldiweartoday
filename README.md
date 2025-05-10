@@ -32,6 +32,8 @@ OPENWEATHERMAP_APPID=<...>
 GOOGLE_GEOCODING_API_KEY=<...>
 ```
 
+- Create a new service account, download its credentials and store at ./credentials.json
+- Get a google services file and store at ./google-services.json
 - Start Expo from the repo root: `expo start`
 - Open the app (follow the Expo instructions). Either:
   - On your phone with the Expo Go client
