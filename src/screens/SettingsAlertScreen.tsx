@@ -9,11 +9,6 @@ import { styles as gStyles } from "../constants/styles";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
-import {
-  startBackgroundTasks,
-  stopBackgroundTasks,
-  updateNotification,
-} from "../services/background";
 
 const SettingsAlertScreen: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -43,7 +38,7 @@ const SettingsAlertScreen: React.FC = () => {
     }
   }, [profile]);
 
-  const handleEnabledEdit = (value: any) => {
+  const handleEnabledEdit = async (value: any) => {
     if (!profile) return;
 
     const updatedProfile = {
@@ -52,17 +47,9 @@ const SettingsAlertScreen: React.FC = () => {
     };
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
-
-    if (updatedProfile.alert.enabled) {
-      startBackgroundTasks().then(() => {
-        updateNotification();
-      });
-    } else {
-      stopBackgroundTasks();
-    }
   };
 
-  const handleCheckboxToggle = (dayIdx: number) => {
+  const handleCheckboxToggle = async (dayIdx: number) => {
     if (!profile) return;
 
     const updatedProfile = {
@@ -79,7 +66,7 @@ const SettingsAlertScreen: React.FC = () => {
     setShowDateTimePicker((prev) => !prev);
   };
 
-  const handleTimeEdit = (selectedDate: Date | undefined) => {
+  const handleTimeEdit = async (selectedDate: Date | undefined) => {
     if (!selectedDate || !profile) return;
 
     setShowDateTimePicker(false);
@@ -92,7 +79,6 @@ const SettingsAlertScreen: React.FC = () => {
     };
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
-    updateNotification();
   };
 
   if (!profile) {

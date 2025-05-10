@@ -17,3 +17,7 @@ data
 
 # macOS
 .DS_Store
+
+# Firebase
+credentials.json
+google-services.json

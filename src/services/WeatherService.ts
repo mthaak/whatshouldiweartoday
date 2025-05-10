@@ -1,12 +1,11 @@
 import { EventEmitter } from "eventemitter3";
 
+import { retrieveWeather } from "../../shared/src/services/weather";
+import WeatherForecast from "../../shared/src/types/WeatherForecast";
+import { TemperatureUnit } from "../../shared/src/types/enums";
 import Location from "../models/Location";
-import WeatherForecast from "../models/WeatherForecast";
-import { TemperatureUnit } from "../models/enums";
 import ConfigService from "./ConfigService";
 
-const OPENWEATHERMAP_BASE_URL =
-  "https://api.openweathermap.org/data/3.0/onecall";
 const REFRESH_PERIOD = 900; // minimal time (s) between each forecast refresh
 
 class WeatherService {
@@ -24,50 +23,6 @@ class WeatherService {
     unit: TemperatureUnit,
     forceFresh = false,
   ) {
-    if (
-      !this.isRefreshing &&
-      (!this.weatherPromise ||
-        !this.timeLastRefreshed ||
-        (Date.now() - this.timeLastRefreshed) / 1e3 > REFRESH_PERIOD ||
-        forceFresh)
-    ) {
-      this.isRefreshing = true;
-      this.weatherPromise = this.retrieveWeather(location, unit)
-        .then((weather) => {
-          this.timeLastRefreshed = Date.now();
-          this.emitter.emit("update");
-          return weather;
-        })
-        .finally(() => (this.isRefreshing = false));
-    }
-    return this.weatherPromise;
-  }
-
-  async retrieveWeather(
-    location: Location,
-    unit: TemperatureUnit,
-  ): Promise<WeatherForecast> {
-    const url = this.buildOpenWeatherMapUrl(location, unit);
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("OpenWeather API Error:", {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText,
-        url: url.replace(ConfigService.getOpenWeatherMapAppId(), "REDACTED"), // Log URL without API key
-      });
-      throw new Error(
-        `OpenWeather API Error: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const json = response.json();
-    return await json;
-  }
-
-  buildOpenWeatherMapUrl(location: Location, unit: TemperatureUnit) {
     const appId = ConfigService.getOpenWeatherMapAppId();
     if (!appId) {
       console.error(
@@ -76,13 +31,23 @@ class WeatherService {
       throw new Error("OpenWeather API key is missing");
     }
 
-    const lat = location.lat;
-    const lon = location.lon;
-    let units = "metric";
-    if (unit === TemperatureUnit.FAHRENHEIT) {
-      units = "imperial";
+    if (
+      !this.isRefreshing &&
+      (!this.weatherPromise ||
+        !this.timeLastRefreshed ||
+        (Date.now() - this.timeLastRefreshed) / 1e3 > REFRESH_PERIOD ||
+        forceFresh)
+    ) {
+      this.isRefreshing = true;
+      this.weatherPromise = retrieveWeather(location, unit, appId)
+        .then((weather) => {
+          this.timeLastRefreshed = Date.now();
+          this.emitter.emit("update");
+          return weather;
+        })
+        .finally(() => (this.isRefreshing = false));
     }
-    return `${OPENWEATHERMAP_BASE_URL}?lat=${lat}&lon=${lon}&appid=${appId}&units=${units}&exclude=minutely&version=3.0`;
+    return this.weatherPromise;
   }
 
   subscribe(callback: any) {
