@@ -4,8 +4,12 @@ import UserProfile from "../types/UserProfile";
 import { isTodayTrue } from "../utils/timeUtils";
 import { formatTemp } from "../utils/weatherUtils";
 import { retrieveWeather } from "./weather";
-import { getTodayWeather, getWearRecommendation } from "./weatherrules";
-import { WearRecommendation, WeatherForecastAtTime } from "./weatherrules";
+import {
+  WearRecommendation,
+  WeatherForecastAtTime,
+  getTodayWeather,
+  getWearRecommendation,
+} from "./weatherrules";
 
 export async function getNotificationContent(
   profile: UserProfile,

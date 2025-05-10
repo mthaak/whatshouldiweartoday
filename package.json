@@ -29,7 +29,6 @@
     "@rneui/themed": "^4.0.0-rc.7",
     "eventemitter3": "^5.0.1",
     "expo": "52",
-    "expo-background-fetch": "~13.0.5",
     "expo-constants": "~17.0.8",
     "expo-dev-client": "~5.0.14",
     "expo-device": "~7.0.3",

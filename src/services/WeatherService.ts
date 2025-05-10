@@ -1,8 +1,8 @@
 import { EventEmitter } from "eventemitter3";
 
 import { retrieveWeather } from "../../shared/src/services/weather";
-import WeatherForecast from "../../shared/types/WeatherForecast";
-import { TemperatureUnit } from "../../shared/types/enums";
+import WeatherForecast from "../../shared/src/types/WeatherForecast";
+import { TemperatureUnit } from "../../shared/src/types/enums";
 import Location from "../models/Location";
 import ConfigService from "./ConfigService";
 

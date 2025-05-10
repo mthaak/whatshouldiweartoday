@@ -67,13 +67,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
             return;
           }
 
-          const registerToken = httpsCallable(functions, "registerPushToken");
+          const registerToken = httpsCallable<
+            { token: string },
+            { success: boolean }
+          >(functions, "registerPushToken");
 
           const response = await registerToken({
             token: token,
           });
 
-          // @ts-ignore
           if (response.data?.success) {
             console.log("Push token registered");
           } else {

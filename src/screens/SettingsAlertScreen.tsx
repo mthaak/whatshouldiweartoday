@@ -9,11 +9,6 @@ import { styles as gStyles } from "../constants/styles";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";
 import Store from "../services/Store";
-import {
-  startBackgroundTasks,
-  stopBackgroundTasks,
-  updateNotification,
-} from "../services/background";
 
 const SettingsAlertScreen: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -52,14 +47,6 @@ const SettingsAlertScreen: React.FC = () => {
     };
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
-
-    if (updatedProfile.alert.enabled) {
-      startBackgroundTasks().then(() => {
-        updateNotification();
-      });
-    } else {
-      stopBackgroundTasks();
-    }
   };
 
   const handleCheckboxToggle = async (dayIdx: number) => {
@@ -92,7 +79,6 @@ const SettingsAlertScreen: React.FC = () => {
     };
     setProfile(updatedProfile);
     Store.saveProfile(updatedProfile);
-    updateNotification();
   };
 
   if (!profile) {

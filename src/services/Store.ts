@@ -79,7 +79,6 @@ class Store {
         },
         timezone: Localization.timezone,
       });
-      console.log("Profile saved to Firestore");
 
       // Save to local storage
       await AsyncStorage.setItem("@store:profile", JSON.stringify(profile));
