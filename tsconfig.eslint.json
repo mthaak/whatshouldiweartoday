@@ -6,6 +6,8 @@
     "src/**/*.tsx",
     "shared/src/**/*.ts",
     "shared/src/**/*.tsx",
-    "shared/src/**/*.d.ts"
+    "shared/src/**/*.d.ts",
+    "functions/src/**/*.ts",
+    "functions/src/**/*.tsx"
   ]
 }
