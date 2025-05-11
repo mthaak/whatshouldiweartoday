@@ -437,7 +437,7 @@ const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
           marginRight: "auto",
           flexDirection: "row",
           flexWrap: "wrap",
-          backgroundColor: "none",
+          backgroundColor: Colors.darkBackground,
           minHeight: 10,
         }}
       >
@@ -452,7 +452,7 @@ const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
           marginRight: "auto",
           flexDirection: "row",
           flexWrap: "wrap",
-          backgroundColor: "none",
+          backgroundColor: Colors.darkBackground,
           minHeight: 10,
         }}
       >
