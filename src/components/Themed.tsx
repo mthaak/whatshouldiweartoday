@@ -32,7 +32,7 @@ export type TextProps = ThemeProps & DefaultText["props"];
 export type TextInputProps = ThemeProps & DefaultTextInput["props"];
 export type ViewProps = ThemeProps & DefaultView["props"];
 
-export function Text(props: TextProps): JSX.Element {
+export function Text(props: TextProps): React.JSX.Element {
   const { style, lightColor, darkColor, bold, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
@@ -44,14 +44,14 @@ export function Text(props: TextProps): JSX.Element {
   );
 }
 
-export function TextInput(props: TextInputProps): JSX.Element {
+export function TextInput(props: TextInputProps): React.JSX.Element {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
 
   return <DefaultTextInput style={[{ color }, style]} {...otherProps} />;
 }
 
-export function View(props: ViewProps): JSX.Element {
+export function View(props: ViewProps): React.JSX.Element {
   const { style, lightColor, darkColor, ...otherProps } = props;
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },

@@ -11,7 +11,7 @@ import Navigation from "./src/navigation";
 import LocationService from "./src/services/LocationService";
 import Store from "./src/services/Store";
 
-export default function App(): JSX.Element | null {
+export default function App(): React.JSX.Element | null {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [areFontsLoaded] = useFonts({
