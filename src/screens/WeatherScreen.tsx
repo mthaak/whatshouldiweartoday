@@ -590,8 +590,8 @@ const WeatherIcon = (props: WeatherIconProps) => {
       source={{ uri: url }}
       accessibilityLabel={props.description}
       style={{
-        width: props.size || "100%",
-        height: props.size || "100%",
+        width: props.size ?? "100%",
+        height: props.size ?? "100%",
       }}
     />
   );

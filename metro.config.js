@@ -1,6 +1,7 @@
 // Workaround for https://github.com/expo/expo/issues/36588
-const { getDefaultConfig } = require("@expo/metro-config");
+import { getDefaultConfig } from "expo/metro-config";
 
+// eslint-disable-next-line no-undef
 const config = getDefaultConfig(__dirname);
 
 // Allow .cjs files
