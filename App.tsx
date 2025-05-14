@@ -1,6 +1,5 @@
 import { Lato_400Regular, useFonts } from "@expo-google-fonts/lato";
 import "expo-dev-client";
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -41,7 +40,6 @@ export default function App(): React.JSX.Element | null {
   return (
     <SafeAreaProvider testID="app-root">
       <Navigation colorScheme={colorScheme ?? "light"} />
-      <StatusBar />
     </SafeAreaProvider>
   );
 }
