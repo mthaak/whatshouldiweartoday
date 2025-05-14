@@ -51,7 +51,7 @@ export function getWearRecommendation(
 export function getHourlyForecast(
   weatherForecast: WeatherForecast,
   hour: number,
-): WeatherForecastAtTime {
+): WeatherForecastAtTime | undefined {
   return weatherForecast.hourly.find((forecast: { dt: number }) =>
     isInHour(forecast.dt, hour),
   );
@@ -249,16 +249,22 @@ function getRainRecommendation(
   let weathers: WeatherForecast[] = [];
   if (isTodayTrue(profile.commute.days)) {
     if (profile.commute.leaveTime) {
-      weathers = weathers.concat(
-        getHourlyForecast(weatherForecast, profile.commute.leaveTime.hours)
-          .weather,
+      const leaveWeather = getHourlyForecast(
+        weatherForecast,
+        profile.commute.leaveTime.hours,
       );
+      if (leaveWeather) {
+        weathers = weathers.concat(leaveWeather.weather);
+      }
     }
     if (profile.commute.returnTime) {
-      weathers = weathers.concat(
-        getHourlyForecast(weatherForecast, profile.commute.returnTime.hours)
-          .weather,
+      const returnWeather = getHourlyForecast(
+        weatherForecast,
+        profile.commute.returnTime.hours,
       );
+      if (returnWeather) {
+        weathers = weathers.concat(returnWeather.weather);
+      }
     }
   }
   if (weathers.length === 0) {
