@@ -13,16 +13,18 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: app/package-lock.json
       - name: 🏗️ Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - name: 📦 Install dependencies
+        working-directory: app
         run: npm install --immutable
       - name: 🚀 Create update
+        working-directory: app
         run: |
           eas update --auto --non-interactive --channel development

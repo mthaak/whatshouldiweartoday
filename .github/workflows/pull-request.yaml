@@ -10,14 +10,16 @@ jobs:
       - name: 🏗️ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: app/package-lock.json
       - name: 📦 Install dependencies
+        working-directory: app
         run: npm install --immutable
       - name: 📝 Run pre-commit
         uses: pre-commit/action@v3.0.0
         with:
           extra_args: --all-files
       - name: 🧪 Run tests
+        working-directory: app
         run: npm test
