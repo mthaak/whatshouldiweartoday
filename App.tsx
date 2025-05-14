@@ -1,6 +1,5 @@
 import { Lato_400Regular, useFonts } from "@expo-google-fonts/lato";
 import "expo-dev-client";
-import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -11,7 +10,7 @@ import Navigation from "./src/navigation";
 import LocationService from "./src/services/LocationService";
 import Store from "./src/services/Store";
 
-export default function App(): JSX.Element | null {
+export default function App(): React.JSX.Element | null {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
   const [areFontsLoaded] = useFonts({
@@ -41,7 +40,6 @@ export default function App(): JSX.Element | null {
   return (
     <SafeAreaProvider testID="app-root">
       <Navigation colorScheme={colorScheme ?? "light"} />
-      <StatusBar />
     </SafeAreaProvider>
   );
 }

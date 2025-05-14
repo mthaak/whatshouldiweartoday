@@ -6,7 +6,7 @@ import { RootStackParamList } from "../navigation";
 
 export default function NotFoundScreen({
   navigation,
-}: StackScreenProps<RootStackParamList, "NotFound">): JSX.Element {
+}: StackScreenProps<RootStackParamList, "NotFound">): React.JSX.Element {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>This screen doesn&apos;t exist.</Text>

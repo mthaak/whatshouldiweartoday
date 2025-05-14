@@ -45,8 +45,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     useState<Notifications.Notification | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
-  const notificationListener = useRef<Subscription>();
-  const responseListener = useRef<Subscription>();
+  const notificationListener = useRef<Subscription | undefined>(undefined);
+  const responseListener = useRef<Subscription | undefined>(undefined);
 
   useEffect(() => {
     const initializeNotifications = async () => {
@@ -108,12 +108,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     return () => {
       if (notificationListener.current) {
-        Notifications.removeNotificationSubscription(
-          notificationListener.current,
-        );
+        notificationListener.current.remove();
       }
       if (responseListener.current) {
-        Notifications.removeNotificationSubscription(responseListener.current);
+        responseListener.current.remove();
       }
     };
   }, [auth.currentUser]);
