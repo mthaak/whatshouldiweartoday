@@ -72,9 +72,6 @@
       }
     }
   },
-  "resolutions": {
-  "react-native-safe-area-context": "4.0.0",
-  },
   "description": "Do you also wonder every morning whether you can wear a skirt or shorts? Or whether you perhaps need to wear a thick jacket because it will be chilly? Or do you want to know about potential rainfall, so you know whether to bring an umbrella?",
   "keywords": [],
   "author": "",
