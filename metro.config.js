@@ -1,5 +1,5 @@
 // Workaround for https://github.com/expo/expo/issues/36588
-const { getDefaultConfig } = require("expo/metro-config");
+const { getDefaultConfig } = require("@expo/metro-config");
 
 const config = getDefaultConfig(__dirname);
 

@@ -364,10 +364,20 @@ const TodayWeather: React.FC<TodayWeatherProps> = (props) => {
 
   return (
     <>
-      <View style={{ marginLeft: "auto", marginRight: "auto", flexDirection: "column" }}>
+      <View
+        style={{
+          marginLeft: "auto",
+          marginRight: "auto",
+          flexDirection: "column",
+        }}
+      >
         <View style={{ flexDirection: "row" }}>
           <View style={{ width: 120 }}>
-            <WeatherIcon icon={props.weatherIcon} description={props.weatherDescription} size={120} />
+            <WeatherIcon
+              icon={props.weatherIcon}
+              description={props.weatherDescription}
+              size={120}
+            />
           </View>
           <View style={{ width: "60%", justifyContent: "center" }}>
             <Text style={[gStyles.shadow, gStyles.xxlarge]}>
@@ -504,7 +514,11 @@ const Commute: React.FC<CommuteProps> = (props) => {
                 </Text>
               </View>
               <View style={{ width: "100%", flexDirection: "row" }}>
-                <WeatherIcon icon={props.weatherIconAtLeave} description={props.weatherDescriptionAtLeave} size={70} />
+                <WeatherIcon
+                  icon={props.weatherIconAtLeave}
+                  description={props.weatherDescriptionAtLeave}
+                  size={70}
+                />
                 <View style={{ justifyContent: "center" }}>
                   <Text style={[gStyles.shadow, gStyles.xlarge]}>
                     {formatTemp(props.tempAtLeave, props.tempUnit)}
@@ -530,7 +544,11 @@ const Commute: React.FC<CommuteProps> = (props) => {
                 </Text>
               </View>
               <View style={{ width: "100%", flexDirection: "row" }}>
-                <WeatherIcon icon={props.weatherIconAtReturn} description={props.weatherDescriptionAtReturn} size={70} />
+                <WeatherIcon
+                  icon={props.weatherIconAtReturn}
+                  description={props.weatherDescriptionAtReturn}
+                  size={70}
+                />
                 <View style={{ justifyContent: "center" }}>
                   <Text style={[gStyles.shadow, gStyles.xlarge]}>
                     {formatTemp(props.tempAtReturn, props.tempUnit)}
@@ -568,10 +586,10 @@ type WeatherIconProps = {
 const WeatherIcon = (props: WeatherIconProps) => {
   const url = `https://openweathermap.org/img/wn/${props.icon}@2x.png`;
   return (
-      <Image
-        source={{ uri: url }}
-        accessibilityLabel={props.description}
-        style={{
+    <Image
+      source={{ uri: url }}
+      accessibilityLabel={props.description}
+      style={{
         width: props.size || "100%",
         height: props.size || "100%",
       }}
