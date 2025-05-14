@@ -1,5 +1,7 @@
 // Workaround for https://github.com/expo/expo/issues/36588
-import { getDefaultConfig } from "expo/metro-config";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { getDefaultConfig } = require("expo/metro-config");
 
 // eslint-disable-next-line no-undef
 const config = getDefaultConfig(__dirname);
