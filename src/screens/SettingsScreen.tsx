@@ -10,6 +10,7 @@ import Store from "../services/Store";
 
 const SettingsScreen: React.FC<any> = (props) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [name, setName] = useState<string>(profile?.name ?? "");
   const [namePlaceholder, setNamePlaceholder] =
     useState<string>("Type your name");
 
@@ -65,8 +66,10 @@ const SettingsScreen: React.FC<any> = (props) => {
           </ListItem.Content>
           <ListItem.Input
             placeholder={namePlaceholder}
-            onChangeText={(value) => handleEdit("name", value)}
+            onChangeText={(value) => setName(value)}
             style={styles.inputStyle}
+            value={name}
+            onBlur={() => handleEdit("name", name)}
           />
         </ListItem>
         <ListItem bottomDivider containerStyle={styles.listItemContainer}>

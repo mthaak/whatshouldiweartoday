@@ -23,6 +23,7 @@ module.exports = {
         "FOREGROUND_SERVICE",
       ],
       googleServicesFile: "./google-services.json",
+      edgeToEdgeEnabled: true,
     },
     ios: {
       bundleIdentifier: "com.mthaak.whatshouldiweartoday",
