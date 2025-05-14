@@ -115,7 +115,7 @@ describe("WeatherScreen", () => {
 
   it("refreshes data when pull-to-refresh is triggered", async () => {
     const { getByText } = render(<WeatherScreen navigation={mockNavigation} />);
-    
+
     // Add a small delay to ensure component has time to mount
     await new Promise((resolve) => setTimeout(resolve, 200));
 
