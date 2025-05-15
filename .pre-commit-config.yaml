@@ -23,6 +23,7 @@ repos:
     rev: v2.6.2
     hooks:
       - id: prettier
+        working_directory: app
         exclude: (^deployment/)|(package-lock\.json$)
         additional_dependencies:
           - prettier@3.1.0
@@ -30,6 +31,7 @@ repos:
   - repo: local
     hooks:
       - id: typescript
+        working_directory: app
         name: typescript
         entry: |
           bash -c '
@@ -43,7 +45,8 @@ repos:
     hooks:
       - id: eslint
         types: [file]
-        files: ^.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
+        working_directory: app
+        files: ^app/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx in app directory
         args: [--fix]
         additional_dependencies:
           - eslint@^8.57.1
