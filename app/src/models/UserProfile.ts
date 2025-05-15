@@ -1,4 +1,4 @@
-import { Gender, TemperatureUnit } from "../../shared/src/types/enums";
+import { Gender, TemperatureUnit } from "../../../shared/src/types/enums";
 import Location from "./Location";
 import Time from "./Time";
 

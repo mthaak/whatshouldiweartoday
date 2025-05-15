@@ -12,7 +12,7 @@ Well, wonder no more! This app tells you what you can best wear with regards to 
   <img alt="Screenshot commute settings screen" src="screenshots/screenshot_commute_settings.jpg" width="30%">
 </p>
 
-This app is currently only built for Android. And not released to the Play Store (though it might at some point). Since this is just meant as a hobby project, it doesn't (yet?) have the quality that I deem sufficient to publicly release it.
+This app is currently only built for Android. And not released to the Play Store (though it might at some point). Since this is just meant as a hobby project, it doesn't have the quality that I deem sufficient to publicly release it.
 
 The weather forecast comes from [OpenWeather](https://openweathermap.org/api).
 
@@ -20,12 +20,12 @@ The weather forecast comes from [OpenWeather](https://openweathermap.org/api).
 
 This is a React Native app, developed using [Expo](https://expo.io/).
 
-Make sure that NodeJS 20 is installed before starting.
+Make sure that NodeJS 18 is installed before starting.
 
-### How to set up
+### How to set up app
 
 - Clone the repo
-- Create a `.env` file in the repo root with the following variables:
+- Create a `.env` file in the app directory with the following variables:
 
 ```
 OPENWEATHERMAP_APPID=<...>
@@ -34,7 +34,7 @@ GOOGLE_GEOCODING_API_KEY=<...>
 
 - Create a new service account, download its credentials and store at ./credentials.json
 - Get a google services file and store at ./google-services.json
-- Start Expo from the repo root: `expo start`
+- Start Expo in the app directory: `npm start`
 - Open the app (follow the Expo instructions). Either:
   - On your phone with the Expo Go client
   - In your web browser
@@ -42,7 +42,9 @@ GOOGLE_GEOCODING_API_KEY=<...>
 
 Also have a look at the [amazing documentation](https://docs.expo.io/get-started/installation/) that Expo provides.
 
-### How to build
+### How to build app
+
+In the `./app` directory:
 
 If you want to build a new version of the Android app, run:
 `eas build --profile preview --platform android`
@@ -55,6 +57,7 @@ If you want a development build, run:
 
 ### Style
 
-Use `npm run lint` to check the style of the code.
-
-Use `npm run format` to format the code.
+In the `./app` directory:
+- Use `npm run lint` to check the style of the code.
+- Use `npm run format` to format the code.
+- Use `npm run typescript` to type-check the code.

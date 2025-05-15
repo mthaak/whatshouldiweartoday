@@ -15,12 +15,12 @@ import {
   WeatherForecastAtTime,
   getWearRecommendation,
   getWeatherAtTime,
-} from "../../shared/src/services/weatherrules";
-import UserProfile from "../../shared/src/types/UserProfile";
-import WeatherForecast from "../../shared/src/types/WeatherForecast";
-import { TemperatureUnit } from "../../shared/src/types/enums";
-import { isTodayTrue } from "../../shared/src/utils/timeUtils";
-import { formatTemp } from "../../shared/src/utils/weatherUtils";
+} from "../../../shared/src/services/weatherrules";
+import UserProfile from "../../../shared/src/types/UserProfile";
+import WeatherForecast from "../../../shared/src/types/WeatherForecast";
+import { TemperatureUnit } from "../../../shared/src/types/enums";
+import { isTodayTrue } from "../../../shared/src/utils/timeUtils";
+import { formatTemp } from "../../../shared/src/utils/weatherUtils";
 import { Text } from "../components/StyledText";
 import { View } from "../components/Themed";
 import { styles as gStyles } from "../constants/styles";

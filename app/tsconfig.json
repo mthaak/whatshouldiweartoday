@@ -11,15 +11,15 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["shared/src/*"]
+      "@shared/*": ["../shared/src/*"]
     }
   },
   "extends": "expo/tsconfig.base",
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "shared/src/**/*.ts",
-    "shared/src/**/*.tsx"
+    "../shared/src/**/*.ts",
+    "../shared/src/**/*.tsx"
   ],
   "exclude": ["node_modules"]
 }

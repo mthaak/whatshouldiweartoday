@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { EventEmitter } from "eventemitter3";
 import { httpsCallable } from "firebase/functions";
 
-import { Gender, TemperatureUnit } from "../../shared/src/types/enums";
+import { Gender, TemperatureUnit } from "@shared/types/enums";
 import { auth, functions } from "../config/firebase";
 import Time from "../models/Time";
 import UserProfile from "../models/UserProfile";

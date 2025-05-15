@@ -7,14 +7,5 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
-web-build/
 .env
-*.xcf
-*.eps
-data
-notes.txt
-
-
-# Firebase
-credentials.json
-google-services.json
+env.ts

@@ -24,6 +24,7 @@ repos:
     hooks:
       - id: prettier
         exclude: (^deployment/)|(package-lock\.json$)
+        args: [--config, app/.prettierrc, app]
         additional_dependencies:
           - prettier@3.1.0
           - "@trivago/prettier-plugin-sort-imports@4.3.0"
@@ -32,7 +33,7 @@ repos:
       - id: typescript
         name: typescript
         entry: |
-          bash -c '
+          cd app && bash -c '
             ./node_modules/.bin/tsc --noEmit --outDir /tmp/tsc-output
           '
         language: system
@@ -43,8 +44,8 @@ repos:
     hooks:
       - id: eslint
         types: [file]
-        files: ^.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx
-        args: [--fix]
+        files: ^app/.*\.[jt]sx?$ # *.js, *.jsx, *.ts and *.tsx in app directory
+        args: [--fix, app]
         additional_dependencies:
           - eslint@^8.57.1
           - typescript@5.8.3
