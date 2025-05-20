@@ -11,6 +11,7 @@ web-build/
 .env
 *.xcf
 *.eps
+dist/
 notes.txt
 env.ts
 data

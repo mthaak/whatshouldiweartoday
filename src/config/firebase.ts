@@ -1,10 +1,13 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getApps, initializeApp } from "firebase/app";
 import {
-  browserLocalPersistence,
+  browserLocalPersistence, // @ts-ignore
+  getReactNativePersistence,
   initializeAuth,
   signInAnonymously,
 } from "firebase/auth";
 import { getFunctions } from "firebase/functions";
+import { Platform } from "react-native";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD6MpRhLAWileJ1H9R5CWIcyccepYavZgY",
@@ -23,9 +26,12 @@ if (getApps().length === 0) {
   app = getApps()[0];
 }
 
-// Initialize Auth with persistence
+// Initialize Auth with platform-specific persistence
 const auth = initializeAuth(app, {
-  persistence: browserLocalPersistence,
+  persistence:
+    Platform.OS === "web"
+      ? browserLocalPersistence
+      : getReactNativePersistence(AsyncStorage),
 });
 
 export const functions = getFunctions(app);
@@ -34,6 +40,12 @@ export { auth };
 // Sign in anonymously
 export const signInAnonymouslyUser = async () => {
   try {
+    // Check if there's already a user logged in
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      return currentUser;
+    }
+
     const userCredential = await signInAnonymously(auth);
     return userCredential.user;
   } catch (error) {
