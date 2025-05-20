@@ -325,8 +325,11 @@ const WeatherScreen: React.FC<any> = (props) => {
             colors={[Colors.foreground]}
           />
         }
+        contentContainerStyle={{
+          flex: 1,
+        }}
       >
-        <View style={{ height: "20%", justifyContent: "center" }}>
+        <View style={{ height: "17%", justifyContent: "center" }}>
           {renderTodayWeather()}
         </View>
 
@@ -334,7 +337,7 @@ const WeatherScreen: React.FC<any> = (props) => {
           {renderWearRecommendation()}
         </View>
 
-        <View style={{ height: "20%", justifyContent: "center" }}>
+        <View style={{ height: "23%", justifyContent: "center" }}>
           {renderCommuteWeather()}
         </View>
       </ScrollView>
@@ -457,7 +460,7 @@ const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
       >
         {tempImages}
       </View>
-      <Text style={[gStyles.large, { marginTop: 0 }]}>
+      <Text style={[gStyles.normal, { marginTop: 0 }]}>
         {props.wearRecommendation.temp.msg}
       </Text>
       <View
@@ -472,7 +475,7 @@ const WearRecommendation: React.FC<WearRecommendationProps> = (props) => {
       >
         {rainImages}
       </View>
-      <Text style={[gStyles.large, { marginTop: 0 }]}>
+      <Text style={[gStyles.normal, { marginTop: 0 }]}>
         {props.wearRecommendation.rain.msg}
       </Text>
     </View>
