@@ -29,9 +29,11 @@ if (getApps().length === 0) {
 // Initialize Auth with platform-specific persistence
 const auth = initializeAuth(app, {
   persistence:
-    Platform.OS === "web"
+    process.env.NODE_ENV === "test"
       ? browserLocalPersistence
-      : getReactNativePersistence(AsyncStorage),
+      : Platform.OS === "web"
+        ? browserLocalPersistence
+        : getReactNativePersistence(AsyncStorage),
 });
 
 export const functions = getFunctions(app);
