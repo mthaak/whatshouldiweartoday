@@ -4,10 +4,13 @@
     "env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "src/**/*.d.ts",
     "shared/src/**/*.ts",
     "shared/src/**/*.tsx",
     "shared/src/**/*.d.ts",
     "functions/src/**/*.ts",
-    "functions/src/**/*.tsx"
-  ]
+    "functions/src/**/*.tsx",
+    "functions/src/**/*.d.ts"
+  ],
+  "exclude": ["node_modules"]
 }
