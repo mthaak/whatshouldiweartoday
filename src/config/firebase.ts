@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getApps, initializeApp } from "firebase/app";
 import {
-  browserLocalPersistence, // @ts-ignore
+  browserLocalPersistence, // @ts-expect-error getReactNativePersistence is not defined in the types
   getReactNativePersistence,
   initializeAuth,
   signInAnonymously,
